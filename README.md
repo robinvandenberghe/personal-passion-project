@@ -5,7 +5,7 @@ Personal Passion Project for Expert Development in Devine at Howest, Kortrijk
 ## The Client: Jeugdhuis 't Kalf
 ## Core Project Statement
 ### Onderzoeksvraag
-Hoe kunnen we leden aantrekken en behouden?
+Hoe kunnen we leden aantrekken en behouden aan de hand van technologie?
 
 ### Omschrijving
 Het aantrekken van nieuwe leden en de huidige leden is van vitaal belang binnen een jeugdhuis. Ze zorgen voor de continuïteit binnen je werking. Daarom hadden we graag gekeken voor een unieke manier om onze leden net iets extra te bieden en ze ook de meerwaarde ervan te tonen.
