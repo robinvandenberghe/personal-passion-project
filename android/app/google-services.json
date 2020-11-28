@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "109846928225",
+    "firebase_url": "https://kalf-app.firebaseio.com",
+    "project_id": "kalf-app",
+    "storage_bucket": "kalf-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:109846928225:android:2b00c5ae9a4e2a7bcf8320",
+        "android_client_info": {
+          "package_name": "io.expo.kalf"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "109846928225-gc7srakqgjmrau33njh10d3u3p7ugvlq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCyzsjb3jkWnVupe9wPVbCfZa2HhhV7Yis"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "109846928225-gc7srakqgjmrau33njh10d3u3p7ugvlq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

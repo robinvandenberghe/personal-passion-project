@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>109846928225-7irbm4r0vjhbjcmaj5iikn7os0s03g43.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.109846928225-7irbm4r0vjhbjcmaj5iikn7os0s03g43</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDQoa4t4x7EdcIFe9ilFlxBi4vhULdqYH8</string>
+	<key>GCM_SENDER_ID</key>
+	<string>109846928225</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>io.expo.kalf</string>
+	<key>PROJECT_ID</key>
+	<string>kalf-app</string>
+	<key>STORAGE_BUCKET</key>
+	<string>kalf-app.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:109846928225:ios:fe3eeb0607c74b12cf8320</string>
+	<key>DATABASE_URL</key>
+	<string>https://kalf-app.firebaseio.com</string>
+</dict>
+</plist>
