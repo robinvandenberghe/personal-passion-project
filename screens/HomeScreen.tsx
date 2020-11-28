@@ -1,10 +1,12 @@
 import * as React from 'react';
 import { StyleSheet } from 'react-native';
-
+import firestore from '@react-native-firebase/firestore';
 import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
 
 export default function HomeScreen() {
+  const ref = firestore().collection('posts');
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Home</Text>
