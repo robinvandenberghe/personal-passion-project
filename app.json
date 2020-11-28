@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "'t Kalf'",
+    "name": "'t Kalf",
     "slug": "t-kalf",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#F9F5F0"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -20,14 +20,24 @@
     ],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "io.expo.kalf"
+      "bundleIdentifier": "io.expo.kalf",
+      "splash": {
+        "image": "./assets/images/splash.png",
+        "imageResizeMode": "contain",
+        "backgroundColor": "#F9F5F0"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
+        "backgroundColor": "#F9F5F0"
       },
-      "package": "io.expo.kalf"
+      "package": "io.expo.kalf",
+      "splash": {
+        "image": "./assets/images/splash.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#F9F5F0"
+      }
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
