@@ -9,6 +9,7 @@ import PlayScreen from '../screens/PlayScreen';
 import OrderScreen from '../screens/OrderScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import { BottomTabParamList, HomeParamList, PlayParamList, OrderParamList, ProfileParamList } from '../types';
+import { StyleSheet } from 'react-native';
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -24,6 +25,7 @@ export default function BottomTabNavigator() {
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
         }}
+        style={styles.icon}
       />
       <BottomTab.Screen
         name="Speel"
@@ -53,7 +55,7 @@ export default function BottomTabNavigator() {
 // You can explore the built-in icon families and icons on the web at:
 // https://icons.expo.fyi/
 function TabBarIcon(props: { name: string; color: string }) {
-  return <AppIcons size={30} {...props} />;
+  return <AppIcons size={30} {...props}  />;
 }
 
 // Each tab has its own navigation stack, you can read more about this pattern here:
@@ -111,3 +113,9 @@ function ProfileNavigator() {
     </ProfileStack.Navigator>
   );
 }
+
+const styles = StyleSheet.create({
+  icon: {
+    padding: 8
+  }
+});

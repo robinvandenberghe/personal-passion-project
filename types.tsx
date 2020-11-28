@@ -13,6 +13,7 @@ export type BottomTabParamList = {
 export type HomeParamList = {
   HomeScreen: undefined;
 };
+
 export type PlayParamList = {
   PlayScreen: undefined;
 };
