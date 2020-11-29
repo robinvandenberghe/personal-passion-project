@@ -22,6 +22,7 @@ export default {
     tint: primaryLight,
     tabIconDefault: primaryGrey,
     tabIconSelected: primaryGrey,
+    labelColor: secondaryGrey,
   },
   dark: {
     text: primaryLight,
@@ -29,5 +30,6 @@ export default {
     tint: secondaryGrey,
     tabIconDefault: '#ccc',
     tabIconSelected: secondaryGrey,
+    labelColor: primaryCrema,
   },
 };

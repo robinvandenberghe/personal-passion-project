@@ -1,35 +1,24 @@
 import React , { useState, useEffect } from 'react';
-import { StyleSheet , FlatList} from 'react-native';
+import { StyleSheet} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import InputWithLabel from '../components/InputWithLabel';
-import { Text, View, Button } from '../components/Themed';
-
+import {  View, Pressable , InputWithLabel, Text, Link} from '../components/Themed';
+import { primaryCrema } from '../constants/Colors';
 
 export default function LoginScreen() {
   const [ email, setEmail] = useState("");
   const [ password, setPassword] = useState("");
 
-  // useEffect(() => {
-  //   async function fetchDrinks() {
-  //     try {
-  //       const ref = await firestore().collection('drinks').get();
-  //       const arr = ref.docs;
-  //       arr.map(item => item.data)
-  //       setDrinks(arr);
-  //     } catch (err) {
-  //       console.error(err);
-  //     }
-  //   }
-
-  //   fetchDrinks();
-  // }, [drinks]);
+  const handleLogin = async () => {
+    alert(email);
+  }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
-      <InputWithLabel placeholder="e-mailadres" label="e-mail" value={email} callback={setEmail} type="email" />
-      <InputWithLabel placeholder="wachtwoord" label="wachtwoord" value={password} callback={setPassword} type="password" />
-      <Button onPress={onPressLearnMore} title="Learn More" accessibilityLabel="Learn more about this purple button"/>
+      <InputWithLabel style={styles.input} placeholder="e-mailadres" label="e-mail" value={email} callback={setEmail} type="emailAddress" />
+      <InputWithLabel style={styles.input} placeholder="wachtwoord" label="wachtwoord" value={password} callback={setPassword} type="password" />
+      <Pressable onPress={handleLogin} style={styles.button}><Text style={styles.buttonText}>Inloggen</Text></Pressable>
+      <Link to="/registreer">Nog geen account? Registreer hier.</Link>
     </View>
   );
 }
@@ -38,7 +27,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+    paddingTop: 50,
   },
   title: {
     fontSize: 20,
@@ -49,5 +39,17 @@ const styles = StyleSheet.create({
     height: 1,
     width: '80%',
   },
+  input: {
+    marginVertical: 4,
+  },
+  button: {
+    marginVertical: 12,
+  },
+  buttonText: {
+    color: primaryCrema,
+    fontSize:16,
+    fontWeight: "600",
+    fontFamily: 'Poppins',
+  }
 });
 

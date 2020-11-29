@@ -4,19 +4,19 @@ export default {
   config: {
     screens: {      
       Authentication: {
-      screens: {
-        Login: {
-          screens: {
-            LoginScreen: 'login',
+        screens: {
+          Login: {
+            screens: {
+              LoginScreen: 'login',
+            },
           },
-        },
-        Register: {
-          screens: {
-            RegisterScreen: 'registreer',
-          },
+          Register: {
+            screens: {
+              RegisterScreen: 'registreer',
+            },
+          }
         }
-      }
-    },
+      },
       Root: {
         screens: {
           Home: {
