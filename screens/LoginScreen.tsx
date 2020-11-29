@@ -1,6 +1,5 @@
 import React , { useState, useEffect } from 'react';
 import { StyleSheet} from 'react-native';
-import firestore from '@react-native-firebase/firestore';
 import {  View, Pressable , InputWithLabel, Text, Link} from '../components/Themed';
 import { primaryCrema } from '../constants/Colors';
 
