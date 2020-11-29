@@ -1,10 +1,11 @@
 import React , { useState, useEffect } from 'react';
 import { StyleSheet , FlatList} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
+import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
 
 
-export default function HomeScreen() {
+export default function RegisterScreen() {
   interface drinks  {
     objects: Array<object>;
   }

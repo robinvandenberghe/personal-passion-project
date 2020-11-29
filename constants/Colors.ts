@@ -20,8 +20,8 @@ export default {
     text: primaryDark,
     background: primaryLight,
     tint: primaryLight,
-    tabIconDefault: '#ccc',
-    tabIconSelected: primaryLight,
+    tabIconDefault: primaryGrey,
+    tabIconSelected: primaryGrey,
   },
   dark: {
     text: primaryLight,

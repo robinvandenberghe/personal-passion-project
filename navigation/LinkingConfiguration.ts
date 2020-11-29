@@ -2,7 +2,21 @@ import * as Linking from 'expo-linking';
 
 export default {
   config: {
-    screens: {
+    screens: {      
+      Authentication: {
+      screens: {
+        Login: {
+          screens: {
+            LoginScreen: 'login',
+          },
+        },
+        Register: {
+          screens: {
+            RegisterScreen: 'registreer',
+          },
+        }
+      }
+    },
       Root: {
         screens: {
           Home: {
