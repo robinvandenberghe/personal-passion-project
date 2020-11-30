@@ -19,6 +19,7 @@ export type AuthenticationParamList = {
 
 export type HomeParamList = {
   HomeScreen: undefined;
+  EventScreen:undefined;
 };
 
 export type PlayParamList = {

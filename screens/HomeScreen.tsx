@@ -1,55 +1,46 @@
 import React , { useState, useEffect } from 'react';
-import { StyleSheet , FlatList} from 'react-native';
+import { StyleSheet , FlatList, ScrollView} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import { Text, View } from '../components/Themed';
+import Post from '../components/Post';
+import { primaryGrey } from '../constants/Colors';
 
 
-export default function HomeScreen() {
-  interface drinks  {
-    objects: Array<object>;
-  }
-  const [ drinks, setDrinks] = useState([]);
+export default function HomeScreen({navigation}:{navigation: any}) {
+  type posts  = any[];
+  const [ posts, setPosts] = useState([]);
 
   useEffect(() => {
-    async function fetchDrinks() {
+    async function fetchPosts() {
       try {
-        const ref = await firestore().collection('drinks').get();
-        const arr = ref.docs;
-        arr.map(item => item.data)
-        setDrinks(arr);
+        const ref = await firestore().collection('posts').get();
+        const arr = ref.docs.map(item => item.data());
+        setPosts(arr);
       } catch (err) {
         console.error(err);
       }
     }
-
-    fetchDrinks();
-  }, [drinks]);
+    fetchPosts();
+  }, [posts, setPosts]);
 
   return (
-    <View style={styles.container}>
       <FlatList
-        data={drinks}
-        renderItem={({item}) => <Text style={styles.title}>{item.get('title')}</Text>}
-      />
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-    </View>
+        contentContainerStyle={{flexGrow: 1,  alignItems: 'center', justifyContent:'flex-start'}}
+        data={posts}
+        renderItem={(item) => {
+          return <Post key={item.index} post={item} />;
+        }}
+        style={styles.container}     
+        showsVerticalScrollIndicator ={false}
+        showsHorizontalScrollIndicator={false} />
+
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
+    backgroundColor: primaryGrey,
+    padding: 8,
+  }
 });
 

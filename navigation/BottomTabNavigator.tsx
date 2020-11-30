@@ -10,6 +10,7 @@ import OrderScreen from '../screens/OrderScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import { BottomTabParamList, HomeParamList, PlayParamList, OrderParamList, ProfileParamList } from '../types';
 import { StyleSheet } from 'react-native';
+import EventScreen from '../screens/EventScreen';
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -25,7 +26,6 @@ export default function BottomTabNavigator() {
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
         }}
-        style={styles.icon}
       />
       <BottomTab.Screen
         name="Speel"
@@ -69,6 +69,10 @@ function HomeNavigator() {
         name="HomeScreen"
         component={HomeScreen}
         options={{ headerTitle: 'Home' }}
+      />
+      <HomeStack.Screen
+        name="EventScreen"
+        component={EventScreen}
       />
     </HomeStack.Navigator>
   );

@@ -47,6 +47,13 @@ export function View(props: ViewProps) {
   return <DefaultView style={[{ backgroundColor}, style]} {...otherProps} />;
 }
 
+export function SwitchView(props: ViewProps) {
+  const { style, lightColor, darkColor, ...otherProps } = props;
+  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'postBackground');
+
+  return <DefaultView style={[{ backgroundColor}, style]} {...otherProps} />;
+}
+
 export function Pressable(props: PressableProps) {
   const { style,  lightColor, darkColor, ...otherProps} = props;
   const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
@@ -91,11 +98,15 @@ setCustomTextInput(customTextInputProps);
 
 const styles = StyleSheet.create({
   button: {
-    padding: 20,
     backgroundColor: primaryDark,
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 16,
+    flex:1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems:'center',
+    alignSelf:'flex-start',
   },
   container: {
     width: '100%',

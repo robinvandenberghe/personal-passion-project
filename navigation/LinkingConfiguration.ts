@@ -23,6 +23,7 @@ export default {
           Home: {
             screens: {
               HomeScreen: 'home',
+              
             },
           },
           Speel: {
@@ -38,6 +39,11 @@ export default {
           Profiel: {
             screens: {
               ProfileScreen: 'profiel',
+            },
+          },        
+          Event: {
+            screens: {
+              EventScreen: 'event',
             },
           },
         },
