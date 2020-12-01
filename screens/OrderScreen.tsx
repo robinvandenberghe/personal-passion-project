@@ -1,5 +1,5 @@
 import React , { useState, useEffect } from 'react';
-import { StyleSheet , ScrollView} from 'react-native';
+import { StyleSheet , Image} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import { Text, View, FlatList } from '../components/Themed';
 import Post from '../components/Post';
@@ -11,6 +11,8 @@ export default function HomeScreen({navigation}:{navigation: any}) {
   const [ isFetching, setFetching] = useState(true);
   const [categories, setCategories] = useState([]);
   const [user, setUser] = useState(global.user);
+  const [cart, setCart] = useState(global.cart);
+
   let welcomeMessage;
   const currentHour = new Date().getHours();
   if(currentHour>=6 && currentHour<=11){
@@ -41,6 +43,9 @@ export default function HomeScreen({navigation}:{navigation: any}) {
     }
     fetchPosts();
   }, [isFetching]);
+
+
+
   return (
     <>
     <Text>{welcomeMessage}</Text>
@@ -53,6 +58,7 @@ export default function HomeScreen({navigation}:{navigation: any}) {
       refreshing={isFetching}
       onRefresh={()=>setFetching(true)}
       keyExtractor={item => item.index}
+      nestedScrollEnabled={true}
       />
     </>
     );
@@ -63,7 +69,24 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   categoryTitle : {
+    fontSize: 14,
+    fontWeight:'500',
     textTransform: 'capitalize',
+    marginTop: 12,
+  },
+  drinkContainer : {
+    flexShrink: 1,
+    marginVertical:4,
+    flexDirection:'row',
+    alignItems: 'center',
+  },
+  drinkTitle : {
+    marginLeft:8,
+  },
+  drinkImage : {
+    width: 37,
+    height:37,
+    resizeMode:'contain',
   }
 });
 
@@ -73,14 +96,25 @@ const Category = ({category, drinks}:{category:string; drinks:object[];}) => {
       <Text style={styles.categoryTitle}>{category.item}</Text>
       <FlatList
       data={drinks.filter((item)=> item.category == category.item)}
-      renderItem={(drink) => {
-      return (<Text>{drink.item.title}</Text>
-        );
-      }}
+      renderItem={(drink) => <Drink drink={drink}/>}
       showsVerticalScrollIndicator ={false}
       showsHorizontalScrollIndicator={false} 
       keyExtractor={item => item.index}
+      nestedScrollEnabled={true}
+
       />
     </>
+  );
+}
+
+const Drink = ({ drink}:{drink:object;}) => {
+  const [imgLink, setImgLink] = useState(require('./../assets/images/drinkDefault.jpg'));
+
+
+  return (
+    <View style={styles.drinkContainer}>
+      <Image source={imgLink} style={styles.drinkImage}/>
+      <Text style={styles.drinkTitle}>{drink.item.title}</Text>
+    </View>
   );
 }
