@@ -9,22 +9,27 @@ import { primaryGrey } from '../constants/Colors';
 export default function HomeScreen({navigation}:{navigation: any}) {
   type posts  = any[];
   const [ posts, setPosts] = useState([]);
+  const [ isFetching, setFetching] = useState(true);
+
   useEffect(() => {
     async function fetchPosts() {
-      try {
-        const ref = await firestore().collection('posts').get();
-        const arr = ref.docs.map(item => item.data());
-        setPosts(arr);
-      } catch (err) {
-        console.error(err);
+      if(isFetching){
+        try {
+          const ref = await firestore().collection('posts').get();
+          const arr = ref.docs.map(item => item.data());
+          setPosts(arr);
+          setFetching(false);
+        } catch (err) {
+          console.error(err);
+        }
       }
     }
     fetchPosts();
-  }, [posts, setPosts]);
+  }, [isFetching]);
 
   return (
       <FlatList
-        contentContainerStyle={{flexGrow: 1,  alignItems: 'center', justifyContent:'flex-start'}}
+        contentContainerStyle={{flexGrow: 1,  alignItems: 'center', justifyContent:'flex-start', alignSelf: 'stretch'}}
         data={posts}
         renderItem={(item) => {
           return <Post post={item} />;
@@ -32,7 +37,10 @@ export default function HomeScreen({navigation}:{navigation: any}) {
         style={styles.container}     
         showsVerticalScrollIndicator ={false}
         showsHorizontalScrollIndicator={false} 
-        keyExtractor={item => item.index}/>
+        refreshing={isFetching}
+        onRefresh={()=>setFetching(true)}
+        keyExtractor={item => item.index}
+        />
 
   );
 }

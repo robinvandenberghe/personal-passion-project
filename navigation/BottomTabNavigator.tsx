@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
 import AppIcons from '../components/AppIcons';
-import Colors from '../constants/Colors';
+import Colors, { infoDark, primaryDark } from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import HomeScreen from '../screens/HomeScreen';
 import PlayScreen from '../screens/PlayScreen';
@@ -11,7 +11,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import { BottomTabParamList, HomeParamList, PlayParamList, OrderParamList, ProfileParamList } from '../types';
 import { StyleSheet, Button } from 'react-native';
 import EventScreen from '../screens/EventScreen';
-import { color } from 'react-native-reanimated';
+import QRScreen from '../screens/QRScreen';
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -20,13 +20,10 @@ export default function BottomTabNavigator() {
   return (
     <BottomTab.Navigator
       initialRouteName="Home"
-      tabBarOptions={{ inactiveBackgroundColor: Colors[colorScheme].tabBackground, activeBackgroundColor: Colors[colorScheme].tabSelected, activeTintColor: Colors[colorScheme].tabIconDefault, tabStyle:{ flexShrink:1, alignContent:'center', alignItems:'center', justifyContent:'center', alignSelf:'center'}}}
-            >
-        
+      tabBarOptions={{ inactiveBackgroundColor: Colors[colorScheme].tabBackground, activeBackgroundColor: Colors[colorScheme].tabSelected, activeTintColor: Colors[colorScheme].tabIconSelected, inactiveTintColor: Colors[colorScheme].tabIconDefault, style:{backgroundColor: Colors[colorScheme].tabBackground}}}>
       <BottomTab.Screen
         name="Home"
         component={HomeNavigator}
-        
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
         }}
@@ -36,15 +33,15 @@ export default function BottomTabNavigator() {
         component={PlayNavigator}
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name="puzzle" color={color} />,
-        }}
-      />
+        }}/>
       <BottomTab.Screen
         name="Bestel"
         component={OrderNavigator}
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name="order" color={color} />,
-        }}
-      />
+          tabBarBadgeStyle: {backgroundColor: infoDark, flex:1,alignItems:'center', justifyContent:'center', padding: 1, fontWeight:'500'},
+          tabBarBadge: (global.cart && global.cart.length >0 ? global.cart.length : undefined),
+        }}/>
       <BottomTab.Screen
         name="Profiel"
         component={ProfileNavigator}
@@ -52,7 +49,6 @@ export default function BottomTabNavigator() {
           tabBarIcon: ({ color }) => <TabBarIcon name="profile" color={color} />,
         }}
       />
-
     </BottomTab.Navigator>
   );
 }
@@ -127,6 +123,11 @@ function ProfileNavigator() {
         name="ProfileScreen"
         component={ProfileScreen}
         options={{ headerTitle: 'Profiel' }}
+      />
+      <ProfileStack.Screen
+        name="QRScreen"
+        component={QRScreen}
+        options={{ headerTitle: 'QR-code' }}
       />
     </ProfileStack.Navigator>
   );

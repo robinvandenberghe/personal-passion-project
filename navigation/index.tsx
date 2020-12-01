@@ -8,6 +8,7 @@ import BottomTabNavigator from './BottomTabNavigator';
 import Authentication from './Authentication';
 import LinkingConfiguration from './LinkingConfiguration';
 import auth from '@react-native-firebase/auth';
+import { primaryCrema, primaryDark } from '../constants/Colors';
 
 
 // If you are not familiar with React Navigation, we recommend going through the
@@ -43,10 +44,10 @@ function RootNavigator() {
 
   if (initializing) return null;
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }} >
+    <Stack.Navigator  screenOptions={{ headerShown: false }}  >
       {!user?
       <Stack.Screen name="Authentication" component={Authentication} />:
-      <Stack.Screen name="Root" component={BottomTabNavigator}/>}
+      <Stack.Screen name="Root" component={BottomTabNavigator}  />}
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
     </Stack.Navigator>
   );

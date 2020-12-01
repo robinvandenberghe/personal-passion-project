@@ -30,5 +30,6 @@ export type OrderParamList = {
 };
 export type ProfileParamList = {
   ProfileScreen: undefined;
+  QRScreen: undefined;
 };
 

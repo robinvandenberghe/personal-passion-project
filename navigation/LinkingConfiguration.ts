@@ -45,6 +45,7 @@ export default {
           Profiel: {
             screens: {
               ProfileScreen: 'profiel',
+              QRScreen: 'profiel/qr',
             },
           },        
         },
