@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     justifyContent: 'flex-start',
     marginBottom: 16,
+    maxWidth: '95%',
   },
   subText:{
     fontSize: 14,

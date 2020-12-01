@@ -1,7 +1,7 @@
 import React , { useState, useEffect } from 'react';
-import { StyleSheet , FlatList, ScrollView} from 'react-native';
+import { StyleSheet , ScrollView} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import { Text, View } from '../components/Themed';
+import { Text, View, FlatList } from '../components/Themed';
 import Post from '../components/Post';
 import { primaryGrey } from '../constants/Colors';
 
@@ -9,7 +9,6 @@ import { primaryGrey } from '../constants/Colors';
 export default function HomeScreen({navigation}:{navigation: any}) {
   type posts  = any[];
   const [ posts, setPosts] = useState([]);
-
   useEffect(() => {
     async function fetchPosts() {
       try {
@@ -39,7 +38,6 @@ export default function HomeScreen({navigation}:{navigation: any}) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: primaryGrey,
     padding: 8,
   }
 });

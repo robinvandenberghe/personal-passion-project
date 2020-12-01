@@ -11,7 +11,6 @@ export type BottomTabParamList = {
   Profiel: undefined;
 };
 
-
 export type AuthenticationParamList = {
   Login: undefined;
   Register: undefined;
@@ -19,7 +18,8 @@ export type AuthenticationParamList = {
 
 export type HomeParamList = {
   HomeScreen: undefined;
-  EventScreen:undefined;
+  EventScreen: {evenId:string};
+
 };
 
 export type PlayParamList = {

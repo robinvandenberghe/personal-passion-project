@@ -20,8 +20,9 @@ export default {
     text: primaryDark,
     background: primaryLight,
     tint: primaryLight,
+    tabSelected: `#D5C5AD`,
     tabIconDefault: primaryGrey,
-    tabIconSelected: primaryGrey,
+    tabBackground: primaryCrema,
     labelColor: secondaryGrey,
     postBackground: secondaryLight,
   },
@@ -33,5 +34,7 @@ export default {
     tabIconSelected: secondaryGrey,
     labelColor: primaryCrema,
     postBackground: secondaryGrey,
+    tabSelected: primaryCrema,
+    tabBackground: primaryCrema,
   },
 };

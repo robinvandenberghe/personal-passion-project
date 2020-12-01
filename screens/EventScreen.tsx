@@ -1,54 +1,106 @@
 import React , { useState, useEffect } from 'react';
-import { StyleSheet} from 'react-native';
+import { StyleSheet, Image} from 'react-native';
 import {  View, Pressable , InputWithLabel, Text, Link} from '../components/Themed';
-import { primaryCrema } from '../constants/Colors';
+import { primaryDark, primaryCrema, secondaryLight } from '../constants/Colors';
+import firestore from '@react-native-firebase/firestore';
 
-export default function EventScreen() {
-  const [ email, setEmail] = useState("");
-  const [ password, setPassword] = useState("");
+export default function EventScreen({route, navigation}: {route?:any; navigation:any;}) {
+  const { title, eventId} = route.params;
+  const [ event, setEvent] = useState({imageUrl:'', titel:'', date: new Date(), description: ''});
 
-  const handleLogin = async () => {
-    alert(email);
+  useEffect(() => {
+    async function fetchEvent() {
+      try {
+        const d =  await firestore().collection('events').doc(eventId).get();
+        const da = d.data();
+        da.date = da.date.toDate();
+        da.id = d.id;
+        da.imageUrl = null;
+        setEvent(da);
+        if(event){
+          // const url = await storage().ref(`events/${event.imageUrl}`).getDownloadURL();
+          // event.imageUrl = url;
+          // setEvent(event);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchEvent();
+  }, []);
+
+  return (<View style={styles.container}>
+    <Image source={event.imageUrl? {uri: event.imageUrl }: undefined } style={styles.eventImage}/>
+    <View style={styles.eventInfo}>
+      <View style={styles.dateContainer}>
+        <Text style={styles.dateNumber}>{event.date.toLocaleDateString('nl-BE', {day: '2-digit'})}</Text>
+        <Text style={styles.dateMonth}>{event.date.toLocaleDateString('nl-BE', {month:'short'}).slice(0, -1)}</Text>
+      </View>
+      <View style={styles.infoContainer}>
+        <Text style={styles.eventTitle}>{event.titel}</Text>
+      </View>
+
+    </View>
+    <View>
+        <Text>{event.description}</Text>
+      </View>
+  </View>);
+  
   }
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-      <InputWithLabel style={styles.input} placeholder="e-mailadres" label="e-mail" value={email} callback={setEmail} type="emailAddress" />
-      <InputWithLabel style={styles.input} placeholder="wachtwoord" label="wachtwoord" value={password} callback={setPassword} type="password" />
-      <Pressable onPress={handleLogin} style={styles.button}><Text style={styles.buttonText}>Inloggen</Text></Pressable>
-      <Link to="/registreer">Nog geen account? Registreer hier.</Link>
-    </View>
-  );
-}
+
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
+  container:{
+    flexGrow:1,
     justifyContent: 'flex-start',
-    paddingTop: 50,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+  eventImage:{
+    flexShrink: 1,
+    height: 120,
+    resizeMode: 'cover',
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  eventInfo:{
+    padding:16,
+    flexShrink:1,
+    flexDirection: 'row',
+    justifyContent:'center',
+    alignItems:'flex-start'
   },
-  input: {
-    marginVertical: 4,
+  dateContainer:{
+    flexGrow: 1,
+    backgroundColor:'transparent',
+    alignItems:'center',
+    justifyContent:'center',
   },
-  button: {
-    marginVertical: 12,
+  dateNumber:{
+    fontSize: 36,
+    color: primaryDark,
+    fontWeight: '800',
+    lineHeight: 40,
   },
-  buttonText: {
+  dateMonth:{
+    fontSize: 24,
+    color: primaryDark,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    lineHeight: 28,
+    marginTop: -8,
+  },
+  infoContainer:{
+    minWidth: '75%',
+    backgroundColor:'transparent',
+    justifyContent:'center',
+    marginLeft:8,
+  },
+  eventTitle: {
+    fontSize: 24,
+    color: primaryDark,
+    fontWeight: '600',
+  },
+  discoverButtonText:{
+    fontSize: 16,
     color: primaryCrema,
-    fontSize:16,
-    fontWeight: "600",
-    fontFamily: 'Poppins',
+    fontWeight: '600',
   }
 });
-

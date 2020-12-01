@@ -2,13 +2,27 @@ import React , { useState, useEffect } from 'react';
 import { StyleSheet} from 'react-native';
 import {  View, Pressable , InputWithLabel, Text, Link} from '../components/Themed';
 import { primaryCrema } from '../constants/Colors';
+import auth from '@react-native-firebase/auth';
+
 
 export default function LoginScreen() {
   const [ email, setEmail] = useState("");
   const [ password, setPassword] = useState("");
 
   const handleLogin = async () => {
-    alert(email);
+    if(email && password){
+      auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(() => {
+        console.log('User account created & signed in!');
+      })
+      .catch(error => {
+        if (error.code === 'auth/invalid-email') {
+          console.log('That email address is invalid!');
+        }
+        console.error(error);
+      });  
+    }
   }
 
   return (
@@ -24,9 +38,9 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexShrink:1,
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     paddingTop: 50,
   },
   title: {

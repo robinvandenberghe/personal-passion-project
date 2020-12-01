@@ -9,8 +9,9 @@ import PlayScreen from '../screens/PlayScreen';
 import OrderScreen from '../screens/OrderScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import { BottomTabParamList, HomeParamList, PlayParamList, OrderParamList, ProfileParamList } from '../types';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Button } from 'react-native';
 import EventScreen from '../screens/EventScreen';
+import { color } from 'react-native-reanimated';
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -19,10 +20,13 @@ export default function BottomTabNavigator() {
   return (
     <BottomTab.Navigator
       initialRouteName="Home"
-      tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}>
+      tabBarOptions={{ inactiveBackgroundColor: Colors[colorScheme].tabBackground, activeBackgroundColor: Colors[colorScheme].tabSelected, activeTintColor: Colors[colorScheme].tabIconDefault, tabStyle:{ flexShrink:1, alignContent:'center', alignItems:'center', justifyContent:'center', alignSelf:'center'}}}
+      >
+        
       <BottomTab.Screen
         name="Home"
         component={HomeNavigator}
+        
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
         }}
@@ -48,6 +52,7 @@ export default function BottomTabNavigator() {
           tabBarIcon: ({ color }) => <TabBarIcon name="profile" color={color} />,
         }}
       />
+
     </BottomTab.Navigator>
   );
 }
@@ -55,7 +60,7 @@ export default function BottomTabNavigator() {
 // You can explore the built-in icon families and icons on the web at:
 // https://icons.expo.fyi/
 function TabBarIcon(props: { name: string; color: string }) {
-  return <AppIcons size={30} {...props}  />;
+  return <AppIcons size={24} {...props}  />;
 }
 
 // Each tab has its own navigation stack, you can read more about this pattern here:
@@ -68,11 +73,12 @@ function HomeNavigator() {
       <HomeStack.Screen
         name="HomeScreen"
         component={HomeScreen}
-        options={{ headerTitle: 'Home' }}
+        options={{ headerTitle: 'Home'  }}
       />
       <HomeStack.Screen
         name="EventScreen"
         component={EventScreen}
+        options={({ route }) => ({ title: route.params.title })}
       />
     </HomeStack.Navigator>
   );

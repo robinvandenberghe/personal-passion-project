@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { StyleSheet } from 'react-native';
-import { Text as DefaultText, View as DefaultView, Pressable as DefaultPressable, TextInput } from 'react-native';
+import { Text as DefaultText, View as DefaultView, Pressable as DefaultPressable, TextInput, FlatList as FlatListDefault } from 'react-native';
 import {
   setCustomText, setCustomTextInput
 } from 'react-native-global-props';
@@ -33,6 +33,8 @@ export type ViewProps = ThemeProps & DefaultView['props'];
 export type PressableProps = ThemeProps & DefaultPressable.arguments;
 export type TextInputProps = ThemeProps & { placeholder?: string; label?:string; disabled?:boolean; value:string; callback:any; type:any; style?:any};
 export type LinkProps = ThemeProps & DefaultLink['props'];
+export type FlatListProps = ThemeProps & FlatListDefault['props'];
+
 
 export function Text(props: TextProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
@@ -52,6 +54,13 @@ export function SwitchView(props: ViewProps) {
   const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'postBackground');
 
   return <DefaultView style={[{ backgroundColor}, style]} {...otherProps} />;
+}
+
+export function FlatList(props: FlatListProps) {
+  const { style, lightColor, darkColor, ...otherProps } = props;
+  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
+
+  return <FlatListDefault style={[{ backgroundColor}, style]} {...otherProps} />;
 }
 
 export function Pressable(props: PressableProps) {

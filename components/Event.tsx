@@ -1,27 +1,37 @@
 import React, {useState, useEffect} from 'react';
 import { StyleSheet, Image } from 'react-native';
 import {  primaryCrema, primaryDark, secondaryLight } from '../constants/Colors';
+import storage from '@react-native-firebase/storage';
+import { useLinkTo } from '@react-navigation/native';
 import { Text, View, Pressable } from './Themed';
 
 export default function Event(post: { event: any; }) {
   const { event} = post;
-  const [eventObject, setEvent] = useState({imageUrl: "", date: new Date(), titel: ""});
+  const [eventObject, setEvent] = useState({imageUrl: "", date: new Date(), titel: "", id: ""});
+  const linkTo = useLinkTo();
 
   useEffect(() => {
-    async function fetchPosts() {
+    async function fetchEvent() {
       try {
         const d = await event.get();
         const da = d.data();
         da.date = da.date.toDate();
+        da.id = d.id;
+        da.imageUrl = null;
         setEvent(da);
+        if(eventObject){
+          // const url = await storage().ref(`events/${eventObject.imageUrl}`).getDownloadURL();
+          // eventObject.imageUrl = url;
+          // setEvent(eventObject);
+        }
       } catch (err) {
         console.error(err);
       }
     }
-    fetchPosts();
-  }, [event, setEvent]);
+    fetchEvent();
+  }, []);
   return (<View style={styles.container}>
-    <Image source={require(`./../assets/images/events/apresski.jpg`)} style={styles.eventImage}/>
+    <Image source={eventObject.imageUrl? {uri: eventObject.imageUrl }: undefined } style={styles.eventImage}/>
     <View style={styles.eventInfo}>
       <View style={styles.dateContainer}>
         <Text style={styles.dateNumber}>{eventObject.date.toLocaleDateString('nl-BE', {day: '2-digit'})}</Text>
@@ -29,7 +39,7 @@ export default function Event(post: { event: any; }) {
       </View>
       <View style={styles.infoContainer}>
         <Text style={styles.eventTitle}>{eventObject.titel}</Text>
-        <Pressable onPress={()=>{}}style={[{alignSelf:'flex-end'}]}><Text style={styles.discoverButtonText}>Ontdek</Text></Pressable>
+        <Pressable onPress={() => linkTo(`/event/${eventObject.titel}/${eventObject.id}`)}style={[{alignSelf:'flex-end'}]}><Text style={styles.discoverButtonText}>Ontdek</Text></Pressable>
       </View>
     </View>
   </View>);
@@ -45,13 +55,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     overflow: 'hidden',
     marginVertical:8,
-    maxWidth: '100%',
     alignSelf: 'center',
     justifyContent: 'flex-start',
   },
   eventImage:{
     flexShrink: 1,
-    maxWidth: '100%',
     height: 100,
     resizeMode: 'cover',
   },
@@ -63,11 +71,10 @@ const styles = StyleSheet.create({
     justifyContent:'center',
   },
   dateContainer:{
-    flex: 1,
+    flexGrow: 1,
     backgroundColor:'transparent',
     alignItems:'center',
     justifyContent:'center',
-
   },
   dateNumber:{
     fontSize: 36,

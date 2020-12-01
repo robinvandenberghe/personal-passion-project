@@ -23,7 +23,13 @@ export default {
           Home: {
             screens: {
               HomeScreen: 'home',
-              
+              EventScreen: {
+                path: 'event/:title/:eventId',
+                parse: {
+                  title: (title) => `${title}`,
+                  eventId: (eventId) => `${eventId}`,
+                }
+              },
             },
           },
           Speel: {
@@ -41,11 +47,6 @@ export default {
               ProfileScreen: 'profiel',
             },
           },        
-          Event: {
-            screens: {
-              EventScreen: 'event',
-            },
-          },
         },
       },
       NotFound: '*',
