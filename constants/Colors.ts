@@ -25,6 +25,8 @@ export default {
     tabBackground: primaryCrema,
     labelColor: secondaryGrey,
     postBackground: secondaryLight,
+    header: secondaryCrema,
+    headerText: primaryGrey,
   },
   dark: {
     text: primaryLight,
@@ -36,5 +38,7 @@ export default {
     postBackground: secondaryGrey,
     tabSelected: primaryCrema,
     tabBackground: primaryCrema,
+    header: secondaryGrey,
+    headerText: primaryLight,
   },
 };

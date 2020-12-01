@@ -7,6 +7,8 @@ import firestore from '@react-native-firebase/firestore';
 export default function EventScreen({route, navigation}: {route?:any; navigation:any;}) {
   const { title, eventId} = route.params;
   const [ event, setEvent] = useState({imageUrl:'', titel:'', date: new Date(), description: ''});
+  const [imgLink, setImgLink] = useState(require('./../assets/images/eventDefault.jpg'))
+
 
   useEffect(() => {
     async function fetchEvent() {
@@ -19,8 +21,7 @@ export default function EventScreen({route, navigation}: {route?:any; navigation
         setEvent(da);
         if(event){
           // const url = await storage().ref(`events/${event.imageUrl}`).getDownloadURL();
-          // event.imageUrl = url;
-          // setEvent(event);
+          // setImgLink(url);
         }
       } catch (err) {
         console.error(err);
@@ -30,7 +31,7 @@ export default function EventScreen({route, navigation}: {route?:any; navigation
   }, []);
 
   return (<View style={styles.container}>
-    <Image source={event.imageUrl? {uri: event.imageUrl }: undefined } style={styles.eventImage}/>
+    <Image source={imgLink} style={styles.eventImage}/>
     <View style={styles.eventInfo}>
       <View style={styles.dateContainer}>
         <Text style={styles.dateNumber}>{event.date.toLocaleDateString('nl-BE', {day: '2-digit'})}</Text>
@@ -41,8 +42,8 @@ export default function EventScreen({route, navigation}: {route?:any; navigation
       </View>
 
     </View>
-    <View>
-        <Text>{event.description}</Text>
+    <View style={styles.moreInfo}>
+        <Text >{event.description}</Text>
       </View>
   </View>);
   
@@ -58,6 +59,7 @@ const styles = StyleSheet.create({
   eventImage:{
     flexShrink: 1,
     height: 120,
+    width:'100%',
     resizeMode: 'cover',
   },
   eventInfo:{
@@ -102,5 +104,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: primaryCrema,
     fontWeight: '600',
+  },
+  moreInfo:{
+    flex:1,
+    paddingHorizontal: 16,
+    width:"100%",
+    alignItems:'flex-start',
+    justifyContent: 'flex-start'
   }
 });

@@ -8,6 +8,7 @@ import { Text, View, Pressable } from './Themed';
 export default function Event(post: { event: any; }) {
   const { event} = post;
   const [eventObject, setEvent] = useState({imageUrl: "", date: new Date(), titel: "", id: ""});
+  const [imgLink, setImgLink] = useState(require('./../assets/images/eventDefault.jpg'))
   const linkTo = useLinkTo();
 
   useEffect(() => {
@@ -21,8 +22,7 @@ export default function Event(post: { event: any; }) {
         setEvent(da);
         if(eventObject){
           // const url = await storage().ref(`events/${eventObject.imageUrl}`).getDownloadURL();
-          // eventObject.imageUrl = url;
-          // setEvent(eventObject);
+          // setImgLink(url);
         }
       } catch (err) {
         console.error(err);
@@ -31,7 +31,7 @@ export default function Event(post: { event: any; }) {
     fetchEvent();
   }, []);
   return (<View style={styles.container}>
-    <Image source={eventObject.imageUrl? {uri: eventObject.imageUrl }: undefined } style={styles.eventImage}/>
+    <Image source={imgLink} style={styles.eventImage}/>
     <View style={styles.eventInfo}>
       <View style={styles.dateContainer}>
         <Text style={styles.dateNumber}>{eventObject.date.toLocaleDateString('nl-BE', {day: '2-digit'})}</Text>
@@ -57,10 +57,11 @@ const styles = StyleSheet.create({
     marginVertical:8,
     alignSelf: 'center',
     justifyContent: 'flex-start',
+    width:"100%",
   },
   eventImage:{
-    flexShrink: 1,
-    height: 100,
+    height: 120,
+    width: '100%',
     resizeMode: 'cover',
   },
   eventInfo:{

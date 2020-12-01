@@ -21,7 +21,7 @@ export default function BottomTabNavigator() {
     <BottomTab.Navigator
       initialRouteName="Home"
       tabBarOptions={{ inactiveBackgroundColor: Colors[colorScheme].tabBackground, activeBackgroundColor: Colors[colorScheme].tabSelected, activeTintColor: Colors[colorScheme].tabIconDefault, tabStyle:{ flexShrink:1, alignContent:'center', alignItems:'center', justifyContent:'center', alignSelf:'center'}}}
-      >
+            >
         
       <BottomTab.Screen
         name="Home"
@@ -68,8 +68,10 @@ function TabBarIcon(props: { name: string; color: string }) {
 const HomeStack = createStackNavigator<HomeParamList>();
 
 function HomeNavigator() {
+  const colorScheme = useColorScheme();
+
   return (
-    <HomeStack.Navigator>
+    <HomeStack.Navigator screenOptions={{headerTintColor: Colors[colorScheme].headerText, headerStyle: { backgroundColor: Colors[colorScheme].header}, headerBackTitleStyle:{color: Colors[colorScheme].headerText} }}>
       <HomeStack.Screen
         name="HomeScreen"
         component={HomeScreen}
@@ -87,8 +89,10 @@ function HomeNavigator() {
 const PlayStack = createStackNavigator<PlayParamList>();
 
 function PlayNavigator() {
+  const colorScheme = useColorScheme();
+
   return (
-    <PlayStack.Navigator>
+    <PlayStack.Navigator screenOptions={{headerTintColor: Colors[colorScheme].headerText, headerStyle: { backgroundColor: Colors[colorScheme].header}, headerBackTitleStyle:{color: Colors[colorScheme].headerText} }}>
       <PlayStack.Screen
         name="PlayScreen"
         component={PlayScreen}
@@ -100,8 +104,10 @@ function PlayNavigator() {
 const OrderStack = createStackNavigator<OrderParamList>();
 
 function OrderNavigator() {
+  const colorScheme = useColorScheme();
+
   return (
-    <OrderStack.Navigator>
+    <OrderStack.Navigator screenOptions={{headerTintColor: Colors[colorScheme].headerText, headerStyle: { backgroundColor: Colors[colorScheme].header}, headerBackTitleStyle:{color: Colors[colorScheme].headerText} }}>
       <OrderStack.Screen
         name="OrderScreen"
         component={OrderScreen}
@@ -113,8 +119,10 @@ function OrderNavigator() {
 const ProfileStack = createStackNavigator<ProfileParamList>();
 
 function ProfileNavigator() {
+  const colorScheme = useColorScheme();
+
   return (
-    <ProfileStack.Navigator>
+    <ProfileStack.Navigator  screenOptions={{headerTintColor: Colors[colorScheme].headerText, headerStyle: { backgroundColor: Colors[colorScheme].header}, headerBackTitleStyle:{color: Colors[colorScheme].headerText} }}>
       <ProfileStack.Screen
         name="ProfileScreen"
         component={ProfileScreen}

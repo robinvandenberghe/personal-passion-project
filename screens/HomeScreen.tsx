@@ -27,11 +27,12 @@ export default function HomeScreen({navigation}:{navigation: any}) {
         contentContainerStyle={{flexGrow: 1,  alignItems: 'center', justifyContent:'flex-start'}}
         data={posts}
         renderItem={(item) => {
-          return <Post key={item.index} post={item} />;
+          return <Post post={item} />;
         }}
         style={styles.container}     
         showsVerticalScrollIndicator ={false}
-        showsHorizontalScrollIndicator={false} />
+        showsHorizontalScrollIndicator={false} 
+        keyExtractor={item => item.index}/>
 
   );
 }

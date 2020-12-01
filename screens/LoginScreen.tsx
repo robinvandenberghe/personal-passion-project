@@ -20,6 +20,9 @@ export default function LoginScreen() {
         if (error.code === 'auth/invalid-email') {
           console.log('That email address is invalid!');
         }
+        if (error.code === 'auth/invalid-password') {
+          console.log('That password is invalid!');
+        }
         console.error(error);
       });  
     }
