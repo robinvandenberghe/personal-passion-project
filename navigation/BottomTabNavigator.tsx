@@ -12,6 +12,11 @@ import { BottomTabParamList, HomeParamList, PlayParamList, OrderParamList, Profi
 import { StyleSheet, Button } from 'react-native';
 import EventScreen from '../screens/EventScreen';
 import QRScreen from '../screens/QRScreen';
+import CartScreen from '../screens/CartScreen';
+import SettingsScreen from '../screens/SettingsScreen';
+import MembershipScreen from '../screens/MembershipScreen';
+import ScoreScreen from '../screens/ScoreScreen';
+import InformationScreen from '../screens/InformationScreen';
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -109,6 +114,11 @@ function OrderNavigator() {
         component={OrderScreen}
         options={{ headerTitle: 'Bestel' }}
       />
+      <OrderStack.Screen
+        name="CartScreen"
+        component={CartScreen}
+        options={{ headerTitle: 'Bestelling' }}
+      />
     </OrderStack.Navigator>
   );
 }
@@ -129,12 +139,26 @@ function ProfileNavigator() {
         component={QRScreen}
         options={{ headerTitle: 'QR-code' }}
       />
+      <ProfileStack.Screen
+        name="SettingsScreen"
+        component={SettingsScreen}
+        options={{ headerTitle: 'Instellingen' }}
+      />
+      <ProfileStack.Screen
+        name="MembershipScreen"
+        component={MembershipScreen}
+        options={{ headerTitle: 'Lidmaatschap' }}
+      />
+      <ProfileStack.Screen
+        name="ScoreScreen"
+        component={ScoreScreen}
+        options={{ headerTitle: 'Puntenstand' }}
+      />
+      <ProfileStack.Screen
+        name="InformationScreen"
+        component={InformationScreen}
+        options={{ headerTitle: 'Mijn informatie' }}
+      />
     </ProfileStack.Navigator>
   );
 }
-
-const styles = StyleSheet.create({
-  icon: {
-    padding: 8
-  }
-});

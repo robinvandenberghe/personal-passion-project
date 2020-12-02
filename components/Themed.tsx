@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { StyleSheet } from 'react-native';
-import { Text as DefaultText, View as DefaultView, Pressable as DefaultPressable, TextInput, FlatList as FlatListDefault } from 'react-native';
+import { Text as DefaultText, View as DefaultView, Pressable as DefaultPressable, TextInput, FlatList as FlatListDefault, ScrollView as ScrollViewDefault } from 'react-native';
 import {
   setCustomText, setCustomTextInput
 } from 'react-native-global-props';
@@ -30,6 +30,7 @@ type ThemeProps = {
 
 export type TextProps = ThemeProps & DefaultText['props'];
 export type ViewProps = ThemeProps & DefaultView['props'];
+export type ScrollViewProps = ThemeProps & ScrollViewDefault['props'];
 export type PressableProps = ThemeProps & DefaultPressable.arguments;
 export type TextInputProps = ThemeProps & { placeholder?: string; label?:string; disabled?:boolean; value:string; callback:any; type:any; style?:any};
 export type LinkProps = ThemeProps & DefaultLink['props'];
@@ -47,6 +48,12 @@ export function View(props: ViewProps) {
   const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
 
   return <DefaultView style={[{ backgroundColor}, style]} {...otherProps} />;
+}
+
+export function ScrollView(props: ViewProps) {
+  const { style, lightColor, darkColor, ...otherProps } = props;
+  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
+  return <ScrollViewDefault style={[{ backgroundColor}, style]} {...otherProps} />;
 }
 
 export function SwitchView(props: ViewProps) {
@@ -111,7 +118,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 16,
-    flex:1,
+    flexShrink:1,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems:'center',

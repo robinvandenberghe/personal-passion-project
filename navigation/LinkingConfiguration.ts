@@ -40,12 +40,18 @@ export default {
           Bestel: {
             screens: {
               OrderScreen: 'bestel',
+              CartScreen:'cart',
             },
           },          
           Profiel: {
             screens: {
               ProfileScreen: 'profiel',
               QRScreen: 'profiel/qr',
+              SettingsScreen: 'profiel/instellingen',
+              MembershipScreen: 'profiel/lidmaatschap',
+              ScoreScreen: 'profiel/puntenstand',
+              InformationScreen: 'profiel/informatie',
+              OrdersScreen: 'profiel/bestellingen',
             },
           },        
         },

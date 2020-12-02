@@ -8,19 +8,18 @@ import auth from '@react-native-firebase/auth';
 export default function LoginScreen() {
   const [ email, setEmail] = useState("");
   const [ password, setPassword] = useState("");
+  const [error, setError] = useState();
 
   const handleLogin = async () => {
     if(email && password){
       auth()
       .signInWithEmailAndPassword(email, password)
-      .then(() => {
-        console.log('User account created & signed in!');
-      })
       .catch(error => {
         if (error.code === 'auth/invalid-email') {
           console.log('That email address is invalid!');
         }
         if (error.code === 'auth/invalid-password') {
+          console.log(error.message);
           console.log('That password is invalid!');
         }
         console.error(error);
@@ -62,10 +61,9 @@ const styles = StyleSheet.create({
     marginVertical: 12,
   },
   buttonText: {
+    fontSize: 16,
     color: primaryCrema,
-    fontSize:16,
-    fontWeight: "600",
-    fontFamily: 'Poppins',
+    fontWeight: '600',
   }
 });
 

@@ -174,7 +174,7 @@ const CartIcon = () =>{
   const {width, height} = Dimensions.get('window');
 
   return (
-    <Draggable renderSize={56} x={width-64} y={height-insets.bottom-196} minX={insets.left} minY={insets.bottom} maxX={width-insets.right-8} maxY={height-insets.bottom-140} isCircle >
+    <Draggable renderSize={56} x={width-64} y={height-insets.bottom-140} minX={insets.left} minY={insets.bottom} maxX={width-insets.right-8} maxY={height-insets.bottom-140} isCircle >
       <Pressable onPress={() => linkTo(`/cart`)}style={[{backgroundColor: Colors[colorScheme].tabBackground} ,styles.cartButton]}><AppIcons size={32} name={'cart'} color={ Colors[colorScheme].text} /></Pressable>
     </Draggable>
   );

@@ -8,6 +8,7 @@ import BottomTabNavigator from './BottomTabNavigator';
 import Authentication from './Authentication';
 import LinkingConfiguration from './LinkingConfiguration';
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 import { primaryCrema, primaryDark } from '../constants/Colors';
 
 
@@ -28,23 +29,33 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
 const Stack = createStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
-
   const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState();
-  const onAuthStateChanged = (user: any) => {
-    global.user = user;
-    setUser(user);
-    if (initializing) setInitializing(false);
-  }
+  const [user, setUser] = useState(global.user);
+
 
   useEffect(() => {
+    const onAuthStateChanged = async (user: any) => {
+      if(user && !user.role){
+        try {
+          const u = await firestore().collection('users').doc(user.uid).get();
+          const d = await u.data();
+          const r = {...d, email: user.email, uid: user.uid }
+          user = r;
+        } catch (err) {
+          console.error(err);
+        }
+      }
+      global.user = user;
+      setUser(user);
+      if (initializing) setInitializing(false);
+    }
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
-  }, []);
+  }, [user]);
 
   if (initializing) return null;
   return (
-    <Stack.Navigator  screenOptions={{ headerShown: false }}  >
+    <Stack.Navigator screenOptions={{ headerShown: false }}  >
       {!user?
       <Stack.Screen name="Authentication" component={Authentication} />:
       <Stack.Screen name="Root" component={BottomTabNavigator}  />}

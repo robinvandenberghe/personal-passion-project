@@ -27,9 +27,16 @@ export type PlayParamList = {
 };
 export type OrderParamList = {
   OrderScreen: undefined;
+  CartScreen:undefined;
 };
 export type ProfileParamList = {
   ProfileScreen: undefined;
   QRScreen: undefined;
+  SettingsScreen: undefined;
+  MembershipScreen: undefined;
+  ScoreScreen: undefined;
+  InformationScreen: undefined;
+  OrdersScreen: undefined;
+
 };
 

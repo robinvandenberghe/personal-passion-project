@@ -37,44 +37,58 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Registreren</Text>
+      <Text style={styles.title}>Mijn informatie</Text>
+      <View>
+
+      </View>
       <InputWithLabel style={styles.input} placeholder="Jan" label="voornaam" value={name} callback={setName} type="name" />
       <InputWithLabel style={styles.input} placeholder="Janssens" label="familienaam" value={surname} callback={setSurname} type="familyName" />
       <InputWithLabel style={styles.input} placeholder="e-mailadres" label="e-mail" value={email} callback={setEmail} type="emailAddress" />
       <InputWithLabel style={styles.input} placeholder="wachtwoord" label="wachtwoord" value={password} callback={setPassword} type="password" />
       <InputWithLabel style={styles.input} placeholder="herhaal wachtwoord" label="herhaal wachtwoord" value={repeatPassword} callback={setRepeatPassword} type="password" />
-      <Pressable onPress={handleRegister} style={styles.button}><Text style={styles.buttonText}>Registreren</Text></Pressable>
-      <Link to="/login">Had je al een account? Log hier in.</Link>
+      <Pressable onPress={handleRegister} ><Text style={styles.buttonText}>Registreren</Text></Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingTop: 50,
+    flexGrow: 1,
+    alignItems: 'flex-start',
+    padding:16,
+    width:'100%'
+  },  
+  separator: {
+    marginVertical: 8,
+    width:'85%',
+    height: 1,
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 24,
+    fontWeight: '600',
+    marginBottom:8,
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  settings:{
+    marginTop:24,
+    flexShrink:1,
+    alignItems:'center',
+    width:"100%",
   },
-  input: {
-    marginVertical: 4,
+  profileItem: {
+    flexShrink:1,
+    width:'95%',
+    flexDirection:'row',
+    alignItems:'center',
   },
-  button: {
-    marginVertical: 12,
+  profileItemTitle:{
+    fontWeight: '600',
+    marginLeft:16,
+    flexGrow:1,
   },
   buttonText: {
     fontSize: 16,
     color: primaryCrema,
     fontWeight: '600',
   }
+  
 });
-

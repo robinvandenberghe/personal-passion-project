@@ -39,9 +39,8 @@ export default function HomeScreen({navigation}:{navigation: any}) {
         showsHorizontalScrollIndicator={false} 
         refreshing={isFetching}
         onRefresh={()=>setFetching(true)}
-        keyExtractor={item => item.index}
+        keyExtractor={(item, index) => index.toString()} 
         />
-
   );
 }
 
