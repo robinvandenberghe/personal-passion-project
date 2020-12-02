@@ -37,6 +37,16 @@ export type ProfileParamList = {
   ScoreScreen: undefined;
   InformationScreen: undefined;
   OrdersScreen: undefined;
-
 };
 
+export interface cartType {
+  amount:number;
+  drink: drinksType;
+}
+
+export interface drinksType {
+  category:string;
+  imageUrl:string;
+  price:number;
+  title:string;
+}

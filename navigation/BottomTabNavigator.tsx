@@ -1,6 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import * as React from 'react';
+import React, {useState} from 'react';
 import AppIcons from '../components/AppIcons';
 import Colors, { infoDark, primaryDark } from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
@@ -8,7 +8,7 @@ import HomeScreen from '../screens/HomeScreen';
 import PlayScreen from '../screens/PlayScreen';
 import OrderScreen from '../screens/OrderScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import { BottomTabParamList, HomeParamList, PlayParamList, OrderParamList, ProfileParamList } from '../types';
+import { BottomTabParamList, HomeParamList, PlayParamList, OrderParamList, ProfileParamList, cartType} from '../types';
 import { StyleSheet, Button } from 'react-native';
 import EventScreen from '../screens/EventScreen';
 import QRScreen from '../screens/QRScreen';
@@ -17,14 +17,22 @@ import SettingsScreen from '../screens/SettingsScreen';
 import MembershipScreen from '../screens/MembershipScreen';
 import ScoreScreen from '../screens/ScoreScreen';
 import InformationScreen from '../screens/InformationScreen';
+import { useGlobalState } from '../state';
+
+
+
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
 export default function BottomTabNavigator() {
   const colorScheme = useColorScheme();
+  const [cart, setCart] = useGlobalState('cart');
+
+
   return (
     <BottomTab.Navigator
       initialRouteName="Home"
+      
       tabBarOptions={{ inactiveBackgroundColor: Colors[colorScheme].tabBackground, activeBackgroundColor: Colors[colorScheme].tabSelected, activeTintColor: Colors[colorScheme].tabIconSelected, inactiveTintColor: Colors[colorScheme].tabIconDefault, style:{backgroundColor: Colors[colorScheme].tabBackground}}}>
       <BottomTab.Screen
         name="Home"
@@ -45,14 +53,16 @@ export default function BottomTabNavigator() {
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name="order" color={color} />,
           tabBarBadgeStyle: {backgroundColor: infoDark, flex:1,alignItems:'center', justifyContent:'center', padding: 1, fontWeight:'500'},
-          tabBarBadge: (global.cart && global.cart.length >0 ? global.cart.length : undefined),
-        }}/>
+          tabBarBadge: (cart && cart.length >0 ? cart.length : undefined),
+        }}
+      />
       <BottomTab.Screen
         name="Profiel"
         component={ProfileNavigator}
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name="profile" color={color} />,
         }}
+        
       />
     </BottomTab.Navigator>
   );
@@ -106,6 +116,7 @@ const OrderStack = createStackNavigator<OrderParamList>();
 
 function OrderNavigator() {
   const colorScheme = useColorScheme();
+  const [cart, setCart] = useGlobalState('cart');
 
   return (
     <OrderStack.Navigator screenOptions={{headerTintColor: Colors[colorScheme].headerText, headerStyle: { backgroundColor: Colors[colorScheme].header}, headerBackTitleStyle:{color: Colors[colorScheme].headerText} }}>
@@ -113,11 +124,14 @@ function OrderNavigator() {
         name="OrderScreen"
         component={OrderScreen}
         options={{ headerTitle: 'Bestel' }}
+        
       />
       <OrderStack.Screen
         name="CartScreen"
         component={CartScreen}
         options={{ headerTitle: 'Bestelling' }}
+        
+
       />
     </OrderStack.Navigator>
   );

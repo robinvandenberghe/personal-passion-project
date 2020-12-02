@@ -4,42 +4,50 @@ import firestore from '@react-native-firebase/firestore';
 import { Text, View, FlatList } from '../components/Themed';
 import { useLinkTo } from '@react-navigation/native';
 import AppIcons from '../components/AppIcons';
-import Colors, { primaryDark, secondaryLight, successDark } from '../constants/Colors';
+import Colors, { infoDark, primaryDark, secondaryLight, successDark } from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import { useSafeAreaInsets, useSafeAreaFrame } from 'react-native-safe-area-context';
 import Draggable from 'react-native-draggable';
+import { cartType, drinksType} from '../types';
+import { useGlobalState } from '../state';
 
 
-interface drinksType {
-  category:string;
-  imageUrl:string;
-  price:number;
-  title:string;
-}
-
-
-export default function HomeScreen({navigation}:{navigation: any}) {
+export default function HomeScreen() {
   const [ drinks , setDrinks] = useState<drinksType[]>([]);
   const [ isFetching, setFetching] = useState(true);
   const [categories, setCategories] = useState<string[]>([]);
-  const [user, setUser] = useState(global.user);
   const insets = useSafeAreaInsets();
+  const [cart, setCart] = useGlobalState('cart');
 
 
   let welcomeMessage;
   const currentHour = new Date().getHours();
   if(currentHour>=6 && currentHour<=11){
-    welcomeMessage = `Goeiemorgen, ${user.name}`;
+    welcomeMessage = `Goeiemorgen, ${global.user.name}`;
   }else if(currentHour>11 && currentHour<18){
-    welcomeMessage = `Goeiemiddag, ${user.name}`;
+    welcomeMessage = `Goeiemiddag, ${global.user.name}`;
   }else if(currentHour>=18 && currentHour<=23){
-    welcomeMessage = `Goeieavond, ${user.name}`;
+    welcomeMessage = `Goeieavond, ${global.user.name}`;
   }else{
-    welcomeMessage = `Goeienacht, ${user.name}`;
+    welcomeMessage = `Goeienacht, ${global.user.name}`;
+  }
+
+  const addItem = (drink:any) => {
+    if(cart.length>0){
+      const r = cart.filter((a:any) => a.drink.title === drink.title);
+      if(r.length == 1){
+        cart[cart.indexOf(r[0])].amount +=1;
+        setCart([...cart]);
+      }else{
+        setCart([...cart, {amount:1, drink}]);
+      }
+    }else{
+      setCart([{amount: 1, drink}]);
+    }
   }
 
   useEffect(() => {
-    async function fetchPosts() {
+    async function fetchDrinks() {
       if(isFetching){
         try {
           const r = await firestore().collection("drinks").orderBy("title", "asc").get();
@@ -57,7 +65,7 @@ export default function HomeScreen({navigation}:{navigation: any}) {
         }
       }
     }
-    fetchPosts();
+    fetchDrinks();
   }, [isFetching]);
 
   return (
@@ -67,7 +75,8 @@ export default function HomeScreen({navigation}:{navigation: any}) {
       <FlatList
         style={styles.drinkList}
         data={categories}
-        renderItem={({item, index}) => <Category category={item}  drinks={drinks} index={index} />}
+        extraData={cart}
+        renderItem={({item, index}) => <Category category={item}  drinks={drinks} index={index} cart={cart} addItem={addItem}/>}
         showsVerticalScrollIndicator ={false}
         showsHorizontalScrollIndicator={false} 
         refreshing={isFetching}
@@ -76,14 +85,14 @@ export default function HomeScreen({navigation}:{navigation: any}) {
         nestedScrollEnabled={true}
         contentContainerStyle={{paddingBottom: insets.bottom  }}
         />
-      <CartIcon />
+      <CartIcon cart={cart} />
     </View>
     );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 8,
+    padding: 16,
     position:'relative',
   },
   drinkList:{
@@ -122,6 +131,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     justifyContent:'center',
     alignItems:'center',
+    position:'relative',
   },
   addButton:{
     backgroundColor: successDark,
@@ -133,17 +143,41 @@ const styles = StyleSheet.create({
     alignItems:'center',
     alignSelf: 'flex-end',
     marginLeft: 8,
-  }
+  },
+  cartBadge:{
+    position:'absolute',
+    top: -8,
+    right:0,
+    flex:1,
+    backgroundColor:infoDark,
+    width:24,
+    height:24,
+    borderRadius:12,
+    alignItems:'center',
+    justifyContent:'center',
+  },
+  cartText: {
+    fontSize: 14,
+    textAlign:'center',
+    lineHeight:20,
+    fontWeight:'600',
+    color: secondaryLight,
+  },
 });
 
-const Category = ({category, drinks, index}:{category:string; drinks:drinksType[]; index:number;}) => {
+const Category = ({category, drinks, index, cart, addItem}:{category:string; drinks:drinksType[]; index:number; cart:any; addItem:any;}) => {
   const categoryDrinks:drinksType[] = drinks.filter((item)=> item.category == category);
   return (
     <>
       <Text style={styles.categoryTitle}>{category}</Text>
       <FlatList
       data={categoryDrinks}
-      renderItem={({item}) => <Drink drink={item}/>}
+      extraData={cart}
+      renderItem={({item}) => {
+        const r = cart.filter((a:any)=> a.drink.title == item.title);
+        const amount = r.length ? cart[cart.indexOf(r[0])].amount | 0 : 0;
+        return <Drink drink={item} amount={amount} addItem={addItem}/>
+      }}
       showsVerticalScrollIndicator ={false}
       showsHorizontalScrollIndicator={false} 
       keyExtractor={(item, index) => index.toString()} 
@@ -154,32 +188,49 @@ const Category = ({category, drinks, index}:{category:string; drinks:drinksType[
   );
 }
 
-const Drink = ({drink}:{drink:drinksType}) => {
+const Drink = ({drink, amount, addItem}:{drink:drinksType; amount:number; addItem:any; }) => {
   const [imgLink, setImgLink] = useState(require('./../assets/images/drinkDefault.jpg'));
+
   return (
     <View style={styles.drinkContainer}>
-      <Image source={imgLink} style={styles.drinkImage}/>
+      <View>      
+        <Image source={imgLink} style={styles.drinkImage}/>
+        <DrinkIcon amount={amount} />
+      </View>
       <Text style={styles.drinkTitle}>{drink.title}</Text>
       <Text>{`€${drink.price.toString().replace(`.`, `,`)}`}</Text>
-      <Pressable onPress={() => alert(drink.title)} style={styles.addButton}><AppIcons size={24} name={'cartplus'} color={secondaryLight} /></Pressable>
+      <Pressable onPress={() => addItem(drink)} style={styles.addButton}><AppIcons size={24} name={'cartplus'} color={secondaryLight} /></Pressable>
     </View>
   );
 }
 
-const CartIcon = () =>{
-  const [cart, setCart] = useState(global.cart);
+const CartIcon = ({cart}:{cart:cartType[]}) => {
   const linkTo = useLinkTo();
   const colorScheme = useColorScheme();
   const insets = useSafeAreaInsets();
   const {width, height} = Dimensions.get('window');
 
-  return (
-    <Draggable renderSize={56} x={width-64} y={height-insets.bottom-196} minX={insets.left} minY={insets.bottom} maxX={width-insets.right-8} maxY={height-insets.bottom-140} isCircle >
-      <Pressable onPress={() => linkTo(`/cart`)}style={[{backgroundColor: Colors[colorScheme].tabBackground} ,styles.cartButton]}><AppIcons size={32} name={'cart'} color={ Colors[colorScheme].text} /></Pressable>
-    </Draggable>
-  );
+  if(cart.length>0){
+    return (
+      <Draggable renderSize={56} x={width-64} y={height-insets.bottom-196} minX={insets.left} minY={insets.bottom} maxX={width-insets.right-8} maxY={height-insets.bottom-140}  >
+        <Pressable onPress={() => linkTo(`/cart`)}style={[{backgroundColor: Colors[colorScheme].tabBackground} ,styles.cartButton]}><View style={styles.cartBadge}><Text style={styles.cartText}>{cart.length}</Text></View><AppIcons size={32} name={'cart'} color={ Colors[colorScheme].text} /></Pressable>
+      </Draggable>
+    );
+  }else{
+    return (
+      <Draggable renderSize={56} x={width-64} y={height-insets.bottom-196} minX={insets.left} minY={insets.bottom} maxX={width-insets.right-8} maxY={height-insets.bottom-140}  >
+        <Pressable onPress={() => linkTo(`/cart`)}style={[{backgroundColor: Colors[colorScheme].tabBackground} ,styles.cartButton]}><AppIcons size={32} name={'cart'} color={ Colors[colorScheme].text} /></Pressable>
+      </Draggable>
+    );
+  }
+
 }
 
-const addItem = (item:drinksType) => {
-
+const DrinkIcon = ({amount}:{amount:number;}) => {
+  if(amount>0){
+    return <View style={styles.cartBadge}><Text style={styles.cartText}>{amount.toString()}</Text></View>;
+  }else{
+    return null;
+  }
 }
+

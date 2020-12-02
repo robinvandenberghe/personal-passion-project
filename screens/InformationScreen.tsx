@@ -62,6 +62,7 @@ export default function LoginScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Mijn informatie</Text>
       <View style={styles.formContainer}>
+        <Text style={styles.subText}>Persoonlijke gegevens</Text>
         <InputWithLabel style={styles.input} placeholder="Jan" label="voornaam" value={name} callback={setName} type="name" />
         <InputWithLabel style={styles.input} placeholder="Janssens" label="familienaam" value={surname} callback={setSurname} type="familyName" />
         <InputWithLabel style={styles.input} placeholder="e-mailadres" label="e-mail" value={email} callback={setEmail} disabled={true} type="emailAddress" />
@@ -69,6 +70,7 @@ export default function LoginScreen() {
         <Pressable style={styles.button} onPress={handleInfoChange} ><Text style={styles.buttonText}>Opslaan</Text></Pressable>
       </View>
       <View style={styles.formContainer}>
+        <Text style={styles.subText}>Wachtwoord wijzigen</Text>
         <InputWithLabel style={styles.input} placeholder="wachtwoord" label="huidig wachtwoord" value={currentPassword} callback={setCurrentPassword} type="password" />
         <InputWithLabel style={styles.input} placeholder="nieuw wachtwoord" label="nieuw wachtwoord" value={password} callback={setPassword} type="password" />
         <InputWithLabel style={styles.input} placeholder="herhaal nieuw wachtwoord" label="herhaal nieuw wachtwoord" value={repeatPassword} callback={setRepeatPassword} type="password" />
@@ -130,5 +132,10 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     marginVertical:4,
     marginHorizontal:'5%',
+  },
+  subText:{
+    fontSize:14,
+    fontWeight:'600',
+    alignSelf:'flex-start',
   },
 });

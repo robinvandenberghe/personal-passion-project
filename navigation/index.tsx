@@ -32,7 +32,6 @@ function RootNavigator() {
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState(global.user);
 
-
   useEffect(() => {
     const onAuthStateChanged = async (user: any) => {
       if(user && !user.role){

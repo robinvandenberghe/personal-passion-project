@@ -1,4 +1,5 @@
 import * as Linking from 'expo-linking';
+import { ScreenStackHeaderRightView } from 'react-native-screens';
 
 export default {
 
