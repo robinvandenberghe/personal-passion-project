@@ -6,17 +6,40 @@ import {  View, Pressable , InputWithLabel, Text, Link} from '../components/Them
 import { primaryCrema } from '../constants/Colors';
 
 export default function LoginScreen() {
-  const [ email, setEmail] = useState("");
-  const [ password, setPassword] = useState("");
-  const [ repeatPassword, setRepeatPassword] = useState("");
-  const [ name, setName] = useState("");
-  const [ surname, setSurname] = useState("");
+  const [ email, setEmail] = useState(global.user.email);
+  const [ currentPassword, setCurrentPassword] = useState('');
+  const [ password, setPassword] = useState('');
+  const [ repeatPassword, setRepeatPassword] = useState('');
+  const [ name, setName] = useState(global.user.name);
+  const [ surname, setSurname] = useState(global.user.surname);
+  const [ phoneNumber, setPhoneNumber] = useState(global.user.phoneNumber);
 
 
-  const handleRegister = async () => {
-    if(email && password && repeatPassword && name && surname && password === repeatPassword){
-      auth()
-      .createUserWithEmailAndPassword(email, password)
+
+  const handleInfoChange = () => {
+    if(name && surname && phoneNumber){
+      firestore().collection('users').doc(global.user.uid).update({name, surname, phoneNumber})
+      .then(({user}) => {
+        firestore().collection('users').doc(user.uid).set({name, surname, role: 'user', profileImg: '', phoneNumber: '', points: 0, settings: {darkMode: false, pushNotifications: false}, membership: {date: undefined, memberNumber:null, paymentId: ''} });
+      })
+      .catch(error => {
+        if (error.code === 'auth/invalid-email') {
+          console.log('That email address is invalid!');
+        }
+        if (error.code === 'auth/email-already-in-use') {
+          console.log('That email is already in use!');
+        }
+        if (error.code === 'auth/weak-password') {
+          console.log('That password is too weak!');
+        }
+        console.error(error);
+      });  
+    }
+  }
+
+  const handlePasswordChange = () => {
+    if(name && surname && phoneNumber){
+      firestore().collection('users').doc(global.user.uid).update({name, surname, phoneNumber})
       .then(({user}) => {
         firestore().collection('users').doc(user.uid).set({name, surname, role: 'user', profileImg: '', phoneNumber: '', points: 0, settings: {darkMode: false, pushNotifications: false}, membership: {date: undefined, memberNumber:null, paymentId: ''} });
       })
@@ -38,15 +61,19 @@ export default function LoginScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Mijn informatie</Text>
-      <View>
-
+      <View style={styles.formContainer}>
+        <InputWithLabel style={styles.input} placeholder="Jan" label="voornaam" value={name} callback={setName} type="name" />
+        <InputWithLabel style={styles.input} placeholder="Janssens" label="familienaam" value={surname} callback={setSurname} type="familyName" />
+        <InputWithLabel style={styles.input} placeholder="e-mailadres" label="e-mail" value={email} callback={setEmail} disabled={true} type="emailAddress" />
+        <InputWithLabel style={styles.input} placeholder="telefoonnummer" label="gsm-nummer (optioneel)" value={phoneNumber} callback={setPhoneNumber} type="telephoneNumber" />
+        <Pressable style={styles.button} onPress={handleInfoChange} ><Text style={styles.buttonText}>Opslaan</Text></Pressable>
       </View>
-      <InputWithLabel style={styles.input} placeholder="Jan" label="voornaam" value={name} callback={setName} type="name" />
-      <InputWithLabel style={styles.input} placeholder="Janssens" label="familienaam" value={surname} callback={setSurname} type="familyName" />
-      <InputWithLabel style={styles.input} placeholder="e-mailadres" label="e-mail" value={email} callback={setEmail} type="emailAddress" />
-      <InputWithLabel style={styles.input} placeholder="wachtwoord" label="wachtwoord" value={password} callback={setPassword} type="password" />
-      <InputWithLabel style={styles.input} placeholder="herhaal wachtwoord" label="herhaal wachtwoord" value={repeatPassword} callback={setRepeatPassword} type="password" />
-      <Pressable onPress={handleRegister} ><Text style={styles.buttonText}>Registreren</Text></Pressable>
+      <View style={styles.formContainer}>
+        <InputWithLabel style={styles.input} placeholder="wachtwoord" label="huidig wachtwoord" value={currentPassword} callback={setCurrentPassword} type="password" />
+        <InputWithLabel style={styles.input} placeholder="nieuw wachtwoord" label="nieuw wachtwoord" value={password} callback={setPassword} type="password" />
+        <InputWithLabel style={styles.input} placeholder="herhaal nieuw wachtwoord" label="herhaal nieuw wachtwoord" value={repeatPassword} callback={setRepeatPassword} type="password" />
+        <Pressable style={styles.button} onPress={handlePasswordChange} ><Text style={styles.buttonText}>Wijzigen</Text></Pressable>
+      </View>
     </View>
   );
 }
@@ -57,7 +84,13 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     padding:16,
     width:'100%'
-  },  
+  }, 
+  formContainer:{
+    flexShrink:1,
+    width:'90%',
+    alignSelf:'center',
+    alignItems:'center',
+  },
   separator: {
     marginVertical: 8,
     width:'85%',
@@ -89,6 +122,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: primaryCrema,
     fontWeight: '600',
-  }
-  
+  },
+  input: {
+    marginVertical: 4,
+  },
+  button:{
+    alignSelf: 'flex-end',
+    marginVertical:4,
+    marginHorizontal:'5%',
+  },
 });
