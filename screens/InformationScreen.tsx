@@ -2,7 +2,7 @@ import React , { useState, useEffect } from 'react';
 import { StyleSheet} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import {  View, Pressable , InputWithLabel, Text, Link} from '../components/Themed';
+import {  View, Pressable , InputWithLabel, Text, Link, PrimaryButton} from '../components/Themed';
 import { primaryCrema } from '../constants/Colors';
 
 export default function LoginScreen() {
@@ -67,14 +67,15 @@ export default function LoginScreen() {
         <InputWithLabel style={styles.input} placeholder="Janssens" label="familienaam" value={surname} callback={setSurname} type="familyName" />
         <InputWithLabel style={styles.input} placeholder="e-mailadres" label="e-mail" value={email} callback={setEmail} disabled={true} type="emailAddress" />
         <InputWithLabel style={styles.input} placeholder="telefoonnummer" label="gsm-nummer (optioneel)" value={phoneNumber} callback={setPhoneNumber} type="telephoneNumber" />
-        <Pressable style={styles.button} onPress={handleInfoChange} ><Text style={styles.buttonText}>Opslaan</Text></Pressable>
+        <PrimaryButton style={styles.button} onPress={handleInfoChange} label={'Opslaan'}/>
+
       </View>
       <View style={styles.formContainer}>
         <Text style={styles.subText}>Wachtwoord wijzigen</Text>
         <InputWithLabel style={styles.input} placeholder="wachtwoord" label="huidig wachtwoord" value={currentPassword} callback={setCurrentPassword} type="password" />
         <InputWithLabel style={styles.input} placeholder="nieuw wachtwoord" label="nieuw wachtwoord" value={password} callback={setPassword} type="password" />
         <InputWithLabel style={styles.input} placeholder="herhaal nieuw wachtwoord" label="herhaal nieuw wachtwoord" value={repeatPassword} callback={setRepeatPassword} type="password" />
-        <Pressable style={styles.button} onPress={handlePasswordChange} ><Text style={styles.buttonText}>Wijzigen</Text></Pressable>
+        <PrimaryButton style={styles.button} onPress={handlePasswordChange} label={'Wijzigen'}/>
       </View>
     </View>
   );
@@ -120,18 +121,13 @@ const styles = StyleSheet.create({
     marginLeft:16,
     flexGrow:1,
   },
-  buttonText: {
-    fontSize: 16,
-    color: primaryCrema,
-    fontWeight: '600',
-  },
   input: {
     marginVertical: 4,
   },
   button:{
     alignSelf: 'flex-end',
     marginVertical:4,
-    marginHorizontal:'5%',
+    marginRight:'5%',
   },
   subText:{
     fontSize:14,

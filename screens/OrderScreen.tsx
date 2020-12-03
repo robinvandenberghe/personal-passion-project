@@ -6,7 +6,7 @@ import { useLinkTo } from '@react-navigation/native';
 import AppIcons from '../components/AppIcons';
 import Colors, { infoDark, primaryDark, secondaryLight, successDark } from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
-import { useSafeAreaInsets, useSafeAreaFrame } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Draggable from 'react-native-draggable';
 import { cartType, drinksType} from '../types';
 import { useGlobalState } from '../state';

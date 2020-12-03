@@ -1,19 +1,21 @@
 import React, {useState} from 'react';
 import { StyleSheet, Image, Pressable, TextInput } from 'react-native';
 import Colors, { errorDark, secondaryLight ,primaryCrema , primaryDark, primaryLight} from '../constants/Colors';
-import QRCode from 'react-native-qrcode-svg';
 import useColorScheme from '../hooks/useColorScheme';
-import { Text, View , FlatList} from '../components/Themed';
+import { Text, View , FlatList, PrimaryButton, SecondaryButton, ScrollView} from '../components/Themed';
 import AppIcons from '../components/AppIcons';
 import { cartType, drinksType} from '../types';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useGlobalState } from '../state';
-import { parse } from 'react-native-svg';
 
 
 export default function CartScreen() {
   const [screen, setScreen] = useState<string>('');
   const colorScheme = useColorScheme();
   const [cart, setCart] = useGlobalState('cart');
+  let cartTotal:number = 0;
+  cart.map((item)=> cartTotal += (item.amount * item.drink.price));
+  const insets = useSafeAreaInsets();
 
 
   const deleteItem = (item:any) => {
@@ -21,22 +23,53 @@ export default function CartScreen() {
     setCart([...cart]);
   }
 
-
   switch(screen){
-    case `qsdfqsdf`:
-      return null;
-    default:
+    case `checkout`:
       return (
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={[styles.container, {paddingBottom: insets.bottom }]} showsVerticalScrollIndicator={false}>
           <Text style={styles.title}>Jouw bestelling</Text>
           <FlatList
             data={cart}
-            renderItem={({item}) => <Drink item={item} deleteItem={deleteItem}/>}
+            renderItem={({item}) => <Drink item={item} deleteItem={deleteItem} screen={screen}/>}
             showsVerticalScrollIndicator ={false}
             showsHorizontalScrollIndicator={false} 
             keyExtractor={(item, index) => index.toString()} 
+            contentContainerStyle={[{flexShrink:1}]}
+            nestedScrollEnabled={true}
             />
-        </View>
+          <View style={styles.totalLine}>
+            <Text style={[{fontWeight:'600', fontSize:18}]}>Totaal</Text> 
+            <Text style={[{fontWeight:'600', marginLeft:8, fontSize:18}]}>{`€${cartTotal.toString().replace(`.`, `,`)}`}</Text> 
+          </View>
+          <View style={styles.spacer}/>
+          <View style={styles.buttonLine}>
+            <SecondaryButton onPress={()=> setScreen(``)} label={'Terug'}/>
+          </View>
+        </ScrollView>
+      );    
+    default:
+      return (
+        <ScrollView contentContainerStyle={[styles.container, {paddingBottom: insets.bottom }]} showsVerticalScrollIndicator={false}>
+          <Text style={styles.title}>Jouw bestelling</Text>
+          <FlatList
+            data={cart}
+            renderItem={({item}) => <Drink item={item} deleteItem={deleteItem} screen={screen}/>}
+            showsVerticalScrollIndicator ={false}
+            showsHorizontalScrollIndicator={false} 
+            keyExtractor={(item, index) => index.toString()}
+            nestedScrollEnabled={true}
+            contentContainerStyle={[{flexShrink:1}]}
+            />
+          <View style={styles.totalLine}>
+            <Text style={[{fontWeight:'600', fontSize:18}]}>Totaal</Text> 
+            <Text style={[{fontWeight:'600', marginLeft:8, fontSize:18}]}>{`€${cartTotal.toString().replace(`.`, `,`)}`}</Text> 
+          </View>
+          <View style={styles.spacer}/>
+          <View style={styles.buttonLine}>
+            <SecondaryButton disabled={cart.length==0?true:false} onPress={()=> setCart([])} label={'Leegmaken'}/>
+            <PrimaryButton onPress={()=> setScreen(`checkout`)} style={[{marginLeft:8}]} disabled={cart.length==0?true:false} label={'Bestellen'}/>
+          </View>
+        </ScrollView>
       );
   }
 }
@@ -46,6 +79,10 @@ const styles = StyleSheet.create({
     padding: 16,
     position:'relative',
     flexGrow:1,
+  },
+  spacer:{
+    width:'100%',
+    flexGrow:112,
   },
   categoryTitle : {
     fontSize: 16,
@@ -99,10 +136,24 @@ const styles = StyleSheet.create({
     alignItems:'center',
     alignSelf: 'flex-end',
     marginLeft: 8,
+  },
+  buttonText:{
+    fontSize:18,
+    fontWeight:'600',
+  },
+  buttonLine:{
+    flexShrink:1,
+    alignSelf:'center',
+    flexDirection:'row',
+  },
+  totalLine:{
+    flexShrink:1,
+    alignSelf:'flex-end',
+    flexDirection:'row',
   }
 });
 
-const Drink = ({item, deleteItem}:{item:cartType; deleteItem:any;}) => {
+const Drink = ({item, deleteItem, screen}:{item:cartType; deleteItem:any; screen:string;}) => {
   const [imgLink, setImgLink] = useState(require('./../assets/images/drinkDefault.jpg'));
   const [amount, setAmount] = useState(item.amount);
   const [cart, setCart] = useGlobalState('cart');
@@ -112,11 +163,17 @@ const Drink = ({item, deleteItem}:{item:cartType; deleteItem:any;}) => {
       <Image source={imgLink} style={styles.drinkImage}/>
       <Text style={styles.drinkTitle}>{item.drink.title}</Text>
       <Text>{`€${item.drink.price.toString().replace(`.`, `,`)}`}</Text>
-      <TextInput style={styles.amountInput} keyboardType='numeric' returnKeyType='done' onEndEditing={()=>{
-        cart[cart.indexOf(item)].amount = amount;
-        setCart([...cart]);
-        }} onChangeText={(val)=> val!=''?setAmount(parseInt(val)):setAmount(0)} value={amount.toString()}/>     
-      <Pressable onPress={() => deleteItem(item)} style={styles.deleteButton}><AppIcons size={20} name={'cartcross'} color={secondaryLight} /></Pressable>
+      {screen==`checkout`? <>
+        <Text style={[{marginHorizontal:8}]}>{`x${amount}`}</Text>
+        <Text style={[{fontWeight:'600', flexShrink:1}]}>{`€${(amount*item.drink.price).toString().replace(`.`, `,`)}`}</Text>
+
+      </> : <>
+        <TextInput style={styles.amountInput} keyboardType='numeric' returnKeyType='done' onEndEditing={()=>{
+          cart[cart.indexOf(item)].amount = amount;
+          setCart([...cart]);
+          }} onChangeText={(val)=> val!=''?setAmount(parseInt(val)):setAmount(0)} value={amount.toString()}/>     
+        <Pressable onPress={() => deleteItem(item)} style={styles.deleteButton}><AppIcons size={20} name={'cartcross'} color={secondaryLight} /></Pressable>
+      </>}
     </View>
   );
 }

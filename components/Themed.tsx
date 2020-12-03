@@ -5,7 +5,7 @@ import {
   setCustomText, setCustomTextInput
 } from 'react-native-global-props';
 import useColorScheme from '../hooks/useColorScheme';
-import Colors, {primaryCrema, primaryDark, primaryGrey, primaryLight, secondaryGrey} from '../constants/Colors';
+import Colors, {primaryCrema, primaryDark, primaryGrey, primaryLight, secondaryCrema, secondaryGrey} from '../constants/Colors';
 import { Link as DefaultLink } from '@react-navigation/native';
 
 
@@ -76,6 +76,16 @@ export function Pressable(props: PressableProps) {
   return <DefaultPressable style={[{ backgroundColor }, styles.button, style]} {...otherProps} />;
 }
 
+export function PrimaryButton(props: PressableProps) {
+  const { disabled, label, style, ...otherProps} = props;
+return <DefaultPressable disabled={disabled} style={disabled?[styles.primaryButton,{backgroundColor:useThemeColor({},'header')}, style]:[styles.primaryButton, style]} {...otherProps}><Text style={disabled?[styles.primaryButtonText,{color:useThemeColor({},'tabSelected')}]:styles.primaryButtonText}>{label}</Text></DefaultPressable>;
+}
+
+export function SecondaryButton(props: PressableProps) {
+  const { disabled, label, style, ...otherProps} = props;
+return <DefaultPressable disabled={disabled} style={disabled?[styles.secondaryButton,{backgroundColor:useThemeColor({},'header')}, style]:[styles.secondaryButton, style]} {...otherProps}><Text style={disabled?[styles.secondaryButtonText,{color:useThemeColor({},'tabSelected')}]:styles.secondaryButtonText}>{label}</Text></DefaultPressable>;
+}
+
 export function Link(props: LinkProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
@@ -113,8 +123,19 @@ const customTextInputProps = {
 setCustomTextInput(customTextInputProps);
 
 const styles = StyleSheet.create({
-  button: {
+  primaryButton: {
     backgroundColor: primaryDark,
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    flexShrink:1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems:'center',
+    alignSelf:'flex-start',
+  },
+  secondaryButton: {
+    backgroundColor: secondaryGrey,
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 16,
@@ -132,6 +153,16 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginLeft: 8,
     marginBottom:4,
+  },
+  primaryButtonText:{
+    color:primaryCrema,
+    fontSize:18,
+    fontWeight:'600',
+  },
+  secondaryButtonText:{
+    color:primaryDark,
+    fontSize:18,
+    fontWeight:'600',
   },
 });
 

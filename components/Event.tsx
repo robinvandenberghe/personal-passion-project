@@ -3,7 +3,7 @@ import { StyleSheet, Image } from 'react-native';
 import {  primaryCrema, primaryDark, secondaryLight } from '../constants/Colors';
 import storage from '@react-native-firebase/storage';
 import { useLinkTo } from '@react-navigation/native';
-import { Text, View, Pressable } from './Themed';
+import { Text, View, Pressable, PrimaryButton } from './Themed';
 
 export default function Event(post: { event: any; }) {
   const { event} = post;
@@ -39,7 +39,7 @@ export default function Event(post: { event: any; }) {
       </View>
       <View style={styles.infoContainer}>
         <Text style={styles.eventTitle}>{eventObject.titel}</Text>
-        <Pressable onPress={() => linkTo(`/event/${eventObject.titel}/${eventObject.id}`)}style={[{alignSelf:'flex-end'}]}><Text style={styles.discoverButtonText}>Ontdek</Text></Pressable>
+        <PrimaryButton onPress={() => linkTo(`/event/${eventObject.titel}/${eventObject.id}`)} style={[{alignSelf:'flex-end'}]} label={'Ontdek'}/>
       </View>
     </View>
   </View>);
