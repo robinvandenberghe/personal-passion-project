@@ -1,40 +1,43 @@
-import React, {useState, useEffect} from 'react';
-import { StyleSheet, Image, Pressable } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Pressable} from 'react-native';
 import auth from '@react-native-firebase/auth';
-import { Text, View, ScrollView} from '../components/Themed';
-import Colors, { errorDark, primaryCrema, primaryDark, primaryGrey, secondaryGrey, secondaryLight } from '../constants/Colors';
+import firestore from '@react-native-firebase/firestore';
+import { Text, View, Switch } from '../components/Themed';
+import Colors, { errorDark, primaryCrema, secondaryGrey } from '../constants/Colors';
 import AppIcons from '../components/AppIcons';
 import useColorScheme from '../hooks/useColorScheme';
-import { useLinkTo } from '@react-navigation/native';
 import { useGlobalState } from '../state';
 
 
 
 export default function SettingsScreen() {
   const [user, setUser] = useGlobalState('user');
+  const [darkMode, setDarkMode] = useState<boolean>(user.settings.darkMode);
+  const [pushNotifications, setPushNotifications] = useState<boolean>(user.settings.pushNotifications);
   const colorScheme = useColorScheme();
-  const linkTo = useLinkTo();
+
+  if(darkMode !== user.settings.darkMode || pushNotifications !== user.settings.pushNotifications){
+    user.settings = {darkMode, pushNotifications};
+    setUser(user);
+    firestore().collection('users').doc(user.uid).update({settings: {darkMode, pushNotifications}}).catch(error=>console.error(error));
+  }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Mijn instellingen</Text>
       <Text >Wijzig hier jouw persoonlijke instellingen</Text>
       <View style={styles.settings}>
-        <ProfileItem title={'QR-code'} route={'qr'} icon={'qr'} color={Colors[colorScheme].text} />
+        <View style={styles.settingView}><Text>Dark mode</Text><Switch value={darkMode} onValueChange={(value)=>setDarkMode(value)}/></View>
         <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-        <ProfileItem title={'Persoonlijke instellingen'} route={''} icon={'settings'} color={Colors[colorScheme].text} />
-        <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-        <ProfileItem title={'Mijn lidmaatschap'} route={''} icon={'membership'} color={Colors[colorScheme].text} />
+        <View style={styles.settingView}><Text>Push-meldingen</Text><Switch value={pushNotifications} onValueChange={(value)=>setPushNotifications(value)}/></View>
         <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
         <ProfileItem title={'Over de app'} action={()=>{}} icon={''} color={Colors[colorScheme].text} />
         <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
         <ProfileItem title={'Uitloggen'} action={()=> {
-          global.user = undefined;
           setUser(undefined);
           auth().signOut();
-         } } icon={'logout'} color={errorDark} />
+         }} icon={'logout'} color={errorDark} />
       </View>
-      {/* <Pressable onPress={()=>auth().signOut()} ><Text>Uitloggen</Text></Pressable> */}
     </View>
   );
 }
@@ -72,6 +75,12 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginLeft:16,
     flexGrow:1,
+  },
+  settingView:{
+    flexGrow:1,
+    justifyContent: 'space-between',
+    flexDirection:'row',
+    width:'95%',
   },
   
 });

@@ -51,9 +51,9 @@ export default function OrderScreen() {
       if(isFetching){
         try {
           const r = await firestore().collection("drinks").orderBy("title", "asc").get();
-          const a:drinksType[] = r.docs.map(item => {
+          const a:drinksType[] = r.docs.map((item) => {
             const temp = item.data();
-            return {category:temp.category,imageUrl:temp.imageUrl,price:temp.price,title:temp.title};
+            return {uid: item.id,category:temp.category,imageUrl:temp.imageUrl,price:temp.price,title:temp.title};
           });
           setDrinks(a);
           const c:string[] = [];

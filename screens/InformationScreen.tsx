@@ -2,37 +2,35 @@ import React , { useState } from 'react';
 import { StyleSheet} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import {  View, InputWithLabel, Text, Link, PrimaryButton} from '../components/Themed';
+import { View,  ScrollView, InputWithLabel, Text, Link, PrimaryButton, Message} from '../components/Themed';
 import { useGlobalState } from '../state';
 
 
 export default function LoginScreen() {
   const [user, setUser] = useGlobalState('user');
-  const [ email, setEmail] = useState(user.email);
   const [ currentPassword, setCurrentPassword] = useState('');
   const [ password, setPassword] = useState('');
   const [ repeatPassword, setRepeatPassword] = useState('');
   const [ name, setName] = useState(user.name);
   const [ surname, setSurname] = useState(user.surname);
   const [ phoneNumber, setPhoneNumber] = useState(user.phoneNumber);
+  const [ info, setInfo ] = useState<{ type:string; subject:string; message:string; }|null>();
 
-
+  if(info){
+    setTimeout(()=>setInfo(null), 4500);
+  }
 
   const handleInfoChange = () => {
     if(name && surname && phoneNumber){
+      user.name = name;
+      user.surname = surname;
+      user.phoneNumber = phoneNumber;
       firestore().collection('users').doc(user.uid).update({name, surname, phoneNumber})
-      .catch(error => {
-        if (error.code === 'auth/invalid-email') {
-          console.log('That email address is invalid!');
-        }
-        if (error.code === 'auth/email-already-in-use') {
-          console.log('That email is already in use!');
-        }
-        if (error.code === 'auth/weak-password') {
-          console.log('That password is too weak!');
-        }
-        console.error(error);
-      });  
+      .then(()=>{
+        setUser({...user});
+        setInfo({type: `success`, subject: 'userUpdated', message:'Je profiel werd bijgewerkt!'});
+      })
+      .catch(error => console.error(error));  
     }
   }
 
@@ -55,16 +53,17 @@ export default function LoginScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text style={styles.title}>Mijn informatie</Text>
       <View style={styles.formContainer}>
         <Text style={styles.subText}>Persoonlijke gegevens</Text>
+        {info && info.subject===`userUpdated`? <Message type={info.type} message={info.message} /> : null}
+
         <InputWithLabel style={styles.input} placeholder="Jan" label="voornaam" value={name} callback={setName} type="name" />
         <InputWithLabel style={styles.input} placeholder="Janssens" label="familienaam" value={surname} callback={setSurname} type="familyName" />
-        <InputWithLabel style={styles.input} placeholder="e-mailadres" label="e-mail" value={email} callback={setEmail} disabled={true} type="emailAddress" />
+        <InputWithLabel style={styles.input} placeholder="e-mailadres" label="e-mail" value={user.email} callback={()=>{}} disabled={true} type="emailAddress" />
         <InputWithLabel style={styles.input} placeholder="telefoonnummer" label="gsm-nummer (optioneel)" value={phoneNumber} callback={setPhoneNumber} type="telephoneNumber" />
         <PrimaryButton style={styles.button} onPress={handleInfoChange} label={'Opslaan'}/>
-
       </View>
       <View style={styles.formContainer}>
         <Text style={styles.subText}>Wachtwoord wijzigen</Text>
@@ -73,7 +72,7 @@ export default function LoginScreen() {
         <InputWithLabel style={styles.input} placeholder="herhaal nieuw wachtwoord" label="herhaal nieuw wachtwoord" value={repeatPassword} callback={setRepeatPassword} type="password" />
         <PrimaryButton style={styles.button} onPress={handlePasswordChange} label={'Wijzigen'}/>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 

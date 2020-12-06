@@ -1,3 +1,5 @@
+import {KeyboardType} from 'react-native';
+
 export type RootStackParamList = {
   Raspberry:undefined;
   Root: undefined;
@@ -46,6 +48,7 @@ export interface cartType {
 }
 
 export interface drinksType {
+  uid:string;
   category:string;
   imageUrl:string;
   price:number;
@@ -67,7 +70,25 @@ export type userType = {
   profileImg: string; 
   role:string; 
   settings: {
-    darkmode:boolean; 
+    darkMode:boolean; 
     pushNotifications:boolean
   }; 
-};
+}
+
+export type inputErrorType = {
+  subject:string;
+  message:string;
+}
+
+export type textInputType = {
+  isError?:boolean;
+  errMessage?:string;
+  placeholder?: string;
+  label?:string;
+  disabled?:boolean;
+  value:string;
+  callback:any;
+  type?:any;
+  style?:any;
+  keyboardType?:KeyboardType;
+}

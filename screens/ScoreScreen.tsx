@@ -17,24 +17,9 @@ export default function SettingsScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Mijn instellingen</Text>
-      <Text >Wijzig hier jouw persoonlijke instellingen</Text>
-      <View style={styles.settings}>
-        <ProfileItem title={'QR-code'} route={'qr'} icon={'qr'} color={Colors[colorScheme].text} />
-        <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-        <ProfileItem title={'Persoonlijke instellingen'} route={''} icon={'settings'} color={Colors[colorScheme].text} />
-        <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-        <ProfileItem title={'Mijn lidmaatschap'} route={''} icon={'membership'} color={Colors[colorScheme].text} />
-        <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-        <ProfileItem title={'Over de app'} action={()=>{}} icon={''} color={Colors[colorScheme].text} />
-        <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-        <ProfileItem title={'Uitloggen'} action={()=> {
-          global.user = undefined;
-          setUser(undefined);
-          auth().signOut();
-         } } icon={'logout'} color={errorDark} />
-      </View>
-      {/* <Pressable onPress={()=>auth().signOut()} ><Text>Uitloggen</Text></Pressable> */}
+      <Text style={styles.title}>Mijn puntenstand</Text>
+      <Text >Jouw huidige positie</Text>
+
     </View>
   );
 }

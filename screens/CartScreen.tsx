@@ -1,22 +1,23 @@
 import React, {useState} from 'react';
 import { StyleSheet, Image, Pressable, TextInput } from 'react-native';
-import Colors, { errorDark, secondaryLight ,primaryCrema , primaryDark, primaryLight} from '../constants/Colors';
+import Colors, { errorDark, secondaryLight ,primaryCrema , primaryDark, primaryLight, successDark} from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import { Text, View , FlatList, PrimaryButton, SecondaryButton, ScrollView, InputWithLabel} from '../components/Themed';
 import AppIcons from '../components/AppIcons';
-import { cartType} from '../types';
+import { cartType, inputErrorType} from '../types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import firestore from '@react-native-firebase/firestore';
+import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import { useGlobalState } from '../state';
 
 
 export default function CartScreen() {
-  const [screen, setScreen] = useState<string>('');
+  const [screen, setScreen] = useState<string>(``);
   const colorScheme = useColorScheme();
   const [cart, setCart] = useGlobalState('cart');
   const [user, setUser] = useGlobalState('user');
+  const [tableNumber, setTableNumber] = useState<string>(``);
+  const [error, setError] = useState<inputErrorType | null>(null);
 
-  const [tableNumber, setTableNumber] = useState<string>('');
   let cartTotal:number = 0;
   cart.map((item)=> cartTotal += (item.amount * item.drink.price));
   const insets = useSafeAreaInsets();
@@ -27,18 +28,76 @@ export default function CartScreen() {
     setCart([...cart]);
   }
 
-  const handleOrderWithoutPayment = async () =>{
-    const order = {
-      date: firestore.Timestamp.now(),
-      drinks : {},
-      paid: false,
-      ready: false,
-      tableNumber,
-      userId: user.uid,
-    };
+  const handleOrder = async (payconiq:boolean) =>{
+    if(tableNumber){
+      const order = {
+        date: firestore.Timestamp.now(),
+        drinks : {},
+        paid: false,
+        ready: false,
+        tableNumber,
+        userId: user.uid,
+      };
+      cart.map((item) => {
+        order.drinks[item.drink.uid] = item.amount;
+      });
+      const o = await firestore().collection('orders').add(order).catch((error)=> console.error(error));
+      if(o){
+        if(payconiq){
+          const url = 'https://api.ext.payconiq.com/v3/payments';
+          const options = { 
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${process.env['PAYCONIQ_API']}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              amount: `${cartTotal}`,
+              currency: 'EUR',
+              callbackUrl: '',
+              description: `Bestelling #${o.id} JH 't Kalf`,
+              reference: `${o.id}`,
+            }),
+          };
+          // const r = await fetch(url, options);
+          setCart([]);
+          setTableNumber('');
+          setScreen(`orderSuccess`);
+        }else{
+          setCart([]);
+          setTableNumber('');
+          setScreen(`orderSuccess`);
+        }
+      }else{
+        setScreen(`orderFailed`);
+      }
+    }else{
+      setError({
+        subject: 'tableNumber',
+        message: 'Vul een tafelnummer in', 
+      });
+    }
   }
 
   switch(screen){
+    case `orderSuccess`:
+      return (
+        <View style={[styles.container, styles.centerContainer]} >
+          <Text style={styles.confirmTitle}>Gelukt!</Text>
+          <Text style={styles.confirmSubtitle}>We ontvingen je bestelling</Text>
+          <Text style={styles.confirmText}>We doen ons best om die zo snel mogelijk tot bij jou te krijgen.</Text>
+          <AppIcons size={150} name={'success'} color={successDark}/>
+        </View>
+      );
+    case `orderFailed`:
+      return(
+        <View style={[styles.container, styles.centerContainer]} >
+          <Text style={styles.confirmTitle}>Helaas!</Text>
+          <Text style={styles.confirmSubtitle}>Er liep iets mis</Text>
+          <Text style={styles.confirmText}>Onze robots gingen de mist in, probeer opnieuw te bestellen.</Text>
+          <AppIcons size={150} name={'error'} color={errorDark}/>
+        </View>
+      );
     case `checkout`:
       return (
         <View style={[styles.container]} >
@@ -56,11 +115,11 @@ export default function CartScreen() {
             <Text style={[{fontWeight:'600', fontSize:18}]}>Totaal</Text> 
             <Text style={[{fontWeight:'600', marginLeft:8, fontSize:18}]}>{`€${cartTotal.toString().replace(`.`, `,`)}`}</Text> 
           </View>
-          <InputWithLabel style={styles.input} placeholder="bv. 16" label="tafelnummer" value={tableNumber} callback={setTableNumber} keyboardType={"number-pad"}/>
+          <InputWithLabel style={styles.input} placeholder="bv. 16" label="tafelnummer" isError={(error && error.subject) == 'tableNumber'?true: false}  errMessage={(error && error.subject) == 'tableNumber'?error.message: ''} value={tableNumber} callback={(val)=>{if(val!==''&&error&&error.subject=='tableNumber'){setError(null)}; setTableNumber(val);}} keyboardType={"number-pad"}/>
           <View style={styles.spacer}/>
           <View style={styles.buttonStack}>
-            <PrimaryButton style={styles.buttonStackButton} onPress={handleOrderWithoutPayment} label={`Betaal aan de bar`}/>
-            <PrimaryButton style={styles.buttonStackButton} onPress={()=>{}} label={`Betaal via Payconiq`}/>
+            <PrimaryButton style={styles.buttonStackButton} onPress={()=> handleOrder(false)} label={`Betaal aan de bar`}/>
+            <PrimaryButton style={styles.buttonStackButton} onPress={()=> handleOrder(true)} label={`Betaal via Payconiq`}/>
           </View>
           <View style={styles.buttonLine}>
             <SecondaryButton onPress={()=> setScreen(``)} label={'Terug'}/>
@@ -98,6 +157,9 @@ const styles = StyleSheet.create({
     position:'relative',
     flexGrow:1,
     maxHeight:'100%',
+  },
+  centerContainer:{
+    alignItems:'center'
   },
   spacer:{
     width:'100%',
@@ -184,6 +246,22 @@ const styles = StyleSheet.create({
   input: {
     marginVertical: 4,
   },
+  confirmTitle:{
+    fontWeight: '600',
+    fontSize:24,
+    marginBottom:8,
+  },
+  confirmSubtitle:{
+    fontWeight: '500',
+    fontSize:24,
+    marginVertical:8,
+  },
+  confirmText:{
+    marginVertical:8,
+    textAlign:'center',
+    maxWidth:'80%',
+    marginBottom:24,
+  }
 });
 
 const Drink = ({item, deleteItem, screen}:{item:cartType; deleteItem:any; screen:string;}) => {

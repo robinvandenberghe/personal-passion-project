@@ -17,7 +17,7 @@ export default function SettingsScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Mijn instellingen</Text>
+      <Text style={styles.title}>Mijn lidmaatschap</Text>
       <Text >Wijzig hier jouw persoonlijke instellingen</Text>
       <View style={styles.settings}>
         <ProfileItem title={'QR-code'} route={'qr'} icon={'qr'} color={Colors[colorScheme].text} />

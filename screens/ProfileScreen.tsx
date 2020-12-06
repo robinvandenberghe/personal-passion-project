@@ -33,8 +33,7 @@ export default function ProfileScreen() {
 
   return (
     user.role && user.role=='admin'? 
-    <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator ={false}
-    >
+    <ScrollView style={styles.container} >
       <Image source={imgLink} style={styles.profileImage}/>
       <Text style={styles.title}>{welcomeMessage}</Text>
       <View>

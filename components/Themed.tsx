@@ -1,13 +1,12 @@
 import * as React from 'react';
-import { KeyboardType, StyleSheet } from 'react-native';
-import { Text as DefaultText, View as DefaultView, Pressable as DefaultPressable, TextInput, FlatList as FlatListDefault, ScrollView as ScrollViewDefault } from 'react-native';
-import {
-  setCustomText, setCustomTextInput
-} from 'react-native-global-props';
+import { KeyboardType, StyleSheet, Animated } from 'react-native';
+import { Text as DefaultText, View as DefaultView, Pressable as DefaultPressable, TextInput, FlatList as FlatListDefault, ScrollView as ScrollViewDefault, Switch as DefaultSwitch } from 'react-native';
+import { setCustomText, setCustomTextInput } from 'react-native-global-props';
 import useColorScheme from '../hooks/useColorScheme';
-import Colors, {primaryCrema, primaryDark, primaryGrey, primaryLight, secondaryCrema, secondaryGrey} from '../constants/Colors';
+import Colors, {alertDark, alertLight, errorDark, errorLight, infoDark, infoLight, primaryCrema, primaryDark, primaryGrey, primaryLight, secondaryCrema, secondaryGrey, successDark, successLight} from '../constants/Colors';
 import { Link as DefaultLink } from '@react-navigation/native';
-
+import { textInputType } from '../types';
+import AppIcons from './AppIcons';
 
 export function useThemeColor(
   props: { light?: string; dark?: string },
@@ -32,9 +31,12 @@ export type TextProps = ThemeProps & DefaultText['props'];
 export type ViewProps = ThemeProps & DefaultView['props'];
 export type ScrollViewProps = ThemeProps & ScrollViewDefault['props'];
 export type PressableProps = ThemeProps & DefaultPressable.arguments;
-export type TextInputProps = ThemeProps & { placeholder?: string; label?:string; disabled?:boolean; value:string; callback:any; type?:any; style?:any; keyboardType?:KeyboardType};
+export type TextInputProps = ThemeProps & textInputType;
 export type LinkProps = ThemeProps & DefaultLink['props'];
 export type FlatListProps = ThemeProps & FlatListDefault['props'];
+export type SwitchProps = ThemeProps & DefaultSwitch['props'];
+export type MessageProps = ThemeProps & DefaultView['props'] & {message:string; type:string;};
+
 
 
 export function Text(props: TextProps) {
@@ -53,7 +55,7 @@ export function View(props: ViewProps) {
 export function ScrollView(props: ViewProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
   const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
-  return <ScrollViewDefault style={[{ backgroundColor}, style]} {...otherProps} />;
+  return <ScrollViewDefault  bounces={false} contentContainerStyle={[{ backgroundColor}, style]} {...otherProps} showsVerticalScrollIndicator={false}  showsHorizontalScrollIndicator={false} />;
 }
 
 export function SwitchView(props: ViewProps) {
@@ -61,6 +63,41 @@ export function SwitchView(props: ViewProps) {
   const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'postBackground');
 
   return <DefaultView style={[{ backgroundColor}, style]} {...otherProps} />;
+}
+
+export function Message(props: MessageProps) {
+  const { message, type, style, ...otherProps } = props;
+
+  switch(type){
+    case `success`:
+      return (
+        <DefaultView style={[ styles.messageView, styles.successMessage, style]} {...otherProps}>
+          <AppIcons size={18} name={`success`} color={successDark}/>
+          <Text style={[styles.messageText, styles.successText]}>{message}</Text>
+        </DefaultView>
+      );
+    case `error`:
+      return (
+        <DefaultView style={[ styles.messageView, styles.errorMessage, style]} {...otherProps}>
+          <AppIcons size={18} name={`error`} color={errorDark}/>
+          <Text style={[styles.messageText, styles.errorText]}>{message}</Text>
+        </DefaultView>
+      );
+    case `info`:
+      return (
+        <DefaultView style={[ styles.messageView, styles.infoMessage, style]} {...otherProps}>
+          <AppIcons size={18} name={`info`} color={infoDark}/>
+          <Text style={[styles.messageText, styles.infoText]}>{message}</Text>
+        </DefaultView>
+      );
+    case `alert`:
+      return (
+        <DefaultView style={[ styles.messageView, styles.alertMessage, style]} {...otherProps}>
+          <AppIcons size={18} name={`alert`} color={alertDark}/>
+          <Text style={[styles.messageText, styles.alertText]}>{message}</Text>
+        </DefaultView>
+      );
+  }
 }
 
 export function FlatList(props: FlatListProps) {
@@ -93,18 +130,35 @@ export function Link(props: LinkProps) {
 }
 
 export function InputWithLabel(props: TextInputProps) {
-  const { style, placeholder = "", label = "", disabled = false, value, callback, type = "none", lightColor, darkColor, keyboardType = "default"} = props;
+  const { style, placeholder = "", label = "", disabled = false, value, callback, type = "none", lightColor, darkColor, keyboardType = "default", isError = false, errMessage = ''} = props;
   const labelColor = useThemeColor({ light: lightColor, dark: darkColor }, 'labelColor');
   const isDisabled = !disabled;
+//   const shakeAnimation = new Animated.Value(0);
+//   const startShake = () => {
+//     Animated.sequence([
+//       Animated.timing(shakeAnimation, { toValue: 10, duration: 100, useNativeDriver: true }),
+//       Animated.timing(shakeAnimation, { toValue: -10, duration: 100, useNativeDriver: true }),
+//       Animated.timing(shakeAnimation, { toValue: 10, duration: 100, useNativeDriver: true }),
+//       Animated.timing(shakeAnimation, { toValue: 0, duration: 100, useNativeDriver: true })
+//     ]).start();
+//  }
+// isError? [{transform: [{translateX: -50}]}, styles.container, style]:
 
   return (
-    <View style={[styles.container, style]}>
-      {label?<Text style={[{ color: labelColor }, styles.label]}>{label}</Text>: null}
-      <TextInput placeholderTextColor={primaryGrey} placeholder={placeholder}  onChangeText={callback}  defaultValue={value} editable={isDisabled} secureTextEntry={type=="password"? true : false} textContentType={type} keyboardType={keyboardType} returnKeyType={"done"}/>
+    <View style={[ styles.container, style]}>
+      {label?<Text style={[{ color: isError? errorDark :labelColor }, styles.label]}>{label}</Text>: null}
+      <TextInput style={isError?[{borderColor: errorDark, backgroundColor: errorLight, color:errorDark}]:null} placeholderTextColor={isError? errorDark : primaryGrey} placeholder={placeholder} onChangeText={callback} defaultValue={value} editable={isDisabled} secureTextEntry={type=="password"? true : false} textContentType={type} keyboardType={keyboardType} returnKeyType={"done"}/>
+      {isError?<Text style={[{ color: errorDark }, styles.label]}>{errMessage}</Text> :null}
     </View>
   );
 }
 
+export function Switch(props: SwitchProps) {
+  const { style, lightColor, darkColor, value, ...otherProps } = props;
+  const trackColor = useThemeColor({ light: lightColor, dark: darkColor }, 'headerText');
+  const thumbColor = useThemeColor({ light: lightColor, dark: darkColor }, 'tabIconSelected');
+  return <DefaultSwitch trackColor={{false:trackColor, true:successLight}} thumbColor={value?successDark:thumbColor} value={value} {...otherProps}/>;
+}
 
 const customTextInputProps = {
   style: {
@@ -163,6 +217,47 @@ const styles = StyleSheet.create({
     color:primaryDark,
     fontSize:18,
     fontWeight:'600',
+  },
+  messageView: {
+    borderWidth:1,
+    borderRadius:8,
+    flexGrow:1,
+    flexDirection: 'row',
+    alignItems:'center',
+    marginVertical:8,
+    padding: 4,
+  },
+  messageText:{
+    marginLeft: 8,
+    fontSize:16,
+  },
+  successMessage:{
+    backgroundColor: successLight,
+    borderColor: successDark,
+  },
+  successText:{
+    color: successDark,
+  },
+  errorMessage:{
+    backgroundColor: errorLight,
+    borderColor: errorDark,
+  },
+  errorText:{
+    color: errorDark,
+  },
+  infoMessage:{
+    backgroundColor: infoLight,
+    borderColor: infoDark,
+  },
+  infoText:{
+    color: infoDark,
+  },
+  alertMessage:{
+    backgroundColor: alertLight,
+    borderColor: alertDark,
+  },
+  alertText:{
+    color: alertDark,
   },
 });
 
