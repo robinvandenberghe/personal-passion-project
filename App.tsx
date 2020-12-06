@@ -1,5 +1,4 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import auth , { FirebaseAuthTypes }from '@react-native-firebase/auth';
 import { SafeAreaProvider } from 'react-native-safe-area-context';

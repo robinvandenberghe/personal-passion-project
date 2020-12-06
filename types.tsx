@@ -1,4 +1,5 @@
 export type RootStackParamList = {
+  Raspberry:undefined;
   Root: undefined;
   Authentication: undefined;
   NotFound: undefined;
@@ -50,3 +51,23 @@ export interface drinksType {
   price:number;
   title:string;
 }
+
+export type userType = { 
+  email:string;
+  uid:string;
+  membership: {
+    date: any; 
+    memberNumber: string; 
+    paymentId: string;
+  }; 
+  name:string; 
+  surname:string;
+  phoneNumber:string; 
+  points:number; 
+  profileImg: string; 
+  role:string; 
+  settings: {
+    darkmode:boolean; 
+    pushNotifications:boolean
+  }; 
+};

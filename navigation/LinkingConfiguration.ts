@@ -4,7 +4,8 @@ import { ScreenStackHeaderRightView } from 'react-native-screens';
 export default {
 
   config: {
-    screens: {      
+    screens: { 
+      Raspberry: 'raspberry',     
       Authentication: {
         screens: {
           Login: {
@@ -58,6 +59,7 @@ export default {
         },
       },
       NotFound: '*',
+
     },
   },
 };

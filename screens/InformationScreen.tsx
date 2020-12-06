@@ -1,27 +1,26 @@
-import React , { useState, useEffect } from 'react';
+import React , { useState } from 'react';
 import { StyleSheet} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import {  View, Pressable , InputWithLabel, Text, Link, PrimaryButton} from '../components/Themed';
-import { primaryCrema } from '../constants/Colors';
+import {  View, InputWithLabel, Text, Link, PrimaryButton} from '../components/Themed';
+import { useGlobalState } from '../state';
+
 
 export default function LoginScreen() {
-  const [ email, setEmail] = useState(global.user.email);
+  const [user, setUser] = useGlobalState('user');
+  const [ email, setEmail] = useState(user.email);
   const [ currentPassword, setCurrentPassword] = useState('');
   const [ password, setPassword] = useState('');
   const [ repeatPassword, setRepeatPassword] = useState('');
-  const [ name, setName] = useState(global.user.name);
-  const [ surname, setSurname] = useState(global.user.surname);
-  const [ phoneNumber, setPhoneNumber] = useState(global.user.phoneNumber);
+  const [ name, setName] = useState(user.name);
+  const [ surname, setSurname] = useState(user.surname);
+  const [ phoneNumber, setPhoneNumber] = useState(user.phoneNumber);
 
 
 
   const handleInfoChange = () => {
     if(name && surname && phoneNumber){
-      firestore().collection('users').doc(global.user.uid).update({name, surname, phoneNumber})
-      .then(({user}) => {
-        firestore().collection('users').doc(user.uid).set({name, surname, role: 'user', profileImg: '', phoneNumber: '', points: 0, settings: {darkMode: false, pushNotifications: false}, membership: {date: undefined, memberNumber:null, paymentId: ''} });
-      })
+      firestore().collection('users').doc(user.uid).update({name, surname, phoneNumber})
       .catch(error => {
         if (error.code === 'auth/invalid-email') {
           console.log('That email address is invalid!');
@@ -39,10 +38,7 @@ export default function LoginScreen() {
 
   const handlePasswordChange = () => {
     if(name && surname && phoneNumber){
-      firestore().collection('users').doc(global.user.uid).update({name, surname, phoneNumber})
-      .then(({user}) => {
-        firestore().collection('users').doc(user.uid).set({name, surname, role: 'user', profileImg: '', phoneNumber: '', points: 0, settings: {darkMode: false, pushNotifications: false}, membership: {date: undefined, memberNumber:null, paymentId: ''} });
-      })
+      firestore().collection('users').doc(user.uid).update({name, surname, phoneNumber})
       .catch(error => {
         if (error.code === 'auth/invalid-email') {
           console.log('That email address is invalid!');

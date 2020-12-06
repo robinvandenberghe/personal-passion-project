@@ -8,11 +8,12 @@ import Colors, { primaryCrema, primaryDark, primaryGrey, secondaryGrey, secondar
 import AppIcons from '../components/AppIcons';
 import useColorScheme from '../hooks/useColorScheme';
 import { useLinkTo } from '@react-navigation/native';
+import { useGlobalState } from '../state';
 
 
 
 export default function ProfileScreen() {
-  const [user, setUser] = useState(global.user);
+  const [user, setUser] = useGlobalState('user');
   const [imgLink, setImgLink] = useState(require('./../assets/images/defaultUser.jpg'));
   const colorScheme = useColorScheme();
 

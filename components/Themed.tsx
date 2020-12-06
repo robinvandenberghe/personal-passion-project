@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet } from 'react-native';
+import { KeyboardType, StyleSheet } from 'react-native';
 import { Text as DefaultText, View as DefaultView, Pressable as DefaultPressable, TextInput, FlatList as FlatListDefault, ScrollView as ScrollViewDefault } from 'react-native';
 import {
   setCustomText, setCustomTextInput
@@ -32,7 +32,7 @@ export type TextProps = ThemeProps & DefaultText['props'];
 export type ViewProps = ThemeProps & DefaultView['props'];
 export type ScrollViewProps = ThemeProps & ScrollViewDefault['props'];
 export type PressableProps = ThemeProps & DefaultPressable.arguments;
-export type TextInputProps = ThemeProps & { placeholder?: string; label?:string; disabled?:boolean; value:string; callback:any; type:any; style?:any};
+export type TextInputProps = ThemeProps & { placeholder?: string; label?:string; disabled?:boolean; value:string; callback:any; type?:any; style?:any; keyboardType?:KeyboardType};
 export type LinkProps = ThemeProps & DefaultLink['props'];
 export type FlatListProps = ThemeProps & FlatListDefault['props'];
 
@@ -73,7 +73,7 @@ export function FlatList(props: FlatListProps) {
 export function Pressable(props: PressableProps) {
   const { style,  lightColor, darkColor, ...otherProps} = props;
   const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
-  return <DefaultPressable style={[{ backgroundColor }, styles.button, style]} {...otherProps} />;
+  return <DefaultPressable style={[{ backgroundColor }, style]} {...otherProps} />;
 }
 
 export function PrimaryButton(props: PressableProps) {
@@ -93,14 +93,14 @@ export function Link(props: LinkProps) {
 }
 
 export function InputWithLabel(props: TextInputProps) {
-  const { style, placeholder = "", label = "", disabled = false, value, callback, type, lightColor, darkColor } = props;
+  const { style, placeholder = "", label = "", disabled = false, value, callback, type = "none", lightColor, darkColor, keyboardType = "default"} = props;
   const labelColor = useThemeColor({ light: lightColor, dark: darkColor }, 'labelColor');
   const isDisabled = !disabled;
 
   return (
     <View style={[styles.container, style]}>
       {label?<Text style={[{ color: labelColor }, styles.label]}>{label}</Text>: null}
-      <TextInput placeholderTextColor={primaryGrey} placeholder={placeholder}  onChangeText={callback}  defaultValue={value} editable={isDisabled} secureTextEntry={type=="password"? true : false} textContentType={type}/>
+      <TextInput placeholderTextColor={primaryGrey} placeholder={placeholder}  onChangeText={callback}  defaultValue={value} editable={isDisabled} secureTextEntry={type=="password"? true : false} textContentType={type} keyboardType={keyboardType} returnKeyType={"done"}/>
     </View>
   );
 }

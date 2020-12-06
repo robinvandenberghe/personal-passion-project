@@ -59,6 +59,7 @@ const styles = StyleSheet.create({
   },
   button: {
     marginVertical: 12,
+    alignSelf:'center',
   }
 });
 

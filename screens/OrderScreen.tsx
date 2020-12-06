@@ -12,24 +12,24 @@ import { cartType, drinksType} from '../types';
 import { useGlobalState } from '../state';
 
 
-export default function HomeScreen() {
+export default function OrderScreen() {
   const [ drinks , setDrinks] = useState<drinksType[]>([]);
   const [ isFetching, setFetching] = useState(true);
   const [categories, setCategories] = useState<string[]>([]);
   const insets = useSafeAreaInsets();
   const [cart, setCart] = useGlobalState('cart');
-
+  const [user, setUser] = useGlobalState('user');
 
   let welcomeMessage;
   const currentHour = new Date().getHours();
   if(currentHour>=6 && currentHour<=11){
-    welcomeMessage = `Goeiemorgen, ${global.user.name}`;
+    welcomeMessage = `Goeiemorgen, ${user.name}`;
   }else if(currentHour>11 && currentHour<18){
-    welcomeMessage = `Goeiemiddag, ${global.user.name}`;
+    welcomeMessage = `Goeiemiddag, ${user.name}`;
   }else if(currentHour>=18 && currentHour<=23){
-    welcomeMessage = `Goeieavond, ${global.user.name}`;
+    welcomeMessage = `Goeieavond, ${user.name}`;
   }else{
-    welcomeMessage = `Goeienacht, ${global.user.name}`;
+    welcomeMessage = `Goeienacht, ${user.name}`;
   }
 
   const addItem = (drink:any) => {
@@ -189,7 +189,7 @@ const Category = ({category, drinks, index, cart, addItem}:{category:string; dri
 }
 
 const Drink = ({drink, amount, addItem}:{drink:drinksType; amount:number; addItem:any; }) => {
-  const [imgLink, setImgLink] = useState(require('./../assets/images/drinkDefault.jpg'));
+  const [imgLink, setImgLink] = useState({uri: `https://robinvandenb.be/assets/img/kalfapp/${drink.imageUrl}`});
 
   return (
     <View style={styles.drinkContainer}>

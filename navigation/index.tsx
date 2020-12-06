@@ -9,7 +9,8 @@ import Authentication from './Authentication';
 import LinkingConfiguration from './LinkingConfiguration';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import { primaryCrema, primaryDark } from '../constants/Colors';
+import { useGlobalState } from '../state';
+
 
 
 // If you are not familiar with React Navigation, we recommend going through the
@@ -30,7 +31,8 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
   const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState(global.user);
+  const [user, setUser] = useGlobalState('user');
+
 
   useEffect(() => {
     const onAuthStateChanged = async (user: any) => {
@@ -44,13 +46,12 @@ function RootNavigator() {
           console.error(err);
         }
       }
-      global.user = user;
       setUser(user);
       if (initializing) setInitializing(false);
     }
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
-  }, [user]);
+  }, []);
 
   if (initializing) return null;
   return (

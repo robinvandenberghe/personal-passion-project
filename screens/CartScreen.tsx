@@ -2,10 +2,11 @@ import React, {useState} from 'react';
 import { StyleSheet, Image, Pressable, TextInput } from 'react-native';
 import Colors, { errorDark, secondaryLight ,primaryCrema , primaryDark, primaryLight} from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
-import { Text, View , FlatList, PrimaryButton, SecondaryButton, ScrollView} from '../components/Themed';
+import { Text, View , FlatList, PrimaryButton, SecondaryButton, ScrollView, InputWithLabel} from '../components/Themed';
 import AppIcons from '../components/AppIcons';
-import { cartType, drinksType} from '../types';
+import { cartType} from '../types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import firestore from '@react-native-firebase/firestore';
 import { useGlobalState } from '../state';
 
 
@@ -13,6 +14,9 @@ export default function CartScreen() {
   const [screen, setScreen] = useState<string>('');
   const colorScheme = useColorScheme();
   const [cart, setCart] = useGlobalState('cart');
+  const [user, setUser] = useGlobalState('user');
+
+  const [tableNumber, setTableNumber] = useState<string>('');
   let cartTotal:number = 0;
   cart.map((item)=> cartTotal += (item.amount * item.drink.price));
   const insets = useSafeAreaInsets();
@@ -23,10 +27,21 @@ export default function CartScreen() {
     setCart([...cart]);
   }
 
+  const handleOrderWithoutPayment = async () =>{
+    const order = {
+      date: firestore.Timestamp.now(),
+      drinks : {},
+      paid: false,
+      ready: false,
+      tableNumber,
+      userId: user.uid,
+    };
+  }
+
   switch(screen){
     case `checkout`:
       return (
-        <ScrollView contentContainerStyle={[styles.container, {paddingBottom: insets.bottom }]} showsVerticalScrollIndicator={false}>
+        <View style={[styles.container]} >
           <Text style={styles.title}>Jouw bestelling</Text>
           <FlatList
             data={cart}
@@ -41,15 +56,20 @@ export default function CartScreen() {
             <Text style={[{fontWeight:'600', fontSize:18}]}>Totaal</Text> 
             <Text style={[{fontWeight:'600', marginLeft:8, fontSize:18}]}>{`€${cartTotal.toString().replace(`.`, `,`)}`}</Text> 
           </View>
+          <InputWithLabel style={styles.input} placeholder="bv. 16" label="tafelnummer" value={tableNumber} callback={setTableNumber} keyboardType={"number-pad"}/>
           <View style={styles.spacer}/>
+          <View style={styles.buttonStack}>
+            <PrimaryButton style={styles.buttonStackButton} onPress={handleOrderWithoutPayment} label={`Betaal aan de bar`}/>
+            <PrimaryButton style={styles.buttonStackButton} onPress={()=>{}} label={`Betaal via Payconiq`}/>
+          </View>
           <View style={styles.buttonLine}>
             <SecondaryButton onPress={()=> setScreen(``)} label={'Terug'}/>
           </View>
-        </ScrollView>
+        </View>
       );    
     default:
       return (
-        <ScrollView contentContainerStyle={[styles.container, {paddingBottom: insets.bottom }]} showsVerticalScrollIndicator={false}>
+        <View style={[styles.container]} >
           <Text style={styles.title}>Jouw bestelling</Text>
           <FlatList
             data={cart}
@@ -57,8 +77,6 @@ export default function CartScreen() {
             showsVerticalScrollIndicator ={false}
             showsHorizontalScrollIndicator={false} 
             keyExtractor={(item, index) => index.toString()}
-            nestedScrollEnabled={true}
-            contentContainerStyle={[{flexShrink:1}]}
             />
           <View style={styles.totalLine}>
             <Text style={[{fontWeight:'600', fontSize:18}]}>Totaal</Text> 
@@ -69,7 +87,7 @@ export default function CartScreen() {
             <SecondaryButton disabled={cart.length==0?true:false} onPress={()=> setCart([])} label={'Leegmaken'}/>
             <PrimaryButton onPress={()=> setScreen(`checkout`)} style={[{marginLeft:8}]} disabled={cart.length==0?true:false} label={'Bestellen'}/>
           </View>
-        </ScrollView>
+        </View>
       );
   }
 }
@@ -79,6 +97,7 @@ const styles = StyleSheet.create({
     padding: 16,
     position:'relative',
     flexGrow:1,
+    maxHeight:'100%',
   },
   spacer:{
     width:'100%',
@@ -142,19 +161,33 @@ const styles = StyleSheet.create({
     fontWeight:'600',
   },
   buttonLine:{
-    flexShrink:1,
+    flexGrow:1,
     alignSelf:'center',
     flexDirection:'row',
   },
-  totalLine:{
+  buttonStack:{
     flexShrink:1,
+    alignSelf:'center',
+    alignItems:'center',
+    marginBottom: 16,
+  },
+  buttonStackButton:{
+    alignSelf: "auto",
+    marginVertical: 4,
+  },
+  totalLine:{
+    flexGrow:1,
     alignSelf:'flex-end',
     flexDirection:'row',
-  }
+    marginVertical:8,
+  },
+  input: {
+    marginVertical: 4,
+  },
 });
 
 const Drink = ({item, deleteItem, screen}:{item:cartType; deleteItem:any; screen:string;}) => {
-  const [imgLink, setImgLink] = useState(require('./../assets/images/drinkDefault.jpg'));
+  const [imgLink, setImgLink] = useState({uri: `https://robinvandenb.be/assets/img/kalfapp/${item.drink.imageUrl}`});
   const [amount, setAmount] = useState(item.amount);
   const [cart, setCart] = useGlobalState('cart');
 

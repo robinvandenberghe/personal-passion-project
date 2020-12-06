@@ -1,9 +1,8 @@
-import React , { useState, useEffect } from 'react';
+import React , { useState} from 'react';
 import { StyleSheet} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import {  View, Pressable , InputWithLabel, Text, Link} from '../components/Themed';
-import { primaryCrema } from '../constants/Colors';
+import {  View , InputWithLabel, Text, Link, PrimaryButton} from '../components/Themed';
 
 export default function LoginScreen() {
   const [ email, setEmail] = useState("");
@@ -18,7 +17,7 @@ export default function LoginScreen() {
       auth()
       .createUserWithEmailAndPassword(email, password)
       .then(({user}) => {
-        firestore().collection('users').doc(user.uid).set({name, surname, role: 'user', profileImg: '', phoneNumber: '', points: 0, settings: {darkMode: false, pushNotifications: false}, membership: {date: undefined, memberNumber:null, paymentId: ''} });
+        firestore().collection('users').doc(user.uid).set({name, surname, role: 'user', profileImg: '', phoneNumber: '', points: 0, settings: {darkMode: false, pushNotifications: false}, membership: {date: undefined, memberNumber:'', paymentId: ''} });
       })
       .catch(error => {
         if (error.code === 'auth/invalid-email') {
@@ -43,7 +42,7 @@ export default function LoginScreen() {
       <InputWithLabel style={styles.input} placeholder="e-mailadres" label="e-mail" value={email} callback={setEmail} type="emailAddress" />
       <InputWithLabel style={styles.input} placeholder="wachtwoord" label="wachtwoord" value={password} callback={setPassword} type="password" />
       <InputWithLabel style={styles.input} placeholder="herhaal wachtwoord" label="herhaal wachtwoord" value={repeatPassword} callback={setRepeatPassword} type="password" />
-      <Pressable onPress={handleRegister} style={styles.button}><Text style={styles.buttonText}>Registreren</Text></Pressable>
+      <PrimaryButton onPress={handleRegister} style={styles.button} label={'Registreren'}/>
       <Link to="/login">Had je al een account? Log hier in.</Link>
     </View>
   );
@@ -70,11 +69,7 @@ const styles = StyleSheet.create({
   },
   button: {
     marginVertical: 12,
-  },
-  buttonText: {
-    fontSize: 16,
-    color: primaryCrema,
-    fontWeight: '600',
+    alignSelf: 'center',
   }
 });
 
