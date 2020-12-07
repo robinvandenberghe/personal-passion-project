@@ -18,7 +18,11 @@ import MembershipScreen from '../screens/MembershipScreen';
 import ScoreScreen from '../screens/ScoreScreen';
 import InformationScreen from '../screens/InformationScreen';
 import { useGlobalState } from '../state';
-
+import OrdersScreen from '../screens/OrdersScreen';
+import QuestionsScreen from '../screens/QuestionsScreen';
+import EventsScreen from '../screens/EventsScreen';
+import RewardsScreen from '../screens/RewardsScreen';
+import PostsScreen from '../screens/PostsScreen';
 
 
 
@@ -138,11 +142,13 @@ function OrderNavigator() {
 }
 const ProfileStack = createStackNavigator<ProfileParamList>();
 
-function ProfileNavigator() {
+const ProfileNavigator = () => {
   const colorScheme = useColorScheme();
+  const [user, setUser] = useGlobalState('user');
 
   return (
-    <ProfileStack.Navigator  screenOptions={{headerTintColor: Colors[colorScheme].headerText, headerStyle: { backgroundColor: Colors[colorScheme].header}, headerBackTitleStyle:{color: Colors[colorScheme].headerText} }}>
+    <ProfileStack.Navigator 
+     screenOptions={{headerTintColor: Colors[colorScheme].headerText, headerStyle: { backgroundColor: Colors[colorScheme].header}, headerBackTitleStyle:{color: Colors[colorScheme].headerText} }}>
       <ProfileStack.Screen
         name="ProfileScreen"
         component={ProfileScreen}
@@ -173,6 +179,35 @@ function ProfileNavigator() {
         component={InformationScreen}
         options={{ headerTitle: 'Mijn informatie' }}
       />
+      {user.role === 'admin'?
+      <>
+        <ProfileStack.Screen
+        name="OrdersScreen"
+        component={OrdersScreen}
+        options={{ headerTitle: 'Bestellingen' }}
+        />
+        <ProfileStack.Screen
+        name="PostsScreen"
+        component={PostsScreen}
+        options={{ headerTitle: 'Posts' }}
+        />
+        <ProfileStack.Screen
+        name="QuestionsScreen"
+        component={QuestionsScreen}
+        options={{ headerTitle: 'Quizvragen' }}
+        />
+        <ProfileStack.Screen
+        name="EventsScreen"
+        component={EventsScreen}
+        options={{ headerTitle: 'Quizvragen' }}
+        />
+        <ProfileStack.Screen
+        name="RewardsScreen"
+        component={RewardsScreen}
+        options={{ headerTitle: 'Quizvragen' }}
+        />
+      </>
+      : null}
     </ProfileStack.Navigator>
   );
 }

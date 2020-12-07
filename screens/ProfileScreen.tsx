@@ -47,15 +47,15 @@ export default function ProfileScreen() {
         <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
         <ProfileItem title={'Mijn informatie'} route={'informatie'} icon={'info'} color={Colors[colorScheme].text} />
         <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-        <ProfileItem title={'Bestellingen'} route={''} icon={'orders'} color={Colors[colorScheme].text} />
+        <ProfileItem title={'Bestellingen'} route={'bestellingen'} icon={'orders'} color={Colors[colorScheme].text} />
         <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-        <ProfileItem title={'Posts'} route={''} icon={'posts'} color={Colors[colorScheme].text} />
+        <ProfileItem title={'Posts'} route={'posts'} icon={'posts'} color={Colors[colorScheme].text} />
         <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-        <ProfileItem title={'Quizvragen'} route={''} icon={'questions'} color={Colors[colorScheme].text} />
+        <ProfileItem title={'Quizvragen'} route={'vragen'} icon={'questions'} color={Colors[colorScheme].text} />
         <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-        <ProfileItem title={'Evenementen'} route={''} icon={'events'} color={Colors[colorScheme].text} />
+        <ProfileItem title={'Evenementen'} route={'evenementen'} icon={'events'} color={Colors[colorScheme].text} />
         <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-        <ProfileItem title={'Beloningen'} route={''} icon={'rewards'} color={Colors[colorScheme].text} />
+        <ProfileItem title={'Beloningen'} route={'beloningen'} icon={'rewards'} color={Colors[colorScheme].text} />
       </View>
     </ScrollView>
   : 
@@ -73,7 +73,6 @@ export default function ProfileScreen() {
         <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
         <ProfileItem title={'Mijn informatie'} route={''} icon={'info'} color={Colors[colorScheme].text} />
       </View>
-      {/* <Pressable onPress={()=>auth().signOut()} ><Text>Uitloggen</Text></Pressable> */}
     </View>
 
   );

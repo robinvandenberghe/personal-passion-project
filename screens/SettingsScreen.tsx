@@ -12,14 +12,13 @@ import { useGlobalState } from '../state';
 
 export default function SettingsScreen() {
   const [user, setUser] = useGlobalState('user');
-  const [darkMode, setDarkMode] = useState<boolean>(user.settings.darkMode);
   const [pushNotifications, setPushNotifications] = useState<boolean>(user.settings.pushNotifications);
   const colorScheme = useColorScheme();
 
-  if(darkMode !== user.settings.darkMode || pushNotifications !== user.settings.pushNotifications){
-    user.settings = {darkMode, pushNotifications};
+  if( pushNotifications !== user.settings.pushNotifications){
+    user.settings = { pushNotifications};
     setUser(user);
-    firestore().collection('users').doc(user.uid).update({settings: {darkMode, pushNotifications}}).catch(error=>console.error(error));
+    firestore().collection('users').doc(user.uid).update({settings: { pushNotifications}}).catch(error=>console.error(error));
   }
 
   return (
@@ -27,8 +26,6 @@ export default function SettingsScreen() {
       <Text style={styles.title}>Mijn instellingen</Text>
       <Text >Wijzig hier jouw persoonlijke instellingen</Text>
       <View style={styles.settings}>
-        <View style={styles.settingView}><Text>Dark mode</Text><Switch value={darkMode} onValueChange={(value)=>setDarkMode(value)}/></View>
-        <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
         <View style={styles.settingView}><Text>Push-meldingen</Text><Switch value={pushNotifications} onValueChange={(value)=>setPushNotifications(value)}/></View>
         <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
         <ProfileItem title={'Over de app'} action={()=>{}} icon={''} color={Colors[colorScheme].text} />

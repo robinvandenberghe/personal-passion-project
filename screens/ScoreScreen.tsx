@@ -14,12 +14,17 @@ export default function SettingsScreen() {
   const [user, setUser] = useGlobalState('user');
   const colorScheme = useColorScheme();
   const linkTo = useLinkTo();
+  const max = Math.ceil(user.points/100)*100;
+  const percentage = (user.points/max)*100;
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Mijn puntenstand</Text>
       <Text >Jouw huidige positie</Text>
-
+      <View style={styles.scoreContainer}>
+        <View style={styles.scoreWrapper}><View style={[styles.scoreBar, {width: `${percentage}%`}]}></View></View>
+        <View style={styles.scoreLabels}><Text>0</Text><Text style={[styles.currentScore, percentage>50?{ right: `${100-percentage}%`}:{left: `${percentage}%`}]}>{user.points}</Text><Text>{max}</Text></View>
+      </View>
     </View>
   );
 }
@@ -57,6 +62,33 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginLeft:16,
     flexGrow:1,
+  },
+  scoreContainer:{
+    width:'100%',
+    marginVertical:16,
+  },
+  scoreWrapper:{
+    backgroundColor: secondaryGrey,
+    height:16,
+    width:'100%',
+  },
+  scoreBar:{
+    backgroundColor: primaryGrey,
+    height:16,
+  },
+  scoreLabels:{
+    flexShrink:1,
+    flexDirection: 'row',
+    justifyContent:'space-between',
+    alignItems:'flex-start',
+    width:'100%',
+    position:'relative',
+  },
+  currentScore:{
+    position: 'absolute',
+    top: 16,
+    textAlign:'center',
+    fontWeight:'600',
   },
   
 });

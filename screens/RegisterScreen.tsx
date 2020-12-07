@@ -17,7 +17,7 @@ export default function LoginScreen() {
       auth()
       .createUserWithEmailAndPassword(email, password)
       .then(({user}) => {
-        firestore().collection('users').doc(user.uid).set({name, surname, role: 'user', profileImg: '', phoneNumber: '', points: 0, settings: {darkMode: false, pushNotifications: false}, membership: {date: undefined, memberNumber:'', paymentId: ''} });
+        firestore().collection('users').doc(user.uid).set({name, surname, role: 'user', profileImg: '', phoneNumber: '', points: 0, settings: { pushNotifications: false}, membership: {date: undefined, memberNumber:'', paymentId: ''} });
       })
       .catch(error => {
         if (error.code === 'auth/invalid-email') {

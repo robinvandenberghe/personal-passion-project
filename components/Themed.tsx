@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   messageView: {
     borderWidth:1,
     borderRadius:8,
-    flexGrow:1,
+    flexShrink:1,
     flexDirection: 'row',
     alignItems:'center',
     marginVertical:8,

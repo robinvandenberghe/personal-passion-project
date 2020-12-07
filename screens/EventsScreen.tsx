@@ -12,8 +12,8 @@ import { cartType, drinksType} from '../types';
 import { useGlobalState } from '../state';
 
 
-export default function OrderScreen() {
-  const [ drinks , setDrinks] = useGlobalState('drinks');
+export default function EventsScreen() {
+  const [ drinks , setDrinks] = useState<drinksType[]>([]);
   const [ isFetching, setFetching] = useState(true);
   const [categories, setCategories] = useState<string[]>([]);
   const insets = useSafeAreaInsets();

@@ -2,6 +2,8 @@ import React , { useState } from 'react';
 import { StyleSheet} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import firebase from '@react-native-firebase/app';
+
 import { View,  ScrollView, InputWithLabel, Text, Link, PrimaryButton, Message} from '../components/Themed';
 import { useGlobalState } from '../state';
 
@@ -21,7 +23,7 @@ export default function LoginScreen() {
   }
 
   const handleInfoChange = () => {
-    if(name && surname && phoneNumber){
+    if(currentPassword && password && repeatPassword && password === repeatPassword){
       user.name = name;
       user.surname = surname;
       user.phoneNumber = phoneNumber;
@@ -34,45 +36,20 @@ export default function LoginScreen() {
     }
   }
 
-  const handlePasswordChange = () => {
-    if(name && surname && phoneNumber){
-      firestore().collection('users').doc(user.uid).update({name, surname, phoneNumber})
-      .catch(error => {
-        if (error.code === 'auth/invalid-email') {
-          console.log('That email address is invalid!');
-        }
-        if (error.code === 'auth/email-already-in-use') {
-          console.log('That email is already in use!');
-        }
-        if (error.code === 'auth/weak-password') {
-          console.log('That password is too weak!');
-        }
-        console.error(error);
-      });  
-    }
-  }
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <Text style={styles.title}>Mijn informatie</Text>
       <View style={styles.formContainer}>
         <Text style={styles.subText}>Persoonlijke gegevens</Text>
         {info && info.subject===`userUpdated`? <Message type={info.type} message={info.message} /> : null}
-
         <InputWithLabel style={styles.input} placeholder="Jan" label="voornaam" value={name} callback={setName} type="name" />
         <InputWithLabel style={styles.input} placeholder="Janssens" label="familienaam" value={surname} callback={setSurname} type="familyName" />
         <InputWithLabel style={styles.input} placeholder="e-mailadres" label="e-mail" value={user.email} callback={()=>{}} disabled={true} type="emailAddress" />
         <InputWithLabel style={styles.input} placeholder="telefoonnummer" label="gsm-nummer (optioneel)" value={phoneNumber} callback={setPhoneNumber} type="telephoneNumber" />
         <PrimaryButton style={styles.button} onPress={handleInfoChange} label={'Opslaan'}/>
       </View>
-      <View style={styles.formContainer}>
-        <Text style={styles.subText}>Wachtwoord wijzigen</Text>
-        <InputWithLabel style={styles.input} placeholder="wachtwoord" label="huidig wachtwoord" value={currentPassword} callback={setCurrentPassword} type="password" />
-        <InputWithLabel style={styles.input} placeholder="nieuw wachtwoord" label="nieuw wachtwoord" value={password} callback={setPassword} type="password" />
-        <InputWithLabel style={styles.input} placeholder="herhaal nieuw wachtwoord" label="herhaal nieuw wachtwoord" value={repeatPassword} callback={setRepeatPassword} type="password" />
-        <PrimaryButton style={styles.button} onPress={handlePasswordChange} label={'Wijzigen'}/>
-      </View>
-    </ScrollView>
+    </View>
   );
 }
 

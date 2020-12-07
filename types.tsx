@@ -40,6 +40,10 @@ export type ProfileParamList = {
   ScoreScreen: undefined;
   InformationScreen: undefined;
   OrdersScreen: undefined;
+  PostsScreen: undefined;
+  QuestionsScreen: undefined;
+  EventsScreen: undefined;
+  RewardsScreen:undefined;
 };
 
 export interface cartType {
@@ -70,7 +74,6 @@ export type userType = {
   profileImg: string; 
   role:string; 
   settings: {
-    darkMode:boolean; 
     pushNotifications:boolean
   }; 
 }
@@ -91,4 +94,14 @@ export type textInputType = {
   type?:any;
   style?:any;
   keyboardType?:KeyboardType;
+}
+
+export type orderType = {
+  uid:string;
+  date:any;
+  drinks: object;
+  paid:boolean;
+  ready:boolean;
+  tableNumber:string;
+  userId:string;
 }
