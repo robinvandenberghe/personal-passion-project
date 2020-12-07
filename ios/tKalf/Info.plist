@@ -36,7 +36,7 @@
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>UILaunchStoryboardName</key>
 	<string>SplashScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -65,7 +65,7 @@
 	<key>UIRequiresFullScreen</key>
 	<true/>
 	<key>CFBundleDisplayName</key>
-	<string>&apos;t Kalf</string>
+	<string>'t Kalf</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Poppins-Black.ttf</string>

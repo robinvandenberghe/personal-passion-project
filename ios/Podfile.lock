@@ -706,26 +706,26 @@ PODS:
     - React
   - RNDeviceInfo (7.2.1):
     - React-Core
-  - RNFBAnalytics (10.1.0):
+  - RNFBAnalytics (10.1.1):
     - Firebase/Analytics (~> 7.1.0)
     - React-Core
     - RNFBApp
   - RNFBApp (10.1.0):
     - Firebase/CoreOnly (~> 7.1.0)
     - React-Core
-  - RNFBAuth (10.1.0):
+  - RNFBAuth (10.1.1):
     - Firebase/Auth (~> 7.1.0)
     - React-Core
     - RNFBApp
-  - RNFBFirestore (10.1.0):
+  - RNFBFirestore (10.1.1):
     - Firebase/Firestore (~> 7.1.0)
     - React-Core
     - RNFBApp
-  - RNFBPerf (10.1.0):
+  - RNFBPerf (10.1.1):
     - Firebase/Performance (~> 7.1.0)
     - React-Core
     - RNFBApp
-  - RNFBStorage (10.1.0):
+  - RNFBStorage (10.1.1):
     - Firebase/Storage (~> 7.1.0)
     - React-Core
     - RNFBApp
@@ -1094,12 +1094,12 @@ SPEC CHECKSUMS:
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
   RNDeviceInfo: ae953cf4af2775e45597304fc9513a7931ef81ff
-  RNFBAnalytics: 0a98aff1ad9abee16de201012f03179246c2e5bb
+  RNFBAnalytics: da48ff33f20c26ee63745271ae9c0fb252422e66
   RNFBApp: 2b4e07dfca4cf780b9e2d61bcc21e34d890cd654
-  RNFBAuth: 850fe75de0fb59d52867b0c462c7e10f9dfa0b8d
-  RNFBFirestore: 70eed960ffd67ee07d9583fcc2031ba0e345a0fa
-  RNFBPerf: a0d50caf0d88079c6e9da1f674e7e6b2a9265585
-  RNFBStorage: 12a4def10a0e9633d0e58df084b88a2b7dab8b9c
+  RNFBAuth: 349a8d96d6ecc91d690c65ec0425cbb21b5831ed
+  RNFBFirestore: 316c7a1ffa979dba7d1e940c51dcf3d3860e8a91
+  RNFBPerf: 8ea399861d778752ff8685b4bdb4823852b3fb7e
+  RNFBStorage: 267441c043b570c93fbac73ae7fe3f56c75ed113
   RNGestureHandler: b6b359bb800ae399a9c8b27032bdbf7c18f08a08
   RNReanimated: e03f7425cb7a38dcf1b644d680d1bfc91c3337ad
   RNScreens: b748efec66e095134c7166ca333b628cd7e6f3e2
@@ -1120,6 +1120,6 @@ SPEC CHECKSUMS:
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: c1c8629c005a668faff885642f7211b826289384
+PODFILE CHECKSUM: 49cc6a5208fb735f2dfeff312bd80f5f590a371b
 
 COCOAPODS: 1.10.0
