@@ -5,7 +5,6 @@ export default {
 
   config: {
     screens: { 
-      Raspberry: 'raspberry',     
       Authentication: {
         screens: {
           Login: {
@@ -37,6 +36,8 @@ export default {
           Speel: {
             screens: {
               PlayScreen: 'speel',
+              PictionaryScreen: 'speel/pictionary',
+              TrivialTimeScreen: 'speel/trivial-time',
             },
           },
           Bestel: {

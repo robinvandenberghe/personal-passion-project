@@ -31,8 +31,8 @@ export default function SettingsScreen() {
         <ProfileItem title={'Over de app'} action={()=>{}} icon={''} color={Colors[colorScheme].text} />
         <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
         <ProfileItem title={'Uitloggen'} action={()=> {
-          setUser(undefined);
           auth().signOut();
+          setUser(undefined);
          }} icon={'logout'} color={errorDark} />
       </View>
     </View>

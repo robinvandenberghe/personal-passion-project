@@ -27,6 +27,8 @@ export type HomeParamList = {
 
 export type PlayParamList = {
   PlayScreen: undefined;
+  PictionaryScreen: undefined;
+  TrivialTimeScreen: undefined;
 };
 export type OrderParamList = {
   OrderScreen: undefined;

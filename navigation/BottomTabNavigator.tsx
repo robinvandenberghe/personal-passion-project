@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, HeaderBackButton } from '@react-navigation/stack';
 import React, {useState} from 'react';
 import AppIcons from '../components/AppIcons';
 import Colors, { infoDark, primaryDark } from '../constants/Colors';
@@ -23,6 +23,8 @@ import QuestionsScreen from '../screens/QuestionsScreen';
 import EventsScreen from '../screens/EventsScreen';
 import RewardsScreen from '../screens/RewardsScreen';
 import PostsScreen from '../screens/PostsScreen';
+import PictionaryScreen from '../screens/PictionaryScreen';
+import TrivialTimeScreen from '../screens/TrivialTimeScreen';
 
 
 
@@ -111,6 +113,16 @@ function PlayNavigator() {
       <PlayStack.Screen
         name="PlayScreen"
         component={PlayScreen}
+        options={{ headerTitle: 'Speel' }}
+      />
+      <PlayStack.Screen
+        name="PictionaryScreen"
+        component={PictionaryScreen}
+        options={{ headerTitle: 'Pictionary',}}
+      />
+      <PlayStack.Screen
+        name="TrivialTimeScreen"
+        component={TrivialTimeScreen}
         options={{ headerTitle: 'Speel' }}
       />
     </PlayStack.Navigator>

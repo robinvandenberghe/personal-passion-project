@@ -1,14 +1,15 @@
+import { useLinkTo } from '@react-navigation/native';
 import * as React from 'react';
 import { StyleSheet } from 'react-native';
-
-import EditScreenInfo from '../components/Post';
-import { Text, View } from '../components/Themed';
+import { PrimaryButton, Text, View } from '../components/Themed';
 
 export default function PlayScreen() {
+  const linkTo = useLinkTo();
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Speel</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+      <Text style={styles.title}>Kies een spel</Text>
+      <PrimaryButton style={styles.gameButton} onPress={()=>linkTo('/speel/pictionary')} label={`Pictionary`}/>
+      {/* <PrimaryButton style={styles.gameButton} onPress={()=>linkTo('/speel/trivial-time')} label={`Trivial Time`} /> */}
     </View>
   );
 }
@@ -20,12 +21,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 24,
+    fontWeight: '600',
+    marginBottom:16,
   }, 
   separator: {
     marginVertical: 30,
     height: 1,
     width: '80%',
+  },
+  gameButton:{
+    marginVertical: 8,
+    alignSelf: 'center',
   },
 });
