@@ -1,236 +1,172 @@
 import React , { useState, useEffect } from 'react';
-import { StyleSheet , Image, Pressable, Dimensions} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import { Text, View, FlatList } from '../components/Themed';
-import { useLinkTo } from '@react-navigation/native';
-import AppIcons from '../components/AppIcons';
-import Colors, { infoDark, primaryDark, secondaryLight, successDark } from '../constants/Colors';
-import useColorScheme from '../hooks/useColorScheme';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Draggable from 'react-native-draggable';
-import { cartType, drinksType} from '../types';
+import { Text, View, FlatList, PrimaryButton, Pressable, SecondaryButton} from '../components/Themed';
+import { StyleSheet , Image, TextInput } from 'react-native';
+import Colors, { alertDark, errorDark, infoDark, primaryDark, secondaryLight, successDark } from '../constants/Colors';
 import { useGlobalState } from '../state';
+import AppIcons from '../components/AppIcons';
+import useColorScheme from '../hooks/useColorScheme';
 
 
-export default function PostsScreen() {
-  const [ drinks , setDrinks] = useState<drinksType[]>([]);
-  const [ isFetching, setFetching] = useState(true);
-  const [categories, setCategories] = useState<string[]>([]);
-  const insets = useSafeAreaInsets();
-  const [cart, setCart] = useGlobalState('cart');
-  const [user, setUser] = useGlobalState('user');
+export default function QuestionsScreen() {
+  const [ screen, setScreen ] = useState<string>(``);
+  const [ error, setError ] = useState<{type:string; subject:string; message:string;}|undefined>();
+  const [ value, setValue ] = useState<string>(``);
+  const [ info, setInfo ] = useState<{ type:string; subject:string; message:string; }|null>();
+  const [ editValue, setEditValue ] = useState<{type:string;}>();
+  const [ newPost, setNewPost ] = useState<string>(``);
+  const colorScheme = useColorScheme();
 
-  let welcomeMessage;
-  const currentHour = new Date().getHours();
-  if(currentHour>=6 && currentHour<=11){
-    welcomeMessage = `Goeiemorgen, ${user.name}`;
-  }else if(currentHour>11 && currentHour<18){
-    welcomeMessage = `Goeiemiddag, ${user.name}`;
-  }else if(currentHour>=18 && currentHour<=23){
-    welcomeMessage = `Goeieavond, ${user.name}`;
-  }else{
-    welcomeMessage = `Goeienacht, ${user.name}`;
+  const handlePost = async () =>{
+
   }
 
-  const addItem = (drink:any) => {
-    if(cart.length>0){
-      const r = cart.filter((a:any) => a.drink.title === drink.title);
-      if(r.length == 1){
-        cart[cart.indexOf(r[0])].amount +=1;
-        setCart([...cart]);
-      }else{
-        setCart([...cart, {amount:1, drink}]);
-      }
-    }else{
-      setCart([{amount: 1, drink}]);
-    }
+
+  switch(screen){
+    default:
+      return(
+        <View style={[styles.container]} >
+          <Text style={styles.title}>Plaats een nieuw bericht</Text>
+          <Text>Welk bericht wil je plaatsen?</Text>
+          <View style={styles.postContainer}>
+            {newPost?
+              newPost==`post`?
+              <View>
+                <Pressable style={styles.postTypeLine} onPress={()=>setNewPost(``)}>
+                  <Text style={styles.postType}>Bericht</Text>
+                  <AppIcons size={18} color={Colors[colorScheme].labelColor} name={`posts`} />
+                </Pressable>
+                <Text style={[styles.subtext, {color: Colors[colorScheme].labelColor}]}>voorbeeld</Text>
+                <View style={[styles.postExample]}>
+                  <Text style={[styles.subtext, {color: Colors[colorScheme].labelColor}]}>5 minuten geleden</Text>
+                  <TextInput style={[styles.multiLineInput, {color: Colors[colorScheme].text}] }  blurOnSubmit placeholder={`Begin met typen ...`}  keyboardType={`default`}  multiline={true} autoFocus={true} onChange={text => {editValue.textValue = text; setEditValue({...editValue});}} value={editValue.textValue}/>
+                </View>
+                <PrimaryButton onPress={handlePost} style={styles.postButton} label={`Plaatsen`} />
+              </View>
+              :newPost==`image`?
+              <View></View>
+              :newPost==`album`?
+              <View></View>
+              :null
+            :
+            <View style={styles.buttonContainer}>
+              <Pressable style={[styles.buttonWrapper, {backgroundColor: Colors[colorScheme].text}]} onPress={()=>{ setNewPost(`post`); setEditValue({type:`post`, textValue: ``})}}>
+                <AppIcons size={30} color={Colors[colorScheme].background} name={`post`} />
+                <Text style={{color: Colors[colorScheme].background, marginTop:8}}>Bericht</Text>
+              </Pressable>
+              <Pressable style={[styles.buttonWrapper, {backgroundColor: Colors[colorScheme].text}]} onPress={()=>setNewPost(`image`)}>
+                <AppIcons size={30} color={Colors[colorScheme].background} name={`image`} />
+                <Text style={{color: Colors[colorScheme].background, marginTop:8}}>Foto</Text>
+              </Pressable>
+              <Pressable style={[styles.buttonWrapper, {backgroundColor: Colors[colorScheme].text}]} onPress={()=>setNewPost(`album`)}>
+                <AppIcons size={30} color={Colors[colorScheme].background} name={`album`} />
+                <Text style={{color: Colors[colorScheme].background, marginTop:8}}>Album</Text>
+              </Pressable>
+            </View>}
+          </View>
+
+        </View>
+      );
   }
 
-  useEffect(() => {
-    async function fetchDrinks() {
-      if(isFetching){
-        try {
-          const r = await firestore().collection("drinks").orderBy("title", "asc").get();
-          const a:drinksType[] = r.docs.map((item) => {
-            const temp = item.data();
-            return {uid: item.id,category:temp.category,imageUrl:temp.imageUrl,price:temp.price,title:temp.title};
-          });
-          setDrinks(a);
-          const c:string[] = [];
-          a.map(item => {if(c.indexOf(item.category)==-1)c.push(item.category)});
-          setCategories(c);
-          setFetching(false);
-        } catch (err) {
-          console.error(err);
-        }
-      }
-    }
-    fetchDrinks();
-  }, [isFetching]);
-
-  return (
-    <View style={[styles.container, {paddingBottom: (insets.bottom) }]} >
-      <Text style={styles.welcomeMessage}>{welcomeMessage}</Text>
-      <Text>Waar heb je zin in?</Text>
-      <FlatList
-        style={styles.drinkList}
-        data={categories}
-        extraData={cart}
-        renderItem={({item, index}) => <Category category={item}  drinks={drinks} index={index} cart={cart} addItem={addItem}/>}
-        showsVerticalScrollIndicator ={false}
-        showsHorizontalScrollIndicator={false} 
-        refreshing={isFetching}
-        onRefresh={()=>setFetching(true)}
-        keyExtractor={(item, index) => index.toString()} 
-        nestedScrollEnabled={true}
-        contentContainerStyle={{paddingBottom: insets.bottom  }}
-        />
-      <CartIcon cart={cart} />
-    </View>
-    );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    position:'relative',
-  },
-  drinkList:{
+    flex: 1,
     flexGrow:1,
-    paddingBottom: 120,
+    padding:16,
   },
-  welcomeMessage: {
-    fontWeight:'500',
+  title: {
     fontSize: 24,
-  },
-  categoryTitle : {
-    fontSize: 16,
-    fontWeight:'500',
-    textTransform: 'capitalize',
-    marginTop: 12,
-  },
-  drinkContainer : {
-    flexShrink: 1,
-    marginVertical:8,
-    flexDirection:'row',
-    alignItems: 'center',
-  },
-  drinkTitle : {
-    marginLeft:8,
-    flexGrow:1,
-  },
-  drinkImage : {
-    width: 40,
-    height:40,
-    resizeMode:'contain',
-  },
-  cartButton : {
-    width:56,
-    height:56,
-    borderRadius:28,
-    flexShrink: 1,
-    justifyContent:'center',
-    alignItems:'center',
-    position:'relative',
-  },
-  addButton:{
-    backgroundColor: successDark,
+    fontWeight: '500',
+    marginBottom:16,
+  }, 
+  roundButton:{
     width:40,
     height:40,
+    flexShrink:1,
+    alignItems:'center',
+    justifyContent:'center',
     borderRadius:20,
-    flexShrink: 1,
+  },
+  editButton:{
+    backgroundColor: alertDark,
+  },
+  rejectButton:{
+    backgroundColor: errorDark,
+    marginRight:4,
+  },
+  approveButton:{
+    backgroundColor: successDark,
+  },
+  backButton:{
+    marginBottom: 8,
+  },
+  input:{
+    alignSelf:'center',
+    marginVertical:16,
+  }, 
+  spacer:{
+    width:'100%',
+    flexGrow:112,
+  },
+  postContainer:{
+    marginTop:16,
+
+  },
+  buttonContainer:{
+    flexShrink:1,
+    width:'100%',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent:'space-between',
+  }, 
+  buttonWrapper:{
+    paddingHorizontal:16,
+    paddingVertical:8,
+    borderRadius:8,
     justifyContent:'center',
     alignItems:'center',
+    minWidth:88,
+  },
+  postTypeLine:{
+    flexShrink:1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  postType:{
+    fontWeight: '500',
+    marginRight: 16,
+    fontSize:18,
+  },
+  subtext:{
+    fontSize:14,
+  },
+  postButton:{
     alignSelf: 'flex-end',
-    marginLeft: 8,
+    marginTop:8,
   },
-  cartBadge:{
-    position:'absolute',
-    top: -8,
-    right:0,
-    flex:1,
-    backgroundColor:infoDark,
-    width:24,
-    height:24,
-    borderRadius:12,
-    alignItems:'center',
-    justifyContent:'center',
+  postExample:{
+    padding:8,
+    borderRadius:8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 3,
+    marginVertical:8,
   },
-  cartText: {
-    fontSize: 14,
-    textAlign:'center',
-    lineHeight:20,
-    fontWeight:'600',
-    color: secondaryLight,
+  multiLineInput:{
+    flexShrink:1,
+    borderColor: 'transparent',
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    padding:0,
+    marginVertical:8,
+    fontSize:16,
   },
 });
-
-const Category = ({category, drinks, index, cart, addItem}:{category:string; drinks:drinksType[]; index:number; cart:any; addItem:any;}) => {
-  const categoryDrinks:drinksType[] = drinks.filter((item)=> item.category == category);
-  return (
-    <>
-      <Text style={styles.categoryTitle}>{category}</Text>
-      <FlatList
-      data={categoryDrinks}
-      extraData={cart}
-      renderItem={({item}) => {
-        const r = cart.filter((a:any)=> a.drink.title == item.title);
-        const amount = r.length ? cart[cart.indexOf(r[0])].amount | 0 : 0;
-        return <Drink drink={item} amount={amount} addItem={addItem}/>
-      }}
-      showsVerticalScrollIndicator ={false}
-      showsHorizontalScrollIndicator={false} 
-      keyExtractor={(item, index) => index.toString()} 
-      listKey={`${index}.1`}
-      nestedScrollEnabled={true}
-      />
-    </>
-  );
-}
-
-const Drink = ({drink, amount, addItem}:{drink:drinksType; amount:number; addItem:any; }) => {
-  const [imgLink, setImgLink] = useState({uri: `https://robinvandenb.be/assets/img/kalfapp/${drink.imageUrl}`});
-
-  return (
-    <View style={styles.drinkContainer}>
-      <View>      
-        <Image source={imgLink} style={styles.drinkImage}/>
-        <DrinkIcon amount={amount} />
-      </View>
-      <Text style={styles.drinkTitle}>{drink.title}</Text>
-      <Text>{`€${drink.price.toString().replace(`.`, `,`)}`}</Text>
-      <Pressable onPress={() => addItem(drink)} style={styles.addButton}><AppIcons size={24} name={'cartplus'} color={secondaryLight} /></Pressable>
-    </View>
-  );
-}
-
-const CartIcon = ({cart}:{cart:cartType[]}) => {
-  const linkTo = useLinkTo();
-  const colorScheme = useColorScheme();
-  const insets = useSafeAreaInsets();
-  const {width, height} = Dimensions.get('window');
-
-  if(cart.length>0){
-    return (
-      <Draggable renderSize={56} x={width-64} y={height-insets.bottom-196} minX={insets.left} minY={insets.bottom} maxX={width-insets.right-8} maxY={height-insets.bottom-140}  >
-        <Pressable onPress={() => linkTo(`/cart`)}style={[{backgroundColor: Colors[colorScheme].tabBackground} ,styles.cartButton]}><View style={styles.cartBadge}><Text style={styles.cartText}>{cart.length}</Text></View><AppIcons size={32} name={'cart'} color={ Colors[colorScheme].text} /></Pressable>
-      </Draggable>
-    );
-  }else{
-    return (
-      <Draggable renderSize={56} x={width-64} y={height-insets.bottom-196} minX={insets.left} minY={insets.bottom} maxX={width-insets.right-8} maxY={height-insets.bottom-140}  >
-        <Pressable onPress={() => linkTo(`/cart`)}style={[{backgroundColor: Colors[colorScheme].tabBackground} ,styles.cartButton]}><AppIcons size={32} name={'cart'} color={ Colors[colorScheme].text} /></Pressable>
-      </Draggable>
-    );
-  }
-
-}
-
-const DrinkIcon = ({amount}:{amount:number;}) => {
-  if(amount>0){
-    return <View style={styles.cartBadge}><Text style={styles.cartText}>{amount.toString()}</Text></View>;
-  }else{
-    return null;
-  }
-}
-

@@ -15,6 +15,7 @@ export default function QuestionsScreen() {
   const [ info, setInfo ] = useState<{ type:string; subject:string; message:string; }|null>();
   const [ rewards , setRewards] = useState<{uid:string; amount:number; available:number; imageUrl:string; title:string; }[]>([]);
   const [ scannedValue, setScannedValue ] = useState<{reward:any; user:any;}>();
+  const [ editValue, setEditValue ] = useState();
   const [ scanHandling, setScanHandling ] = useState(true);
 
   useEffect(() => {
@@ -121,6 +122,15 @@ export default function QuestionsScreen() {
     case `editRewards`:
       return(
         <View style={[styles.container]} >
+          {editValue?
+          <>
+            <View style={styles.overlay} />
+            <View style={styles.scannedContainer}>
+              <Image style={styles.scannedImage} source={{uri: `https://robinvandenb.be/assets/img/kalfapp/${scannedValue.reward.imageUrl}`}}/>
+              <Text style={styles.scannedText}>{`${scannedValue.user.name} wil graag ${scannedValue.reward.amount} punten inruilen voor een ${scannedValue.reward.title}`}</Text>
+              <PrimaryButton style={{alignSelf:'center'}} onPress={handleRewardGiven} label={`In orde!`} />
+            </View>
+          </>:<></>}
           <Text style={styles.title}>Beheer beloningen</Text>
           <SecondaryButton style={styles.backButton} onPress={()=>{setScreen(``)}} label={`Terug`} />
           <FlatList

@@ -49,7 +49,7 @@ export default function ProfileScreen() {
         <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
         <ProfileItem title={'Bestellingen'} route={'bestellingen'} icon={'orders'} color={Colors[colorScheme].text} />
         <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-        <ProfileItem title={'Posts'} route={'posts'} icon={'posts'} color={Colors[colorScheme].text} />
+        <ProfileItem title={'Nieuwe post'} route={'posts'} icon={'posts'} color={Colors[colorScheme].text} />
         <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
         <ProfileItem title={'Quizvragen'} route={'vragen'} icon={'questions'} color={Colors[colorScheme].text} />
         <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
