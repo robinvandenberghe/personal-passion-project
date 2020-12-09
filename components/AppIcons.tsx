@@ -209,6 +209,12 @@ export default function AppIcons({ size, name, color = primaryDark}: {size:numbe
         </Svg>
 
       );
+    case `approve`:
+      return(
+        <Svg width={size} height={size} viewBox="0 0 28 19" fill="none">
+          <Path  d="M27.401 0.678579C26.5726 -0.192422 25.1915 -0.230784 24.3166 0.597349L10.3881 13.7692L3.74462 6.9675C2.90319 6.10667 1.5236 6.0878 0.659573 6.92694C-0.203713 7.76524 -0.221898 9.14238 0.61879 10.0032L8.76414 18.3423C9.191 18.7796 9.7583 19 10.3271 19C10.8667 19 11.4063 18.8013 11.8289 18.4032L27.3196 3.75423C28.1937 2.92746 28.2307 1.55031 27.401 0.678579Z" fill={color}/>
+        </Svg>
+      );
     default:   
     return (
         <Svg width={size} height={size} viewBox="0 0 24 24"  fill="none">

@@ -1,32 +1,109 @@
 import React, {useState, useEffect} from 'react';
-import { StyleSheet, Image, Pressable } from 'react-native';
-import auth from '@react-native-firebase/auth';
-import { Text, View, ScrollView} from '../components/Themed';
+import { StyleSheet, Image } from 'react-native';
+import firestore from '@react-native-firebase/firestore';
+import { Text, View, FlatList, PrimaryButton, SecondaryButton} from '../components/Themed';
 import Colors, { errorDark, primaryCrema, primaryDark, primaryGrey, secondaryGrey, secondaryLight } from '../constants/Colors';
-import AppIcons from '../components/AppIcons';
 import useColorScheme from '../hooks/useColorScheme';
-import { useLinkTo } from '@react-navigation/native';
 import { useGlobalState } from '../state';
+import QRCode from 'react-native-qrcode-svg';
 
 
 
 export default function SettingsScreen() {
   const [user, setUser] = useGlobalState('user');
+  const [ max, setMax ] = useState(Math.ceil(user.points/100)*100);
+  const [ percentage, setPercentage ] = useState((user.points/max)*100);
+  const [ score, setScore ] = useState(user.points);
+  const [ rewards, setRewards ] = useState<{uid:string; amount:number; available:number; imageUrl:string; title:string; }[]>([]);
+  const [ screen, setScreen ] = useState<string>(``);
+  const [ chosenReward, setChosenReward ] = useState<{uid:string; amount:number; available:number; imageUrl:string; title:string; }>();
   const colorScheme = useColorScheme();
-  const linkTo = useLinkTo();
-  const max = Math.ceil(user.points/100)*100;
-  const percentage = (user.points/max)*100;
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Mijn puntenstand</Text>
-      <Text >Jouw huidige positie</Text>
-      <View style={styles.scoreContainer}>
-        <View style={styles.scoreWrapper}><View style={[styles.scoreBar, {width: `${percentage}%`}]}></View></View>
-        <View style={styles.scoreLabels}><Text>0</Text><Text style={[styles.currentScore, percentage>50?{ right: `${100-percentage}%`}:{left: `${percentage}%`}]}>{user.points}</Text><Text>{max}</Text></View>
+  useEffect(() => {
+    const fetchScores = async () => {
+      try {
+        firestore().doc(`users/${user.uid}`).onSnapshot(snap => {
+          const sc = snap.data().points;
+          const mx = Math.ceil(sc/100)*100;
+          setScore(sc);
+          setMax(mx)
+          setPercentage((sc/mx)*100);
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchScores();
+    const fetchRewards = async () => {
+      try {
+        firestore().collection("rewards").where('available', '>', 0).onSnapshot((snap) => {
+          if(snap&&snap.size>0){
+            const a = snap.docs.map((item) => {
+              const temp = item.data();
+              return {uid: item.id, amount: temp.amount, available: temp.available, imageUrl: temp.imageUrl, title: temp.title};
+            });
+            setRewards(a);
+          }
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchRewards();
+  }, []);
+
+  const handleExchangePoints = (reward) =>{
+    setChosenReward(reward);
+    setScreen(`exchangePoints`);
+  }
+
+  const Reward = ({reward}:{reward:{uid:string; amount:number; available:number; imageUrl:string; title:string; };}) => {
+    const [imgLink, setImgLink] = useState({uri: `https://robinvandenb.be/assets/img/kalfapp/${reward.imageUrl}`});
+    return (
+      <View style={styles.rewardContainer}>
+        <Image source={imgLink} style={styles.drinkImage}/>
+        <Text style={styles.rewardTitle}>{reward.title}</Text>
+        <Text style={styles.rewardAmount}>{reward.amount.toString()}</Text>
+        <PrimaryButton style={styles.exchangeButton} disabled={score<reward.amount?true: false} onPress={()=>handleExchangePoints(reward)} label={`Inruilen`}/>
       </View>
-    </View>
-  );
+    );
+  }
+
+  switch(screen){
+    case `exchangePoints`:
+      return(
+        <View style={styles.container}>
+        <Text style={styles.title}>Mijn puntenstand</Text>
+        <Text >Toon dit scherm aan de barman om je beloning te ontvangen</Text>
+        <SecondaryButton style={{marginTop:8}} onPress={()=>setScreen(``)} label={`Terug`} />
+        <Text style={styles.rewardLine}>{`${chosenReward.title} - ${chosenReward.amount.toString()}`}</Text>
+        <View style={{alignSelf:'center'}}>
+          <QRCode  size={280} value={`${chosenReward.uid}\f${user.uid}`} backgroundColor='transparent' ecl={'L'} color={Colors[colorScheme].text}/> 
+        </View>
+      </View>
+      );
+    default:
+      return (
+        <View style={styles.container}>
+          <Text style={styles.title}>Mijn puntenstand</Text>
+          <Text >Jouw huidige positie</Text>
+          <View style={styles.scoreContainer}>
+            <View style={styles.scoreWrapper}><View style={[styles.scoreBar, {width: `${percentage}%`}]}></View></View>
+            <View style={styles.scoreLabels}><Text>0</Text><Text style={[styles.currentScore, percentage>50?{ right: `${100-percentage}%`}:{left: `${percentage}%`}]}>{score}</Text><Text>{max}</Text></View>
+          </View>
+          <Text>Beloningen</Text>
+          <FlatList
+            style={styles.rewardsList}
+            data={rewards.sort((first, second)=>first.amount-second.amount)}
+            extraData={score}
+            renderItem={({item, index}) => <Reward reward={item} />}
+            showsVerticalScrollIndicator ={false}
+            showsHorizontalScrollIndicator={false} 
+            keyExtractor={(item, index) => index.toString()} 
+            />
+        </View>
+      );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -90,15 +167,36 @@ const styles = StyleSheet.create({
     textAlign:'center',
     fontWeight:'600',
   },
-  
+  rewardsList:{
+    flexShrink:1,
+    width: '100%',
+  },
+  rewardContainer : {
+    flexShrink: 1,
+    marginVertical:8,
+    flexDirection:'row',
+    alignItems: 'center',
+  },
+  rewardTitle : {
+    marginLeft:8,
+    flexGrow:1,
+  },
+  drinkImage : {
+    width: 40,
+    height:40,
+    resizeMode:'contain',
+  },
+  rewardAmount:{
+    fontWeight: '600',
+    marginRight:8,
+  },
+  exchangeButton:{
+    alignSelf: 'flex-end'
+  },
+  rewardLine: {
+    fontWeight:'600',
+    fontSize:18,
+    marginVertical:16,
+
+  }
 });
-
-const ProfileItem = ({title, action, icon, color}:{title:string; action:any; icon:string; color:string;}) =>{
-  return(
-    <Pressable onPress={action} style={styles.profileItem}>
-      <AppIcons size={24} name={icon} color={color}  />
-      <Text style={[{color}, styles.profileItemTitle]}>{title}</Text>
-    </Pressable>
-  );
-
-}

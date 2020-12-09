@@ -11,7 +11,7 @@ export default function HomeScreen({navigation}:{navigation: any}) {
   const [ isFetching, setFetching] = useState(true);
 
   useEffect(() => {
-    async function fetchPosts() {
+    const fetchPosts = async () => {
       if(isFetching){
         try {
           const ref = await firestore().collection('posts').get();

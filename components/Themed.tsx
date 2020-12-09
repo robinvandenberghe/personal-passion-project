@@ -147,7 +147,7 @@ export function InputWithLabel(props: TextInputProps) {
   return (
     <View style={[ styles.container, style]}>
       {label?<Text style={[{ color: isError? errorDark :labelColor }, styles.label]}>{label}</Text>: null}
-      <TextInput style={isError?[{borderColor: errorDark, backgroundColor: errorLight, color:errorDark}]:null} placeholderTextColor={isError? errorDark : primaryGrey} placeholder={placeholder} onChangeText={callback} defaultValue={value} editable={isDisabled}  textContentType={type} keyboardType={keyboardType} returnKeyType={"done"}/>
+      <TextInput style={isError?[{borderColor: errorDark, backgroundColor: errorLight, color:errorDark}]:null} secureTextEntry={type=='password'?true:false} placeholderTextColor={isError? errorDark : primaryGrey} placeholder={placeholder} onChangeText={callback} defaultValue={value} editable={isDisabled} textContentType={type} keyboardType={keyboardType} returnKeyType={"done"}/>
       {isError?<Text style={[{ color: errorDark }, styles.label]}>{errMessage}</Text> :null}
     </View>
   );
