@@ -1,7 +1,6 @@
 import React , { useState, useEffect } from 'react';
-import { StyleSheet , Image, Pressable, Dimensions} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import { Text, View, FlatList } from '../components/Themed';
+import { Text, View, FlatList, Pressable} from '../components/Themed';
 import { useLinkTo } from '@react-navigation/native';
 import AppIcons from '../components/AppIcons';
 import Colors, { infoDark, primaryDark, secondaryLight, successDark } from '../constants/Colors';
@@ -13,52 +12,30 @@ import { useGlobalState } from '../state';
 
 
 export default function QuestionsScreen() {
-  const [ drinks , setDrinks] = useState<drinksType[]>([]);
+  const [ screen, setScreen ] = useState<string>(``);
+  const [ user, setUser ] = useGlobalState('user');
+  const [ error, setError ] = useState<{type:string; subject:string; message:string;}|undefined>();
+  const [ value, setValue ] = useState<string>(``);
+  const [ info, setInfo ] = useState<{ type:string; subject:string; message:string; }|null>();
   const [ isFetching, setFetching] = useState(true);
-  const [categories, setCategories] = useState<string[]>([]);
-  const insets = useSafeAreaInsets();
-  const [cart, setCart] = useGlobalState('cart');
-  const [user, setUser] = useGlobalState('user');
-
-  let welcomeMessage;
-  const currentHour = new Date().getHours();
-  if(currentHour>=6 && currentHour<=11){
-    welcomeMessage = `Goeiemorgen, ${user.name}`;
-  }else if(currentHour>11 && currentHour<18){
-    welcomeMessage = `Goeiemiddag, ${user.name}`;
-  }else if(currentHour>=18 && currentHour<=23){
-    welcomeMessage = `Goeieavond, ${user.name}`;
-  }else{
-    welcomeMessage = `Goeienacht, ${user.name}`;
-  }
-
-  const addItem = (drink:any) => {
-    if(cart.length>0){
-      const r = cart.filter((a:any) => a.drink.title === drink.title);
-      if(r.length == 1){
-        cart[cart.indexOf(r[0])].amount +=1;
-        setCart([...cart]);
-      }else{
-        setCart([...cart, {amount:1, drink}]);
-      }
-    }else{
-      setCart([{amount: 1, drink}]);
-    }
-  }
+  const [ requests , setRequests] = useState<{quiz:string; requests: {userId:string; question:string;}[]}[]>([]);
 
   useEffect(() => {
-    async function fetchDrinks() {
+    async function fetchRequests() {
       if(isFetching){
         try {
-          const r = await firestore().collection("drinks").orderBy("title", "asc").get();
-          const a:drinksType[] = r.docs.map((item) => {
-            const temp = item.data();
-            return {uid: item.id,category:temp.category,imageUrl:temp.imageUrl,price:temp.price,title:temp.title};
-          });
-          setDrinks(a);
-          const c:string[] = [];
-          a.map(item => {if(c.indexOf(item.category)==-1)c.push(item.category)});
-          setCategories(c);
+          const r = await firestore().collection("questionRequests").orderBy("quiz", "asc").get();
+          const a = r.docs.map((item) => item.data());
+          const b = a.filter(item=>item.quiz)
+          const c:{quiz: string, requests: {userId:string; question:string;}[]}[];
+          a.map(item => {
+            if(c.indexOf(item.quiz)==-1){
+              c.push({quiz: item.quiz, requests: []});
+             }
+             return {userId: item.userId, question: item.question};
+            });
+          c.map(game => game.requests = a.filter(item => item.quiz == game.quiz));
+          setRequests(c);
           setFetching(false);
         } catch (err) {
           console.error(err);
@@ -68,26 +45,21 @@ export default function QuestionsScreen() {
     fetchDrinks();
   }, [isFetching]);
 
-  return (
-    <View style={[styles.container, {paddingBottom: (insets.bottom) }]} >
-      <Text style={styles.welcomeMessage}>{welcomeMessage}</Text>
-      <Text>Waar heb je zin in?</Text>
-      <FlatList
-        style={styles.drinkList}
-        data={categories}
-        extraData={cart}
-        renderItem={({item, index}) => <Category category={item}  drinks={drinks} index={index} cart={cart} addItem={addItem}/>}
-        showsVerticalScrollIndicator ={false}
-        showsHorizontalScrollIndicator={false} 
-        refreshing={isFetching}
-        onRefresh={()=>setFetching(true)}
-        keyExtractor={(item, index) => index.toString()} 
-        nestedScrollEnabled={true}
-        contentContainerStyle={{paddingBottom: insets.bottom  }}
-        />
-      <CartIcon cart={cart} />
-    </View>
-    );
+  switch(screen){
+    case `f`:
+      return(
+        <Text>Placeholder</Text>
+      );
+    default:
+      return(
+        <View style={[styles.container]} >
+          <Text style={styles.title}>Beheer de quizvragen</Text>
+          <Text>Kies een quiz om te wijzigen</Text>
+          <Pressable onPress={()=>{setScreen(``)}}></Pressable>
+        </View>
+      );
+  }
+
 }
 
 const styles = StyleSheet.create({
@@ -165,72 +137,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const Category = ({category, drinks, index, cart, addItem}:{category:string; drinks:drinksType[]; index:number; cart:any; addItem:any;}) => {
-  const categoryDrinks:drinksType[] = drinks.filter((item)=> item.category == category);
-  return (
-    <>
-      <Text style={styles.categoryTitle}>{category}</Text>
-      <FlatList
-      data={categoryDrinks}
-      extraData={cart}
-      renderItem={({item}) => {
-        const r = cart.filter((a:any)=> a.drink.title == item.title);
-        const amount = r.length ? cart[cart.indexOf(r[0])].amount | 0 : 0;
-        return <Drink drink={item} amount={amount} addItem={addItem}/>
-      }}
-      showsVerticalScrollIndicator ={false}
-      showsHorizontalScrollIndicator={false} 
-      keyExtractor={(item, index) => index.toString()} 
-      listKey={`${index}.1`}
-      nestedScrollEnabled={true}
-      />
-    </>
-  );
-}
-
-const Drink = ({drink, amount, addItem}:{drink:drinksType; amount:number; addItem:any; }) => {
-  const [imgLink, setImgLink] = useState({uri: `https://robinvandenb.be/assets/img/kalfapp/${drink.imageUrl}`});
-
-  return (
-    <View style={styles.drinkContainer}>
-      <View>      
-        <Image source={imgLink} style={styles.drinkImage}/>
-        <DrinkIcon amount={amount} />
-      </View>
-      <Text style={styles.drinkTitle}>{drink.title}</Text>
-      <Text>{`€${drink.price.toString().replace(`.`, `,`)}`}</Text>
-      <Pressable onPress={() => addItem(drink)} style={styles.addButton}><AppIcons size={24} name={'cartplus'} color={secondaryLight} /></Pressable>
-    </View>
-  );
-}
-
-const CartIcon = ({cart}:{cart:cartType[]}) => {
-  const linkTo = useLinkTo();
-  const colorScheme = useColorScheme();
-  const insets = useSafeAreaInsets();
-  const {width, height} = Dimensions.get('window');
-
-  if(cart.length>0){
-    return (
-      <Draggable renderSize={56} x={width-64} y={height-insets.bottom-196} minX={insets.left} minY={insets.bottom} maxX={width-insets.right-8} maxY={height-insets.bottom-140}  >
-        <Pressable onPress={() => linkTo(`/cart`)}style={[{backgroundColor: Colors[colorScheme].tabBackground} ,styles.cartButton]}><View style={styles.cartBadge}><Text style={styles.cartText}>{cart.length}</Text></View><AppIcons size={32} name={'cart'} color={ Colors[colorScheme].text} /></Pressable>
-      </Draggable>
-    );
-  }else{
-    return (
-      <Draggable renderSize={56} x={width-64} y={height-insets.bottom-196} minX={insets.left} minY={insets.bottom} maxX={width-insets.right-8} maxY={height-insets.bottom-140}  >
-        <Pressable onPress={() => linkTo(`/cart`)}style={[{backgroundColor: Colors[colorScheme].tabBackground} ,styles.cartButton]}><AppIcons size={32} name={'cart'} color={ Colors[colorScheme].text} /></Pressable>
-      </Draggable>
-    );
-  }
-
-}
-
-const DrinkIcon = ({amount}:{amount:number;}) => {
-  if(amount>0){
-    return <View style={styles.cartBadge}><Text style={styles.cartText}>{amount.toString()}</Text></View>;
-  }else{
-    return null;
-  }
-}
 
