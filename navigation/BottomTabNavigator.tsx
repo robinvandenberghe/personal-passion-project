@@ -216,7 +216,7 @@ const ProfileNavigator = () => {
         <ProfileStack.Screen
         name="RewardsScreen"
         component={RewardsScreen}
-        options={{ headerTitle: 'Quizvragen' }}
+        options={{ headerTitle: 'Beloningen' }}
         />
       </>
       : null}

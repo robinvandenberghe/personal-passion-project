@@ -61,7 +61,7 @@ export default function SettingsScreen() {
     const [imgLink, setImgLink] = useState({uri: `https://robinvandenb.be/assets/img/kalfapp/${reward.imageUrl}`});
     return (
       <View style={styles.rewardContainer}>
-        <Image source={imgLink} style={styles.drinkImage}/>
+        <Image source={imgLink} style={styles.rewardImage}/>
         <Text style={styles.rewardTitle}>{reward.title}</Text>
         <Text style={styles.rewardAmount}>{reward.amount.toString()}</Text>
         <PrimaryButton style={styles.exchangeButton} disabled={score<reward.amount?true: false} onPress={()=>handleExchangePoints(reward)} label={`Inruilen`}/>
@@ -78,7 +78,7 @@ export default function SettingsScreen() {
         <SecondaryButton style={{marginTop:8}} onPress={()=>setScreen(``)} label={`Terug`} />
         <Text style={styles.rewardLine}>{`${chosenReward.title} - ${chosenReward.amount.toString()}`}</Text>
         <View style={{alignSelf:'center'}}>
-          <QRCode  size={280} value={`${chosenReward.uid}\f${user.uid}`} backgroundColor='transparent' ecl={'L'} color={Colors[colorScheme].text}/> 
+          <QRCode  size={280} logo={require('./../assets/images/qrKalf.png')} logoSize={69} logoBackgroundColor={Colors[colorScheme].background} logoMargin={4} value={`${chosenReward.uid}/f/${user.uid}`} backgroundColor='transparent' color={Colors[colorScheme].text}/> 
         </View>
       </View>
       );
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     marginLeft:8,
     flexGrow:1,
   },
-  drinkImage : {
+  rewardImage : {
     width: 40,
     height:40,
     resizeMode:'contain',

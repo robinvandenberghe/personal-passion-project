@@ -11,7 +11,7 @@ export default function QRScreen() {
   const colorScheme = useColorScheme();
   return (
     <View style={styles.container}>
-      {user.uid? <QRCode size={280} value={user.uid} backgroundColor='transparent' ecl={'L'} color={Colors[colorScheme].text}/> : null}
+      {user.uid? <QRCode size={280} logo={require('./../assets/images/qrKalf.png')} logoSize={60} logoBackgroundColor={Colors[colorScheme].background} logoMargin={4} value={user.uid} backgroundColor='transparent' color={Colors[colorScheme].text}/> : null}
     </View>
   );
 }

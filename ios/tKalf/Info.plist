@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSCameraUsageDescription</key>
+	<string>We hebben uw toestemming nodig om QR-codes te scannen in de app.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
@@ -36,7 +38,7 @@
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string/>
+	<string></string>
 	<key>UILaunchStoryboardName</key>
 	<string>SplashScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -65,7 +67,7 @@
 	<key>UIRequiresFullScreen</key>
 	<true/>
 	<key>CFBundleDisplayName</key>
-	<string>'t Kalf</string>
+	<string>&apos;t Kalf</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Poppins-Black.ttf</string>
