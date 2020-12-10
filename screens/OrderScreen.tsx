@@ -10,6 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Draggable from 'react-native-draggable';
 import { cartType, drinksType} from '../types';
 import { useGlobalState } from '../state';
+// import { DRINK_IMG_URL } from "@env";
 
 
 export default function OrderScreen() {
@@ -189,8 +190,7 @@ const Category = ({category, drinks, index, cart, addItem}:{category:string; dri
 }
 
 const Drink = ({drink, amount, addItem}:{drink:drinksType; amount:number; addItem:any; }) => {
-  const [imgLink, setImgLink] = useState({uri: `https://robinvandenb.be/assets/img/kalfapp/${drink.imageUrl}`});
-
+  const [imgLink, setImgLink] = useState({uri: `http://192.168.1.35/assets/img/drinks/${drink.imageUrl}`});
   return (
     <View style={styles.drinkContainer}>
       <View>      

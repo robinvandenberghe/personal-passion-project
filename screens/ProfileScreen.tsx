@@ -2,7 +2,6 @@ import React, {useState, useEffect} from 'react';
 import { StyleSheet, Image, Pressable } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import storage from '@react-native-firebase/storage';
 import { Text, View, ScrollView} from '../components/Themed';
 import Colors, { primaryCrema, primaryDark, primaryGrey, secondaryGrey, secondaryLight } from '../constants/Colors';
 import AppIcons from '../components/AppIcons';
@@ -14,7 +13,7 @@ import { useGlobalState } from '../state';
 
 export default function ProfileScreen() {
   const [user, setUser] = useGlobalState('user');
-  const [imgLink, setImgLink] = useState(require('./../assets/images/defaultUser.jpg'));
+  const [imgLink, setImgLink] = useState(!user.profileImg? require('../assets/images/defaultUser.jpg') : {uri: `http://192.168.1.35/assets/img/users/${user.profileImg}`});
   const colorScheme = useColorScheme();
 
 
@@ -67,11 +66,11 @@ export default function ProfileScreen() {
         <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
         <ProfileItem title={'Persoonlijke instellingen'} route={'instellingen'} icon={'settings'} color={Colors[colorScheme].text} />
         <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-        <ProfileItem title={'Mijn lidmaatschap'} route={''} icon={'membership'} color={Colors[colorScheme].text} />
+        <ProfileItem title={'Mijn lidmaatschap'} route={'lidmaatschap'} icon={'membership'} color={Colors[colorScheme].text} />
         <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-        <ProfileItem title={'Puntenstand'} route={''} icon={'points'} color={Colors[colorScheme].text} />
+        <ProfileItem title={'Puntenstand'} route={'puntenstand'} icon={'points'} color={Colors[colorScheme].text} />
         <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-        <ProfileItem title={'Mijn informatie'} route={''} icon={'info'} color={Colors[colorScheme].text} />
+        <ProfileItem title={'Mijn informatie'} route={'informatie'} icon={'info'} color={Colors[colorScheme].text} />
       </View>
     </View>
 

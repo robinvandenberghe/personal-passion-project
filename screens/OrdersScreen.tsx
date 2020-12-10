@@ -12,15 +12,52 @@ import AppIcons from '../components/AppIcons';
 
 export default function OrdersScreen() {
   const [ orders , setOrders] = useState<[]>([]);
-  const [ isFetching, setFetching] = useState(true);
   const [drinks, setDrinks] = useGlobalState('drinks');
   const insets = useSafeAreaInsets();
 
+  const Order = ({order}:{order:any;}) => {
+    const {date, drinks, paid, ready, tableNumber, userId} = order;
+    const colorScheme = useColorScheme();
+    const [oUser, setOUser] = useState();
+    if(!oUser){
+      firestore().doc(`users/${userId}`).get().then(d => setOUser(d.data()));
+    }
+    let orderTotal = 0;
+    if(!paid){
+      drinks.map(({drink, amount})=>orderTotal+=(drink.price*amount))
+    }
+  
+    return (
+      <View style={[styles.orderContainer, {backgroundColor: Colors[colorScheme].tabBackground}]}>
+        <Text style={styles.orderTime}>{parsePostingTime(new Date(date))}</Text>
+        <View style={[styles.splitRow, {marginVertical:16}]}>
+          <View style={{flexGrow:1}}>
+          {drinks.map(({drink, amount}, index) => <Text key={index}>{`${amount}x ${drink.title}`}</Text>)}
+          </View>
+          <Text style={styles.boldText}>{`Totaal €${orderTotal.toString()}`}</Text>
+        </View>
+        {paid?<View style={styles.paidMessage}><AppIcons size={18} name={`success`} color={successDark} /><Text style={styles.paidMessageText}>{`Betaald`}</Text></View>:null}
+        <View style={styles.splitRow}>
+          <View style={{flexGrow:1}}>
+            <Text>{`Tafel ${tableNumber}`}</Text>
+            <Text style={styles.boldText}>{oUser?`${oUser.name} ${oUser.surname}`:`Laden...`}</Text>
+          </View>
+          <PrimaryButton onPress={()=>setReady(order)} label={`Klaar`}/>
+        </View>
+      </View>
+    );
+  
+  
+  }
+  
+  const setReady = (order:orderType) => {
+    firestore().doc(`orders/${order.uid}`).update({ready: true});
 
+  }
+  
 
   useEffect(() => {
     const fetchDrinks = async () => {
-      if(isFetching){
         if(!drinks||drinks.length==0){
           try {
             const r = await firestore().collection("drinks").orderBy("title", "asc").get();
@@ -44,7 +81,6 @@ export default function OrdersScreen() {
                 setOrders(b);
               }
               setDrinks(a);
-              setFetching(false);
               });
             } catch (err) {
               console.error(err);
@@ -67,18 +103,14 @@ export default function OrdersScreen() {
               });
               a.sort((first,second)=>second.date.getTime()-first.date.getTime());
               setOrders(a);
-            }
-            setFetching(false);
-            });
+            }});
           } catch (err) {
             console.error(err);
           }    
         }
-
-      }
     }
     fetchDrinks();
-  }, [isFetching]);
+  }, []);
 
   return (
     orders.length>0?
@@ -87,8 +119,6 @@ export default function OrdersScreen() {
       renderItem={({item, index}) => <Order order={item}/>}
       showsVerticalScrollIndicator ={false}
       showsHorizontalScrollIndicator={false} 
-      refreshing={isFetching}
-      onRefresh={()=>setFetching(true)}
       keyExtractor={(item, index) => index.toString()} 
       contentContainerStyle={[{paddingBottom: insets.bottom  }, styles.container]}
       />:
@@ -145,44 +175,6 @@ const styles = StyleSheet.create({
 
 });
 
-const Order = ({order}:{order:any;}) => {
-  const {date, drinks, paid, ready, tableNumber, userId} = order;
-  const colorScheme = useColorScheme();
-  const [oUser, setOUser] = useState();
-  if(!oUser){
-    firestore().doc(`users/${userId}`).get().then(d => setOUser(d.data()));
-  }
-  let orderTotal = 0;
-  if(!paid){
-    drinks.map(({drink, amount})=>orderTotal+=(drink.price*amount))
-  }
-
-  return (
-    <View style={[styles.orderContainer, {backgroundColor: Colors[colorScheme].tabBackground}]}>
-      <Text style={styles.orderTime}>{parsePostingTime(new Date(date))}</Text>
-      <View style={[styles.splitRow, {marginVertical:16}]}>
-        <View style={{flexGrow:1}}>
-        {drinks.map(({drink, amount}, index) => <Text key={index}>{`${amount}x ${drink.title}`}</Text>)}
-        </View>
-        <Text style={styles.boldText}>{`Totaal €${orderTotal.toString()}`}</Text>
-      </View>
-      {paid?<View style={styles.paidMessage}><AppIcons size={18} name={`success`} color={successDark} /><Text style={styles.paidMessageText}>{`Betaald`}</Text></View>:null}
-      <View style={styles.splitRow}>
-        <View style={{flexGrow:1}}>
-          <Text>{`Tafel ${tableNumber}`}</Text>
-          <Text style={styles.boldText}>{oUser?`${oUser.name} ${oUser.surname}`:`Laden...`}</Text>
-        </View>
-        <PrimaryButton onPress={()=>setReady(order)} label={`Klaar`}/>
-      </View>
-    </View>
-  );
-
-
-}
-
-const setReady = async (order:orderType) => {
-  await firestore().doc(`orders/${order.uid}`).update({ready: true});
-}
 
 const parsePostingTime = (date: any) =>{
   const diff = date_diff_inminutes(date, new Date());

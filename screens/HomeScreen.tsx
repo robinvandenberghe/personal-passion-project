@@ -14,7 +14,7 @@ export default function HomeScreen({navigation}:{navigation: any}) {
     const fetchPosts = async () => {
       if(isFetching){
         try {
-          const ref = await firestore().collection('posts').get();
+          const ref = await firestore().collection('posts').orderBy('date','desc').get();
           const arr = ref.docs.map(item => item.data());
           setPosts(arr);
           setFetching(false);
@@ -28,12 +28,11 @@ export default function HomeScreen({navigation}:{navigation: any}) {
 
   return (
       <FlatList
-        contentContainerStyle={{flexGrow: 1,  alignItems: 'center', justifyContent:'flex-start', alignSelf: 'stretch'}}
+        contentContainerStyle={styles.container}
         data={posts}
         renderItem={(item) => {
           return <Post post={item} />;
         }}
-        style={styles.container}     
         showsVerticalScrollIndicator ={false}
         showsHorizontalScrollIndicator={false} 
         refreshing={isFetching}
@@ -45,7 +44,12 @@ export default function HomeScreen({navigation}:{navigation: any}) {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 8,
+    padding: 16,
+    flexGrow: 1,
+    width:'100%',
+    alignItems: 'center',
+    justifyContent:'flex-start',
+    alignSelf: 'stretch',
   }
 });
 

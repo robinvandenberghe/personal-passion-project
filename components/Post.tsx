@@ -1,17 +1,23 @@
 import * as WebBrowser from 'expo-web-browser';
 import React, {useState, useEffect} from 'react';
-import { StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, TouchableOpacity , Dimensions } from 'react-native';
 import Colors, { secondaryCrema, secondaryLight } from '../constants/Colors';
 import firestore from '@react-native-firebase/firestore';
 import { Text, SwitchView } from './Themed';
 import Event from './Event';
+import AutoHeightImage from 'react-native-auto-height-image';
 
-export default function Post(post:any) {
-  const { date } = post.post.item;
+
+export default function Post({post}:{post:any}) {
+  const { date, message, event , imageUrl} = post.item;
+  const windowWidth = Dimensions.get('window').width;
+
   return (
     <SwitchView style={styles.container}>
       <Text style={styles.subText}>{parsePostingTime(date.toDate())}</Text>
-      {parsePostView(post.post.item)}
+      {message? <Text style={styles.message}>{message}</Text> :null}
+      {event? <Event event={event} /> :null}
+      {imageUrl? <AutoHeightImage width={windowWidth-52}  style={styles.postImage}  source={{uri: `http://192.168.1.35/assets/img/posts/${imageUrl}`}} /> :null}
     </SwitchView>
   );
 }
@@ -36,25 +42,15 @@ const date_diff_inminutes = (date1: any, date2: any) => {
   return Math.round((dt2.getTime() - dt1.getTime()) / 1000 / 60  );
 }
 
-const parsePostView =  (post: {type: string; event?: string; message?:string }) => {
-  const {type, event, message} = post;
-  switch(type){
-    case 'event':
-      return <Event event={event} />;
-    case 'message':
-  return <Text style={styles.message}>{message}</Text>
-  }
-
-}
-
 const styles = StyleSheet.create({
   container: {
+    minWidth:'99%',
+    maxWidth: '100%',
     flexShrink:1,
     padding: 10,
     borderRadius: 8,
     justifyContent: 'flex-start',
     marginBottom: 16,
-    maxWidth: '95%',
   },
   subText:{
     fontSize: 14,
@@ -63,6 +59,11 @@ const styles = StyleSheet.create({
   message:{
     marginTop:8,
     fontSize: 16,
+  },
+  postImage:{
+    marginVertical:8,
+    width: '100%',
+    maxHeight: 380,
   },
 
 });
