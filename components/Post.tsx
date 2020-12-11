@@ -12,7 +12,7 @@ export default function Post({post}:{post:any}) {
   const {width: windowWidth} = Dimensions.get('window');
   const [ activeSlide, setActiveSlide ] = useState(0);
   const colorScheme = useColorScheme();
-
+  const [ carouselRef, setCarouselRef ] = useState();
   const renderImage = (renderItem: { item: any; index: number; }, parallaxProps?: AdditionalParallaxProps) =>{
     const { item } = renderItem;
     return <ParallaxImage parallaxFactor={0.4} style={styles.postImage} containerStyle={styles.imageContainer} source={{uri: `http://192.168.1.35/assets/img/posts/${item}`}} {...parallaxProps} />;
@@ -35,7 +35,7 @@ export default function Post({post}:{post:any}) {
           hasParallaxImages
           containerCustomStyle={styles.carousel}
           loop
-          ref={(c) => { this._carousel = c; }}
+          ref={(c) =>setCarouselRef(c)}
         />
         <Pagination
           dotsLength={images.length}
@@ -43,7 +43,7 @@ export default function Post({post}:{post:any}) {
           dotStyle={[styles.dotStyle, {backgroundColor: Colors[colorScheme].text}]}
           inactiveDotOpacity={0.4}
           inactiveDotScale={0.6}
-          carouselRef={this._carousel}
+          carouselRef={carouselRef}
           tappableDots
           containerStyle={{marginVertical:-24}}
         />

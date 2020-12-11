@@ -1,16 +1,24 @@
-import React, { useState } from 'react';
-import { StyleSheet, Image, Pressable } from 'react-native';
-import { Text, View, ScrollView} from '../components/Themed';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Image, Pressable, Button, Dimensions, Platform } from 'react-native';
+import { Text, View, ScrollView, Message } from '../components/Themed';
 import Colors, { primaryCrema, secondaryGrey } from '../constants/Colors';
 import AppIcons from '../components/AppIcons';
 import useColorScheme from '../hooks/useColorScheme';
 import { useLinkTo } from '@react-navigation/native';
 import { useGlobalState } from '../state';
+import ImagePicker, { ImageOrVideo } from 'react-native-image-crop-picker';
+import firestore from '@react-native-firebase/firestore';
 
 export default function ProfileScreen() {
   const [user, setUser] = useGlobalState('user');
   const [imgLink, setImgLink] = useState(!user.profileImg? require('../assets/images/defaultUser.jpg') : {uri: `http://192.168.1.35/assets/img/users/${user.profileImg}`});
+  const [ tempImage , setTempImage ] = useState<ImageOrVideo>();
+  const [ info, setInfo ] = useState<{ type:string; subject:string; message:string; }|null>();
   const colorScheme = useColorScheme();
+
+  if(info){
+    setTimeout(()=>setInfo(null), 4500);
+  }
 
   let welcomeMessage;
   const currentHour = new Date().getHours();
@@ -24,10 +32,66 @@ export default function ProfileScreen() {
     welcomeMessage = `Goeienacht, ${user.name}`;
   }
 
+  const handleChoosePhoto = async () => {
+    const image = await ImagePicker.openPicker({
+      compressImageMaxWidth: 750,
+      compressImageMaxHeight: 750,
+      compressImageQuality:0.75,
+      forceJpg: true,
+    });
+    if(image){
+      handleUploadPhoto(image).then(response => {
+        if(response){
+          firestore().doc(`users/${user.uid}`).update({profileImg: response.image.filename});
+          user.profileImg = response.image.filename;          
+          setUser(user);
+          setImgLink({uri: `http://192.168.1.35/assets/img/users/${response.image.filename}`});
+          setInfo({type: `success`, subject: `profileImage`, message:`Profielfoto succesvol upgeload!`});
+        }else{
+          setInfo({type: `error`, subject: `profileImage`, message:`Er liep iets mis tijdens het uploaden van je profielfoto.`});
+        }
+      });
+
+    } 
+  }
+
+  const handleUploadPhoto = (image) => {
+    return fetch("http://192.168.1.35/api/user-profilepicture", {
+      method: "POST",
+      body: createFormData(image, { userId: user.uid, profileLink: user.profileImg })
+    })
+      .then(response => response.json())
+      .catch(error => {
+        console.log("upload error", error);
+      });
+  };
+
+  const createFormData = (photo, body) => {
+    const data = new FormData();
+    data.append(`photo`, {
+      name: photo.filename,
+      type: photo.type,
+      uri:
+        Platform.OS === "android" ? photo.sourceURL : photo.sourceURL.replace("file://", "")
+    });
+ 
+    Object.keys(body).forEach(key => {
+      data.append(key, body[key]);
+    });
+  
+    return data;
+  };
+
   return (
     user.role && user.role=='admin'? 
     <ScrollView style={styles.container} >
-      <Image source={imgLink} style={styles.profileImage}/>
+      <View style={styles.profileImageWrapper}>
+        <Pressable onPress={handleChoosePhoto} style={[styles.editProfileImageButton, {backgroundColor: Colors[colorScheme].text}]}>
+          <AppIcons size={20} color={Colors[colorScheme].background} name={`posts`} />
+        </Pressable>
+        <Image source={imgLink} style={styles.profileImage}/>
+      </View>
+      {info && info.subject===`profileImage`? <Message type={info.type} message={info.message} /> : null}
       <Text style={styles.title}>{welcomeMessage}</Text>
       <View>
         <ProfileItem title={'QR-code'} route={'qr'} icon={'qr'} color={Colors[colorScheme].text} />
@@ -88,13 +152,29 @@ const styles = StyleSheet.create({
     marginVertical:16,
     textAlign:'center'
   },
-  profileImage: {
-    flexShrink: 1,
+  profileImageWrapper:{
+    borderRadius: 90,
     height: 180,
     width: 180,
     maxWidth:'100%',
+    flexShrink: 1,
+    overflow:'hidden',
+    position:'relative',
+  },
+  profileImage: {
+    width:'100%',
+    height: '100%',
     resizeMode: 'cover',
-    borderRadius: 90,
+  },
+  editProfileImageButton:{
+    position:'absolute',
+    bottom:0,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent:'center',
+    height:32,
+    zIndex:3,
+    opacity:.8,
   },
   profileItem: {
     flexShrink:1,

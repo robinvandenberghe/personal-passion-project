@@ -133,23 +133,22 @@ export function InputWithLabel(props: TextInputProps) {
   const { style, placeholder = "", label = "", disabled = false, value, callback, type = "none", lightColor, darkColor, keyboardType = "default", isError = false, errMessage = ''} = props;
   const labelColor = useThemeColor({ light: lightColor, dark: darkColor }, 'labelColor');
   const isDisabled = !disabled;
-//   const shakeAnimation = new Animated.Value(0);
-//   const startShake = () => {
-//     Animated.sequence([
-//       Animated.timing(shakeAnimation, { toValue: 10, duration: 100, useNativeDriver: true }),
-//       Animated.timing(shakeAnimation, { toValue: -10, duration: 100, useNativeDriver: true }),
-//       Animated.timing(shakeAnimation, { toValue: 10, duration: 100, useNativeDriver: true }),
-//       Animated.timing(shakeAnimation, { toValue: 0, duration: 100, useNativeDriver: true })
-//     ]).start();
-//  }
-// isError? [{transform: [{translateX: -50}]}, styles.container, style]:
+  const shakeAnimation = new Animated.ValueXY();
+  Animated.sequence([
+    Animated.timing(shakeAnimation, { toValue: {x: 8, y:0}, duration: 80, useNativeDriver: true }),
+    Animated.timing(shakeAnimation, { toValue: {x: -8, y:0}, duration: 80, useNativeDriver: true }),
+    Animated.timing(shakeAnimation, { toValue: {x: 8, y:0}, duration: 80, useNativeDriver: true }),
+    Animated.timing(shakeAnimation, { toValue: 0, duration: 80, useNativeDriver: true })
+  ]).start();
+ 
+
 
   return (
-    <View style={[ styles.container, style]}>
+    <Animated.View style={isError? [{transform: shakeAnimation.getTranslateTransform()}, styles.container, style]:[ styles.container, style]}>
       {label?<Text style={[{ color: isError? errorDark :labelColor }, styles.label]}>{label}</Text>: null}
       <TextInput style={isError?[{borderColor: errorDark, backgroundColor: errorLight, color:errorDark}]:null} secureTextEntry={type=='password'?true:false} placeholderTextColor={isError? errorDark : primaryGrey} placeholder={placeholder} onChangeText={callback} defaultValue={value} editable={isDisabled} textContentType={type} keyboardType={keyboardType} returnKeyType={"done"}/>
       {isError?<Text style={[{ color: errorDark }, styles.label]}>{errMessage}</Text> :null}
-    </View>
+    </Animated.View>
   );
 }
 

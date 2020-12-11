@@ -1,4 +1,4 @@
-import React , { useState, useEffect } from 'react';
+import React , { useState } from 'react';
 import firestore from '@react-native-firebase/firestore';
 import { Text, View, PrimaryButton, Message} from '../components/Themed';
 import { StyleSheet , Dimensions, TextInput , Pressable, Platform} from 'react-native';
@@ -12,14 +12,13 @@ import Carousel, { Pagination, ParallaxImage, AdditionalParallaxProps } from 're
 
 export default function PostsScreen() {
   const [ screen, setScreen ] = useState<string>(``);
-  const [ error, setError ] = useState<{type:string; subject:string; message:string;}|undefined>();
   const [ value, setValue ] = useState<string>(``);
+  const [ carouselRef, setCarouselRef ] = useState();
   const [ activeSlide, setActiveSlide ] = useState<number>(0);
   const [ info, setInfo ] = useState<{ type:string; subject:string; message:string; }|null>();
   const [ editValue, setEditValue ] = useState<{images?:any[];textValue:string;eventValue?:string;}>({textValue: ``});
   const colorScheme = useColorScheme();
   const {width: windowWidth} = Dimensions.get('window');
-
 
   if(info){
     setTimeout(()=>setInfo(null), 4500);
@@ -37,6 +36,7 @@ export default function PostsScreen() {
       const newDoc = await firestore().collection('posts').add(input);
       if(newDoc){
         const files = await handleUploadPhoto();
+        console.log(files)
         setEditValue({textValue: ``});
         setInfo({type: `success`, subject: `newPost`, message:`Post succesvol geplaatst!`});
       }else{
@@ -75,7 +75,7 @@ export default function PostsScreen() {
   const handleUploadPhoto = () => {
     return fetch("http://192.168.1.35:80/api/post-photo", {
       method: "POST",
-      body: createFormData(editValue.images, { userId: "123" })
+      body: createFormData(editValue.images, { userId: "123",  })
     })
       .then(response => response.json())
       .catch(error => {
@@ -85,12 +85,12 @@ export default function PostsScreen() {
 
   const createFormData = (photoArray, body) => {
     const data = new FormData();
-    photoArray.map(photo=>{
-      data.append("photo", {
-        name: photo.fileName,
+    photoArray.slice(0,10).map((photo, index)=>{
+      data.append(`photo-${index}`, {
+        name: photo.filename,
         type: photo.type,
         uri:
-          Platform.OS === "android" ? photo.uri : photo.uri.replace("file://", "")
+          Platform.OS === "android" ? photo.sourceURL : photo.sourceURL.replace("file://", "")
       });
     });
  
@@ -103,9 +103,8 @@ export default function PostsScreen() {
 
   const renderImage = (renderItem: { item: any; index: number; }, parallaxProps?: AdditionalParallaxProps) =>{
     const { item } = renderItem;
-    return <ParallaxImage parallaxFactor={0.4} style={styles.exampleImage} containerStyle={styles.imageContainer} source={{uri: item.path}} {...parallaxProps} />;
+    return <ParallaxImage parallaxFactor={0.4} style={styles.exampleImage} containerStyle={styles.imageContainer}  source={{uri: item.path}} {...parallaxProps} />;
   }
-
 
   switch(screen){
     default:
@@ -121,27 +120,28 @@ export default function PostsScreen() {
                   <Text style={[styles.subtext, {color: Colors[colorScheme].labelColor}]}>5 minuten geleden</Text>
                   <TextInput style={[styles.multiLineInput, {color: Colors[colorScheme].text}] }  blurOnSubmit placeholder={`Begin met typen ...`} placeholderTextColor={Colors[colorScheme].labelColor}  keyboardType={`default`}  multiline onChangeText={text => {editValue.textValue = text; setEditValue({...editValue});}} value={editValue.textValue}/>
                   {editValue.images?
-                    <Pressable onPress={handleChoosePhoto}>
+                    <Pressable onPress={handleChoosePhoto} style={styles.carouselWrapper}>
                       <Carousel
                         data={editValue.images}
                         renderItem={renderImage}
                         onSnapToItem={(index) => setActiveSlide(index) }
                         itemWidth={windowWidth - 68}
                         sliderWidth={windowWidth - 52}
-                        sliderHeight={windowWidth}
+                        sliderHeight={windowWidth + 6}
                         hasParallaxImages
                         containerCustomStyle={styles.carousel}
                         loop
-                        ref={(c) => { this._carousel = c; }}
+                        ref={(c) =>setCarouselRef(c)}
                       />
                       <Pagination
-                        carouselRef={this._carousel}
+                        carouselRef={carouselRef}
                         tappableDots
                         dotsLength={editValue.images.length}
                         activeDotIndex={activeSlide}
                         dotStyle={[styles.dotStyle, {backgroundColor: Colors[colorScheme].text}]}
                         inactiveDotOpacity={0.4}
                         inactiveDotScale={0.6}
+                        containerStyle={{marginVertical:-24}}
                       />
                     </Pressable>
                    :editValue.eventValue?
@@ -154,7 +154,6 @@ export default function PostsScreen() {
         </View>
       );
   }
-
 }
 
 const styles = StyleSheet.create({
@@ -254,9 +253,9 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   imageContainer:{
-    flex: 1,
     marginBottom: Platform.select({ios: 0, android: 1}),
     borderRadius: 8,
+    flex:1,
   },
   dotStyle:{
     width: 10,
@@ -264,9 +263,13 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginHorizontal: 8,
   },
+  carouselWrapper:{
+    width:'100%',
+  },
   carousel:{
-    flex:1,
-    maxHeight: 320,
+    height: 320,
     marginVertical: 8,
+    flexGrow:0,
+    flex:0,
   }
 });
