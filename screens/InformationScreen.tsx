@@ -1,12 +1,8 @@
 import React , { useState } from 'react';
 import { StyleSheet} from 'react-native';
-import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import firebase from '@react-native-firebase/app';
-
-import { View,  ScrollView, InputWithLabel, Text, Link, PrimaryButton, Message} from '../components/Themed';
+import { View, InputWithLabel, Text, PrimaryButton, Message} from '../components/Themed';
 import { useGlobalState } from '../state';
-
 
 export default function LoginScreen() {
   const [ user, setUser ] = useGlobalState('user');
@@ -40,7 +36,6 @@ export default function LoginScreen() {
       }
     }
   }
-
 
   return (
     <View style={styles.container}>

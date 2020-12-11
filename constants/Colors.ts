@@ -13,7 +13,8 @@ successLight=`#95DCAD`,
 alertDark=`#C6811A`,
 alertLight=`#E5CBA4`,
 infoDark=`#174B98`,
-infoLight=`#7E9FD0`;
+infoLight=`#7E9FD0`,
+dropShadow={ shadowColor: primaryDark, shadowOffset: { width: 0, height: 2,}, shadowOpacity: 0.25, shadowRadius: 4, elevation: 3,};
 
 export default {
   light: {

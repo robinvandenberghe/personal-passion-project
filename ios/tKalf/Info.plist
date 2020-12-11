@@ -76,7 +76,7 @@
 	<key>UIRequiresFullScreen</key>
 	<true/>
 	<key>CFBundleDisplayName</key>
-	<string>&apos;t Kalf</string>
+	<string>'t Kalf</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Poppins-Black.ttf</string>

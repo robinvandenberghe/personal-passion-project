@@ -1,9 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import { StyleSheet, Image } from 'react-native';
-import {  primaryCrema, primaryDark, secondaryLight } from '../constants/Colors';
-import storage from '@react-native-firebase/storage';
+import {  primaryCrema, primaryDark, secondaryLight, dropShadow } from '../constants/Colors';
 import { useLinkTo } from '@react-navigation/native';
-import { Text, View, Pressable, PrimaryButton } from './Themed';
+import { Text, View, PrimaryButton } from './Themed';
 
 export default function Event(post: { event: any; }) {
   const { event} = post;
@@ -18,51 +17,46 @@ export default function Event(post: { event: any; }) {
         const da = d.data();
         da.date = da.date.toDate();
         da.id = d.id;
-        da.imageUrl = null;
         setEvent(da);
-        if(eventObject){
-          // const url = await storage().ref(`events/${eventObject.imageUrl}`).getDownloadURL();
-          // setImgLink(url);
-        }
+        setImgLink({uri: `http://192.168.1.35/assets/img/events/${da.imageUrl}`});
       } catch (err) {
         console.error(err);
       }
     }
     fetchEvent();
   }, []);
-  return (<View style={styles.container}>
-    <Image source={imgLink} style={styles.eventImage}/>
-    <View style={styles.eventInfo}>
-      <View style={styles.dateContainer}>
-        <Text style={styles.dateNumber}>{eventObject.date.toLocaleDateString('nl-BE', {day: '2-digit'})}</Text>
-        <Text style={styles.dateMonth}>{eventObject.date.toLocaleDateString('nl-BE', {month:'short'}).slice(0, -1)}</Text>
-      </View>
-      <View style={styles.infoContainer}>
-        <Text style={styles.eventTitle}>{eventObject.titel}</Text>
-        <PrimaryButton onPress={() => linkTo(`/event/${eventObject.titel}/${eventObject.id}`)} style={[{alignSelf:'flex-end'}]} label={'Ontdek'}/>
+
+  return (
+    <View style={[styles.container]}>
+      <Image source={imgLink} style={styles.eventImage}/>
+      <View style={styles.eventInfo}>
+        <View style={styles.dateContainer}>
+          <Text style={styles.dateNumber}>{eventObject.date.toLocaleDateString('nl-BE', {day: '2-digit'})}</Text>
+          <Text style={styles.dateMonth}>{eventObject.date.toLocaleDateString('nl-BE', {month:'short'}).slice(0, -1)}</Text>
+        </View>
+        <View style={styles.infoContainer}>
+          <Text style={styles.eventTitle}>{eventObject.titel}</Text>
+          <PrimaryButton onPress={() => linkTo(`/event/${eventObject.titel}/${eventObject.id}`)} style={[{alignSelf:'flex-end'}]} label={'Ontdek'}/>
+        </View>
       </View>
     </View>
-  </View>);
-  
-  }
-
-
+  );
+}
 
 const styles = StyleSheet.create({
   container:{
-    flexShrink:1,
+    flexGrow:0,
     backgroundColor: secondaryLight,
-    borderRadius: 8,
-    overflow: 'hidden',
     marginVertical:8,
     alignSelf: 'center',
-    justifyContent: 'flex-start',
     width:"100%",
+    overflow: 'hidden',
+    borderRadius:8,
   },
   eventImage:{
     height: 120,
     width: '100%',
-    resizeMode: 'cover',
+    resizeMode: 'cover',    
   },
   eventInfo:{
     backgroundColor: secondaryLight,

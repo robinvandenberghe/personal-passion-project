@@ -1,11 +1,10 @@
 import React , { useState, useEffect } from 'react';
-import { StyleSheet , ScrollView} from 'react-native';
+import { StyleSheet } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import { Text, View, FlatList } from '../components/Themed';
+import { FlatList } from '../components/Themed';
 import Post from '../components/Post';
 
-
-export default function HomeScreen({navigation}:{navigation: any}) {
+export default function HomeScreen() {
   type posts  = any[];
   const [ posts, setPosts] = useState([]);
   const [ isFetching, setFetching] = useState(true);

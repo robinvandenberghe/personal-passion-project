@@ -1,21 +1,16 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Image, Pressable } from 'react-native';
-import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
 import { Text, View, ScrollView} from '../components/Themed';
-import Colors, { primaryCrema, primaryDark, primaryGrey, secondaryGrey, secondaryLight } from '../constants/Colors';
+import Colors, { primaryCrema, secondaryGrey } from '../constants/Colors';
 import AppIcons from '../components/AppIcons';
 import useColorScheme from '../hooks/useColorScheme';
 import { useLinkTo } from '@react-navigation/native';
 import { useGlobalState } from '../state';
 
-
-
 export default function ProfileScreen() {
   const [user, setUser] = useGlobalState('user');
   const [imgLink, setImgLink] = useState(!user.profileImg? require('../assets/images/defaultUser.jpg') : {uri: `http://192.168.1.35/assets/img/users/${user.profileImg}`});
   const colorScheme = useColorScheme();
-
 
   let welcomeMessage;
   const currentHour = new Date().getHours();
@@ -28,7 +23,6 @@ export default function ProfileScreen() {
   }else{
     welcomeMessage = `Goeienacht, ${user.name}`;
   }
-
 
   return (
     user.role && user.role=='admin'? 
@@ -124,5 +118,4 @@ const ProfileItem = ({title, route, icon, color}:{title:string; route:string; ic
       <Text style={[{color}, styles.profileItemTitle]}>{title}</Text>
     </Pressable>
   );
-
 }

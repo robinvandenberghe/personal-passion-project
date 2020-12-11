@@ -1,31 +1,32 @@
 import React , { useState, useEffect } from 'react';
-import firestore , { Timestamp } from '@react-native-firebase/firestore';
-import { Text, View, FlatList, PrimaryButton, Pressable, SecondaryButton, Message} from '../components/Themed';
-import { StyleSheet , Dimensions, TextInput , Platform} from 'react-native';
-import Colors, { alertDark, errorDark, infoDark, primaryDark, secondaryLight, successDark } from '../constants/Colors';
+import firestore from '@react-native-firebase/firestore';
+import { Text, View, PrimaryButton, Message} from '../components/Themed';
+import { StyleSheet , Dimensions, TextInput , Pressable, Platform} from 'react-native';
+import Colors, { alertDark, errorDark, successDark , dropShadow} from '../constants/Colors';
 import AppIcons from '../components/AppIcons';
 import useColorScheme from '../hooks/useColorScheme';
-import { launchImageLibrary } from 'react-native-image-picker';
-import AutoHeightImage from 'react-native-auto-height-image';
+import ImagePicker from 'react-native-image-crop-picker';
 import Event from './../components/Event';
-
+import Carousel, { Pagination, ParallaxImage, AdditionalParallaxProps } from 'react-native-snap-carousel';
 
 
 export default function PostsScreen() {
   const [ screen, setScreen ] = useState<string>(``);
   const [ error, setError ] = useState<{type:string; subject:string; message:string;}|undefined>();
   const [ value, setValue ] = useState<string>(``);
+  const [ activeSlide, setActiveSlide ] = useState<number>(0);
   const [ info, setInfo ] = useState<{ type:string; subject:string; message:string; }|null>();
-  const [ editValue, setEditValue ] = useState<{photo?:any;textValue:string;eventValue?:string;}>({textValue: ``});
+  const [ editValue, setEditValue ] = useState<{images?:any[];textValue:string;eventValue?:string;}>({textValue: ``});
   const colorScheme = useColorScheme();
-  const windowWidth = Dimensions.get('window').width;
+  const {width: windowWidth} = Dimensions.get('window');
+
 
   if(info){
     setTimeout(()=>setInfo(null), 4500);
   }
 
   const handlePost = async () =>{
-    if(editValue.textValue !== `` || editValue.photo || editValue.eventValue){
+    if(editValue.textValue !== `` || editValue.images || editValue.eventValue){
       let input = {date: firestore.Timestamp.now()};
       if(editValue.textValue !== ``){
         input.message = editValue.textValue; 
@@ -49,21 +50,32 @@ export default function PostsScreen() {
   }
 
   const handleChoosePhoto = () => {
-    const options = {
-      noData: true,
-    }
-    launchImageLibrary(options,response => {
-      if (response.uri) {
-        editValue.photo = response;
-        setEditValue({...editValue});
+    ImagePicker.openPicker({
+      multiple: true,
+      maxFiles: 10,
+      compressImageMaxWidth: 750,
+      compressImageMaxHeight: 750,
+      compressImageQuality:0.75,
+      forceJpg: true,
+
+    }).then(images => {
+      if(images){
+        editValue.images = images;
+        setEditValue({...editValue});   
+      } 
+
+    }).catch((error) => {
+      if (error.code === 'E_PICKER_CANCELLED' && editValue.images.length>0) {
+        editValue.images = undefined;
+        setEditValue({...editValue});   
       }
-    })
+    });
   }
 
   const handleUploadPhoto = () => {
     return fetch("http://192.168.1.35:80/api/post-photo", {
       method: "POST",
-      body: createFormData(editValue.photo, { userId: "123" })
+      body: createFormData(editValue.images, { userId: "123" })
     })
       .then(response => response.json())
       .catch(error => {
@@ -71,21 +83,28 @@ export default function PostsScreen() {
       });
   };
 
-  const createFormData = (photo, body) => {
+  const createFormData = (photoArray, body) => {
     const data = new FormData();
-    data.append("photo", {
-      name: photo.fileName,
-      type: photo.type,
-      uri:
-        Platform.OS === "android" ? photo.uri : photo.uri.replace("file://", "")
+    photoArray.map(photo=>{
+      data.append("photo", {
+        name: photo.fileName,
+        type: photo.type,
+        uri:
+          Platform.OS === "android" ? photo.uri : photo.uri.replace("file://", "")
+      });
     });
-  
+ 
     Object.keys(body).forEach(key => {
       data.append(key, body[key]);
     });
   
     return data;
   };
+
+  const renderImage = (renderItem: { item: any; index: number; }, parallaxProps?: AdditionalParallaxProps) =>{
+    const { item } = renderItem;
+    return <ParallaxImage parallaxFactor={0.4} style={styles.exampleImage} containerStyle={styles.imageContainer} source={{uri: item.path}} {...parallaxProps} />;
+  }
 
 
   switch(screen){
@@ -101,13 +120,33 @@ export default function PostsScreen() {
                 <View style={[styles.postExample, {backgroundColor: Colors[colorScheme].postBackground}]}>
                   <Text style={[styles.subtext, {color: Colors[colorScheme].labelColor}]}>5 minuten geleden</Text>
                   <TextInput style={[styles.multiLineInput, {color: Colors[colorScheme].text}] }  blurOnSubmit placeholder={`Begin met typen ...`} placeholderTextColor={Colors[colorScheme].labelColor}  keyboardType={`default`}  multiline onChangeText={text => {editValue.textValue = text; setEditValue({...editValue});}} value={editValue.textValue}/>
-                  {editValue.photo?
-                    <Pressable style={styles.exampleImageWrapper} onPress={handleChoosePhoto} >
-                      <AutoHeightImage width={windowWidth-52}  style={styles.exampleImage}  source={{uri: editValue.photo.uri}} />
+                  {editValue.images?
+                    <Pressable onPress={handleChoosePhoto}>
+                      <Carousel
+                        data={editValue.images}
+                        renderItem={renderImage}
+                        onSnapToItem={(index) => setActiveSlide(index) }
+                        itemWidth={windowWidth - 68}
+                        sliderWidth={windowWidth - 52}
+                        sliderHeight={windowWidth}
+                        hasParallaxImages
+                        containerCustomStyle={styles.carousel}
+                        loop
+                        ref={(c) => { this._carousel = c; }}
+                      />
+                      <Pagination
+                        carouselRef={this._carousel}
+                        tappableDots
+                        dotsLength={editValue.images.length}
+                        activeDotIndex={activeSlide}
+                        dotStyle={[styles.dotStyle, {backgroundColor: Colors[colorScheme].text}]}
+                        inactiveDotOpacity={0.4}
+                        inactiveDotScale={0.6}
+                      />
                     </Pressable>
                    :editValue.eventValue?
                     <Event event={editValue.eventValue} />
-                    :<View style={[styles.buttonLine, {backgroundColor: Colors[colorScheme].postBackground}]}><PrimaryButton onPress={handleChoosePhoto} style={styles.imageButton} label={<AppIcons size={32} color={Colors[colorScheme].text} name={`image`}/>} /><PrimaryButton onPress={handleChoosePhoto} style={styles.imageButton} label={<AppIcons size={32} color={Colors[colorScheme].text} name={`events`}/>} /></View>}
+                    :<View style={[styles.buttonLine, {backgroundColor: Colors[colorScheme].postBackground}]}><PrimaryButton onPress={handleChoosePhoto} style={styles.imageButton} label={<AppIcons size={32} color={Colors[colorScheme].background} name={`image`}/>} /><PrimaryButton onPress={handleChoosePhoto} style={styles.imageButton} label={<AppIcons size={32} color={Colors[colorScheme].background} name={`events`}/>} /></View>}
                 </View>
                 <PrimaryButton onPress={handlePost} style={styles.postButton} label={`Plaatsen`} />
               </View>
@@ -160,7 +199,7 @@ const styles = StyleSheet.create({
   },
   postContainer:{
     marginTop:16,
-
+    maxHeight:400,
   },
   buttonContainer:{
     flexShrink:1,
@@ -177,16 +216,6 @@ const styles = StyleSheet.create({
     alignItems:'center',
     minWidth:88,
   },
-  postTypeLine:{
-    flexShrink:1,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  postType:{
-    fontWeight: '500',
-    marginRight: 16,
-    fontSize:18,
-  },
   subtext:{
     fontSize:14,
   },
@@ -198,14 +227,7 @@ const styles = StyleSheet.create({
     flexShrink:1,
     padding:10,
     borderRadius:8,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-    elevation: 3,
+    ...dropShadow,
     marginVertical:8,
   },
   multiLineInput:{
@@ -217,18 +239,6 @@ const styles = StyleSheet.create({
     marginVertical:8,
     fontSize:16,
   },
-  exampleImageWrapper:{
-    marginVertical:8,
-    width: '100%',
-    flexShrink:1,
-    maxHeight: 380,
-    justifyContent:'center',
-    },
-  exampleImage:{
-    flexShrink:1,
-    maxHeight:'100%',
-    maxWidth:'100%',
-  },
   imageButton:{
     marginVertical:8,
     marginRight: 8,
@@ -239,4 +249,24 @@ const styles = StyleSheet.create({
     flexShrink:1,
     flexWrap: 'wrap',
   },
+  exampleImage:{
+    ...StyleSheet.absoluteFillObject,
+    resizeMode: 'contain',
+  },
+  imageContainer:{
+    flex: 1,
+    marginBottom: Platform.select({ios: 0, android: 1}),
+    borderRadius: 8,
+  },
+  dotStyle:{
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginHorizontal: 8,
+  },
+  carousel:{
+    flex:1,
+    maxHeight: 320,
+    marginVertical: 8,
+  }
 });

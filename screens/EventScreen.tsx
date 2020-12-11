@@ -17,12 +17,8 @@ export default function EventScreen({route, navigation}: {route?:any; navigation
         const da = d.data();
         da.date = da.date.toDate();
         da.id = d.id;
-        da.imageUrl = null;
         setEvent(da);
-        if(event){
-          // const url = await storage().ref(`events/${event.imageUrl}`).getDownloadURL();
-          // setImgLink(url);
-        }
+        setImgLink({uri: `http://192.168.1.35/assets/img/events/${da.imageUrl}`});
       } catch (err) {
         console.error(err);
       }
