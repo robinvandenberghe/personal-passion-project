@@ -78,7 +78,7 @@ export default function SettingsScreen() {
         <SecondaryButton style={{marginTop:8}} onPress={()=>setScreen(``)} label={`Terug`} />
         <Text style={styles.rewardLine}>{`${chosenReward.title} - ${chosenReward.amount.toString()}`}</Text>
         <View style={{alignSelf:'center'}}>
-          <QRCode  size={280} logo={require('./../assets/images/qrKalf.png')} logoSize={69} logoBackgroundColor={Colors[colorScheme].background} logoMargin={4} value={`${chosenReward.uid}/f/${user.uid}`} backgroundColor='transparent' color={Colors[colorScheme].text}/> 
+          <QRCode  size={280} value={`${chosenReward.uid}/f/${user.uid}`} backgroundColor='transparent' color={Colors[colorScheme].text}/> 
         </View>
       </View>
       );

@@ -38,7 +38,6 @@ export default function BottomTabNavigator() {
   return (
     <BottomTab.Navigator
       initialRouteName="Home"
-      
       tabBarOptions={{ inactiveBackgroundColor: Colors[colorScheme].tabBackground, activeBackgroundColor: Colors[colorScheme].tabSelected, activeTintColor: Colors[colorScheme].tabIconSelected, inactiveTintColor: Colors[colorScheme].tabIconDefault, style:{backgroundColor: Colors[colorScheme].tabBackground}}}>
       <BottomTab.Screen
         name="Home"
@@ -92,7 +91,8 @@ function HomeNavigator() {
       <HomeStack.Screen
         name="HomeScreen"
         component={HomeScreen}
-        options={{ headerTitle: 'Home'  }}
+        options={{ headerTitle: 'Home' }}
+        
       />
       <HomeStack.Screen
         name="EventScreen"

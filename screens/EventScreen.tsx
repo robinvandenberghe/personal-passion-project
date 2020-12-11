@@ -1,14 +1,16 @@
 import React , { useState, useEffect } from 'react';
 import { StyleSheet, Image} from 'react-native';
 import {  View, Pressable , InputWithLabel, Text, Link} from '../components/Themed';
-import { primaryDark, primaryCrema, secondaryLight } from '../constants/Colors';
+import Colors, { primaryDark, primaryCrema, secondaryLight } from '../constants/Colors';
 import firestore from '@react-native-firebase/firestore';
+import { IMG_URL , APP_API } from "@env";
+import useColorScheme from '../hooks/useColorScheme';
 
 export default function EventScreen({route, navigation}: {route?:any; navigation:any;}) {
   const { title, eventId} = route.params;
-  const [ event, setEvent] = useState({imageUrl:'', titel:'', date: new Date(), description: ''});
+  const [ event, setEvent] = useState({imageUrl:'', title:'', date: new Date(), description: ''});
   const [imgLink, setImgLink] = useState(require('./../assets/images/eventDefault.jpg'))
-
+  const colorScheme = useColorScheme();
 
   useEffect(() => {
     async function fetchEvent() {
@@ -18,7 +20,7 @@ export default function EventScreen({route, navigation}: {route?:any; navigation
         da.date = da.date.toDate();
         da.id = d.id;
         setEvent(da);
-        setImgLink({uri: `http://192.168.1.35/assets/img/events/${da.imageUrl}`});
+        setImgLink({uri: `${IMG_URL}events/${da.imageUrl}`, headers:{ 'Authorization': `Bearer ${APP_API}`}});
       } catch (err) {
         console.error(err);
       }
@@ -30,11 +32,11 @@ export default function EventScreen({route, navigation}: {route?:any; navigation
     <Image source={imgLink} style={styles.eventImage}/>
     <View style={styles.eventInfo}>
       <View style={styles.dateContainer}>
-        <Text style={styles.dateNumber}>{event.date.toLocaleDateString('nl-BE', {day: '2-digit'})}</Text>
-        <Text style={styles.dateMonth}>{event.date.toLocaleDateString('nl-BE', {month:'short'}).slice(0, -1)}</Text>
+        <Text style={[styles.dateNumber, {color: Colors[colorScheme].text}]}>{event.date.toLocaleDateString('nl-BE', {day: '2-digit'})}</Text>
+        <Text style={[styles.dateMonth, {color: Colors[colorScheme].text}]}>{event.date.toLocaleDateString('nl-BE', {month:'short'}).slice(0, -1)}</Text>
       </View>
       <View style={styles.infoContainer}>
-        <Text style={styles.eventTitle}>{event.titel}</Text>
+        <Text style={[styles.eventTitle, {color: Colors[colorScheme].text}]}>{event.title}</Text>
       </View>
 
     </View>

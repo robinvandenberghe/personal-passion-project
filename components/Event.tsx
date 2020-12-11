@@ -3,10 +3,11 @@ import { StyleSheet, Image } from 'react-native';
 import {  primaryCrema, primaryDark, secondaryLight, dropShadow } from '../constants/Colors';
 import { useLinkTo } from '@react-navigation/native';
 import { Text, View, PrimaryButton } from './Themed';
+import { IMG_URL , APP_API } from "@env";
 
 export default function Event(post: { event: any; }) {
   const { event} = post;
-  const [eventObject, setEvent] = useState({imageUrl: "", date: new Date(), titel: "", id: ""});
+  const [eventObject, setEvent] = useState({imageUrl: "", date: new Date(), title: "", id: ""});
   const [imgLink, setImgLink] = useState(require('./../assets/images/eventDefault.jpg'))
   const linkTo = useLinkTo();
 
@@ -18,7 +19,7 @@ export default function Event(post: { event: any; }) {
         da.date = da.date.toDate();
         da.id = d.id;
         setEvent(da);
-        setImgLink({uri: `http://192.168.1.35/assets/img/events/${da.imageUrl}`});
+        setImgLink({uri: `${IMG_URL}events/${da.imageUrl}`, headers:{ 'Authorization': `Bearer ${APP_API}`}});
       } catch (err) {
         console.error(err);
       }
@@ -35,8 +36,8 @@ export default function Event(post: { event: any; }) {
           <Text style={styles.dateMonth}>{eventObject.date.toLocaleDateString('nl-BE', {month:'short'}).slice(0, -1)}</Text>
         </View>
         <View style={styles.infoContainer}>
-          <Text style={styles.eventTitle}>{eventObject.titel}</Text>
-          <PrimaryButton onPress={() => linkTo(`/event/${eventObject.titel}/${eventObject.id}`)} style={[{alignSelf:'flex-end'}]} label={'Ontdek'}/>
+          <Text style={styles.eventTitle}>{eventObject.title}</Text>
+          <PrimaryButton onPress={() => linkTo(`/event/${slugify(eventObject.title)}/${eventObject.id}`)} style={[{alignSelf:'flex-end'}]} label={'Ontdek'}/>
         </View>
       </View>
     </View>
@@ -102,3 +103,13 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   }
 });
+
+const slugify = (text) =>  text
+    .toString()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w-]+/g, '')
+    .replace(/--+/g, '-')

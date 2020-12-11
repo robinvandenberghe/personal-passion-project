@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Image, Pressable, Button, Dimensions, Platform } from 'react-native';
 import { Text, View, ScrollView, Message } from '../components/Themed';
 import Colors, { primaryCrema, secondaryGrey } from '../constants/Colors';
@@ -6,13 +6,13 @@ import AppIcons from '../components/AppIcons';
 import useColorScheme from '../hooks/useColorScheme';
 import { useLinkTo } from '@react-navigation/native';
 import { useGlobalState } from '../state';
-import ImagePicker, { ImageOrVideo } from 'react-native-image-crop-picker';
+import ImagePicker from 'react-native-image-crop-picker';
 import firestore from '@react-native-firebase/firestore';
+import { IMG_URL, APP_API } from "@env";
 
 export default function ProfileScreen() {
   const [user, setUser] = useGlobalState('user');
-  const [imgLink, setImgLink] = useState(!user.profileImg? require('../assets/images/defaultUser.jpg') : {uri: `http://192.168.1.35/assets/img/users/${user.profileImg}`});
-  const [ tempImage , setTempImage ] = useState<ImageOrVideo>();
+  const [imgLink, setImgLink] = useState(!user.profileImg? require('../assets/images/defaultUser.jpg') : {uri: `${IMG_URL}users/${user.profileImg}`, headers: {'Authorization':`Bearer ${APP_API}`}});
   const [ info, setInfo ] = useState<{ type:string; subject:string; message:string; }|null>();
   const colorScheme = useColorScheme();
 
@@ -45,7 +45,7 @@ export default function ProfileScreen() {
           firestore().doc(`users/${user.uid}`).update({profileImg: response.image.filename});
           user.profileImg = response.image.filename;          
           setUser(user);
-          setImgLink({uri: `http://192.168.1.35/assets/img/users/${response.image.filename}`});
+          setImgLink({uri: `${IMG_URL}users/${response.image.filename}`});
           setInfo({type: `success`, subject: `profileImage`, message:`Profielfoto succesvol upgeload!`});
         }else{
           setInfo({type: `error`, subject: `profileImage`, message:`Er liep iets mis tijdens het uploaden van je profielfoto.`});
@@ -74,11 +74,9 @@ export default function ProfileScreen() {
       uri:
         Platform.OS === "android" ? photo.sourceURL : photo.sourceURL.replace("file://", "")
     });
- 
     Object.keys(body).forEach(key => {
       data.append(key, body[key]);
     });
-  
     return data;
   };
 
@@ -115,23 +113,22 @@ export default function ProfileScreen() {
         <ProfileItem title={'Beloningen'} route={'beloningen'} icon={'rewards'} color={Colors[colorScheme].text} />
       </View>
     </ScrollView>
-  : 
+    : 
     <View style={styles.container}>
-      <Image source={imgLink} style={styles.profileImage}/>
-      <Text style={styles.title}>{welcomeMessage}</Text>
-      <View>
-        <ProfileItem title={'QR-code'} route={'qr'} icon={'qr'} color={Colors[colorScheme].text} />
-        <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-        <ProfileItem title={'Persoonlijke instellingen'} route={'instellingen'} icon={'settings'} color={Colors[colorScheme].text} />
-        <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-        <ProfileItem title={'Mijn lidmaatschap'} route={'lidmaatschap'} icon={'membership'} color={Colors[colorScheme].text} />
-        <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-        <ProfileItem title={'Puntenstand'} route={'puntenstand'} icon={'points'} color={Colors[colorScheme].text} />
-        <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-        <ProfileItem title={'Mijn informatie'} route={'informatie'} icon={'info'} color={Colors[colorScheme].text} />
+        <Image source={imgLink} style={styles.profileImage}/>
+        <Text style={styles.title}>{welcomeMessage}</Text>
+        <View>
+          <ProfileItem title={'QR-code'} route={'qr'} icon={'qr'} color={Colors[colorScheme].text} />
+          <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
+          <ProfileItem title={'Persoonlijke instellingen'} route={'instellingen'} icon={'settings'} color={Colors[colorScheme].text} />
+          <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
+          <ProfileItem title={'Mijn lidmaatschap'} route={'lidmaatschap'} icon={'membership'} color={Colors[colorScheme].text} />
+          <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
+          <ProfileItem title={'Puntenstand'} route={'puntenstand'} icon={'points'} color={Colors[colorScheme].text} />
+          <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
+          <ProfileItem title={'Mijn informatie'} route={'informatie'} icon={'info'} color={Colors[colorScheme].text} />
+        </View>
       </View>
-    </View>
-
   );
 }
 
@@ -191,7 +188,6 @@ const styles = StyleSheet.create({
 
 const ProfileItem = ({title, route, icon, color}:{title:string; route:string; icon:string; color:string;}) =>{
   const linkTo = useLinkTo();
-
   return(
     <Pressable onPress={()=> linkTo(`/profiel/${route}`)} style={styles.profileItem}>
       <AppIcons size={24} name={icon} color={color}  />

@@ -222,8 +222,8 @@ const makeTitle = (slug) => {
   }
   return words.join(' ');
 }
-const slugify = text =>
-  text
+
+const slugify = (text) =>  text
     .toString()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')

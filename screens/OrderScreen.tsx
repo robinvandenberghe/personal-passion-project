@@ -10,7 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Draggable from 'react-native-draggable';
 import { cartType, drinksType} from '../types';
 import { useGlobalState } from '../state';
-// import { DRINK_IMG_URL } from "@env";
+import { IMG_URL, APP_API } from "@env";
 
 
 export default function OrderScreen() {
@@ -47,6 +47,15 @@ export default function OrderScreen() {
     }
   }
 
+  const renderHeader = () => {
+    return (
+      <>      
+        <Text style={styles.welcomeMessage}>{welcomeMessage}</Text>
+        <Text>Waar heb je zin in?</Text>
+      </>
+    );
+  }
+
   useEffect(() => {
     async function fetchDrinks() {
       if(isFetching){
@@ -71,9 +80,9 @@ export default function OrderScreen() {
 
   return (
     <View style={[styles.container, {paddingBottom: (insets.bottom) }]} >
-      <Text style={styles.welcomeMessage}>{welcomeMessage}</Text>
-      <Text>Waar heb je zin in?</Text>
+
       <FlatList
+        ListHeaderComponent={renderHeader}
         style={styles.drinkList}
         data={categories}
         extraData={cart}
@@ -190,11 +199,10 @@ const Category = ({category, drinks, index, cart, addItem}:{category:string; dri
 }
 
 const Drink = ({drink, amount, addItem}:{drink:drinksType; amount:number; addItem:any; }) => {
-  const [imgLink, setImgLink] = useState({uri: `http://192.168.1.35/assets/img/drinks/${drink.imageUrl}`});
   return (
     <View style={styles.drinkContainer}>
       <View>      
-        <Image source={imgLink} style={styles.drinkImage}/>
+        <Image source={{uri: `${IMG_URL}drinks/${drink.imageUrl}`, headers: { 'Authorization': `Bearer ${APP_API}`},}} style={styles.drinkImage}/>
         <DrinkIcon amount={amount} />
       </View>
       <Text style={styles.drinkTitle}>{drink.title}</Text>

@@ -8,12 +8,12 @@ import useColorScheme from '../hooks/useColorScheme';
 import ImagePicker from 'react-native-image-crop-picker';
 import Event from './../components/Event';
 import Carousel, { Pagination, ParallaxImage, AdditionalParallaxProps } from 'react-native-snap-carousel';
+import { IMG_URL, APP_API } from "@env";
 
 
 export default function PostsScreen() {
   const [ screen, setScreen ] = useState<string>(``);
   const [ value, setValue ] = useState<string>(``);
-  const [ carouselRef, setCarouselRef ] = useState();
   const [ activeSlide, setActiveSlide ] = useState<number>(0);
   const [ info, setInfo ] = useState<{ type:string; subject:string; message:string; }|null>();
   const [ editValue, setEditValue ] = useState<{images?:any[];textValue:string;eventValue?:string;}>({textValue: ``});
@@ -35,10 +35,22 @@ export default function PostsScreen() {
       }
       const newDoc = await firestore().collection('posts').add(input);
       if(newDoc){
-        const files = await handleUploadPhoto();
-        console.log(files)
-        setEditValue({textValue: ``});
-        setInfo({type: `success`, subject: `newPost`, message:`Post succesvol geplaatst!`});
+        handleUploadPhoto().then(response => {
+          if(response){
+            const images = response.uploadedImages.map(img => img.filename);
+            firestore().doc(`posts/${newDoc.id}`).update({images}).then(()=>{
+              setEditValue({textValue: ``});
+              setInfo({type: `success`, subject: `newPost`, message:`Post succesvol geplaatst!`});
+            }).catch((err)=>{
+              setInfo({type: `error`, subject: `profileImage`, message:`Er liep iets mis tijdens het uploaden van de afbeeldingen.`});
+            });
+          }else{
+          setInfo({type: `error`, subject: `profileImage`, message:`Er liep iets mis tijdens het uploaden van de afbeeldingen.`});
+          }
+        }).catch((err)=>{
+          setInfo({type: `error`, subject: `profileImage`, message:`Er liep iets mis tijdens het uploaden van de afbeeldingen.`});
+        });
+
       }else{
         setInfo({type: `error`, subject: `newPost`, message:`Er liep iets mis tijdens het plaatsen van je post, probeer opnieuw!`});
       }
@@ -75,7 +87,10 @@ export default function PostsScreen() {
   const handleUploadPhoto = () => {
     return fetch("http://192.168.1.35:80/api/post-photo", {
       method: "POST",
-      body: createFormData(editValue.images, { userId: "123",  })
+      body: createFormData(editValue.images, { userId: "123",  }),
+      headers: { 
+        'Authorization': `Bearer ${APP_API}`,
+      }
     })
       .then(response => response.json())
       .catch(error => {
@@ -85,14 +100,15 @@ export default function PostsScreen() {
 
   const createFormData = (photoArray, body) => {
     const data = new FormData();
-    photoArray.slice(0,10).map((photo, index)=>{
-      data.append(`photo-${index}`, {
+    photoArray.map((photo)=>{
+      data.append(`photo`, {
         name: photo.filename,
         type: photo.type,
         uri:
           Platform.OS === "android" ? photo.sourceURL : photo.sourceURL.replace("file://", "")
       });
     });
+
  
     Object.keys(body).forEach(key => {
       data.append(key, body[key]);
@@ -131,11 +147,8 @@ export default function PostsScreen() {
                         hasParallaxImages
                         containerCustomStyle={styles.carousel}
                         loop
-                        ref={(c) =>setCarouselRef(c)}
                       />
                       <Pagination
-                        carouselRef={carouselRef}
-                        tappableDots
                         dotsLength={editValue.images.length}
                         activeDotIndex={activeSlide}
                         dotStyle={[styles.dotStyle, {backgroundColor: Colors[colorScheme].text}]}
@@ -146,7 +159,7 @@ export default function PostsScreen() {
                     </Pressable>
                    :editValue.eventValue?
                     <Event event={editValue.eventValue} />
-                    :<View style={[styles.buttonLine, {backgroundColor: Colors[colorScheme].postBackground}]}><PrimaryButton onPress={handleChoosePhoto} style={styles.imageButton} label={<AppIcons size={32} color={Colors[colorScheme].background} name={`image`}/>} /><PrimaryButton onPress={handleChoosePhoto} style={styles.imageButton} label={<AppIcons size={32} color={Colors[colorScheme].background} name={`events`}/>} /></View>}
+                    :<View style={[styles.buttonLine, {backgroundColor: Colors[colorScheme].postBackground}]}><PrimaryButton onPress={handleChoosePhoto} style={styles.imageButton} label={<AppIcons size={32} color={Colors[colorScheme].postBackground} name={`image`}/>} /><PrimaryButton onPress={handleChoosePhoto} style={styles.imageButton} label={<AppIcons size={32} color={Colors[colorScheme].postBackground} name={`events`}/>} /></View>}
                 </View>
                 <PrimaryButton onPress={handlePost} style={styles.postButton} label={`Plaatsen`} />
               </View>

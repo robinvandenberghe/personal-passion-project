@@ -1,26 +1,32 @@
 import React, { useState } from 'react';
-import { StyleSheet, Dimensions, Platform } from 'react-native';
-import Colors, { dropShadow} from '../constants/Colors';
-import { Text, SwitchView } from './Themed';
+import { StyleSheet, Dimensions, Platform, View } from 'react-native';
+import Colors, { alertDark, dropShadow, errorDark, secondaryLight, successDark} from '../constants/Colors';
+import { Text, SwitchView, Pressable } from './Themed';
 import Event from './Event';
 import Carousel, { Pagination, ParallaxImage , AdditionalParallaxProps} from 'react-native-snap-carousel';
 import useColorScheme from '../hooks/useColorScheme';
-
+import { IMG_URL , APP_API } from "@env";
+import { useGlobalState } from '../state';
+import AppIcons from './AppIcons';
 
 export default function Post({post}:{post:any}) {
   const { date, message, event , images} = post.item;
   const {width: windowWidth} = Dimensions.get('window');
   const [ activeSlide, setActiveSlide ] = useState(0);
+  const [ user, setUser ] = useGlobalState('user');
   const colorScheme = useColorScheme();
-  const [ carouselRef, setCarouselRef ] = useState();
   const renderImage = (renderItem: { item: any; index: number; }, parallaxProps?: AdditionalParallaxProps) =>{
     const { item } = renderItem;
-    return <ParallaxImage parallaxFactor={0.4} style={styles.postImage} containerStyle={styles.imageContainer} source={{uri: `http://192.168.1.35/assets/img/posts/${item}`}} {...parallaxProps} />;
+    return <ParallaxImage parallaxFactor={0.4} style={styles.postImage} containerStyle={styles.imageContainer} source={{uri: `${IMG_URL}posts/${item}`, headers: { 'Authorization': `Bearer ${APP_API}`},}} {...parallaxProps} />;
+  }
+
+  const handleDeletePost = () => {
+    console.log('delete');
   }
 
   return (
     <SwitchView style={styles.container}>
-      <Text style={styles.subText}>{parsePostingTime(date.toDate())}</Text>
+      <View style={styles.topLine}><Text style={styles.subText}>{parsePostingTime(date.toDate())}</Text>{user.role==`admin`? <View style={{flexDirection:'row'}}><Pressable onPress={handleDeletePost} style={[styles.roundButton, styles.rejectButton]}><AppIcons size={16} color={secondaryLight} name={`cartcross`} /></Pressable><Pressable onPress={()=>{}} style={[styles.roundButton, styles.editButton]}><AppIcons size={20} color={secondaryLight} name={`posts`} /></Pressable></View> :null}</View>
       {message? <Text style={styles.message}>{message}</Text> :null}
       {event? <Event event={event} /> :null}
       {images?
@@ -35,7 +41,6 @@ export default function Post({post}:{post:any}) {
           hasParallaxImages
           containerCustomStyle={styles.carousel}
           loop
-          ref={(c) =>setCarouselRef(c)}
         />
         <Pagination
           dotsLength={images.length}
@@ -43,8 +48,6 @@ export default function Post({post}:{post:any}) {
           dotStyle={[styles.dotStyle, {backgroundColor: Colors[colorScheme].text}]}
           inactiveDotOpacity={0.4}
           inactiveDotScale={0.6}
-          carouselRef={carouselRef}
-          tappableDots
           containerStyle={{marginVertical:-24}}
         />
       </>:null}
@@ -83,6 +86,10 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     ...dropShadow
   },
+  topLine:{
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   subText:{
     fontSize: 14,
     fontWeight: '500',
@@ -97,7 +104,7 @@ const styles = StyleSheet.create({
   },
   imageContainer:{
     flex: 1,
-    marginBottom: Platform.select({ios: 0, android: 1}), // Prevent a random Android rendering issue
+    marginBottom: Platform.select({ios: 0, android: 1}),
     borderRadius: 8,
   },
   dotStyle:{
@@ -108,7 +115,25 @@ const styles = StyleSheet.create({
   },
   carousel:{
     flex:1,
-    maxHeight: 320,
+    height: 320,
     marginVertical: 8,
-  }
+  },
+  roundButton:{
+    width:40,
+    height:40,
+    flexShrink:1,
+    alignItems:'center',
+    justifyContent:'center',
+    borderRadius:20,
+  },
+  editButton:{
+    backgroundColor: alertDark,
+  },
+  rejectButton:{
+    backgroundColor: errorDark,
+    marginRight:4,
+  },
+  approveButton:{
+    backgroundColor: successDark,
+  },
 });
