@@ -140,8 +140,6 @@ export function InputWithLabel(props: TextInputProps) {
     Animated.timing(shakeAnimation, { toValue: {x: 8, y:0}, duration: 80, useNativeDriver: true }),
     Animated.timing(shakeAnimation, { toValue: 0, duration: 80, useNativeDriver: true })
   ]).start();
- 
-
 
   return (
     <Animated.View style={isError? [{transform: shakeAnimation.getTranslateTransform()}, styles.container, style]:[ styles.container, style]}>

@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:109846928225:android:2b00c5ae9a4e2a7bcf8320",
+        "mobilesdk_app_id": "1:109846928225:android:b96776de87a16cf7cf8320",
         "android_client_info": {
-          "package_name": "io.expo.kalf"
+          "package_name": "be.robinvandenb.tkalf"
         }
       },
       "oauth_client": [
@@ -30,6 +30,13 @@
             {
               "client_id": "109846928225-gc7srakqgjmrau33njh10d3u3p7ugvlq.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "109846928225-7irbm4r0vjhbjcmaj5iikn7os0s03g43.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "io.expo.kalf"
+              }
             }
           ]
         }

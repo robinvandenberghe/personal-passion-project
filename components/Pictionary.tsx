@@ -1,11 +1,12 @@
 import React, {useState, useEffect} from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Image } from 'react-native';
 import { Text, View, InputWithLabel, PrimaryButton, SecondaryButton } from './Themed';
 import { useGlobalState } from '../state';
 import AppIcons from './AppIcons';
 import Colors from './../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import { useNavigation } from '@react-navigation/native';
+import { SERVER_URL, APP_API } from '@env';
 
 export default function Pictionary({starter = false, socket}:{starter?:boolean;socket:any;}) {
   const [error, setError] = useState<{type:string; subject:string; message:string;}|undefined>();
@@ -13,8 +14,8 @@ export default function Pictionary({starter = false, socket}:{starter?:boolean;s
   const [turn, setTurn] = useState();
   const [screen, setScreen] = useState(``);
   const [user, setUser] = useGlobalState('user');
-  const [gameUser, setGameUser] = useState({id: user.uid, name: `${user.name} ${user.surname.charAt(0)}.`, score:0});
-  const [game, setGame] = useState<{ type: string; code: string; users: { id: string; name: string; score: number; }[]; rounds: any[]; started: boolean; }>();
+  const [gameUser, setGameUser] = useState({imgUri: user.profileImg, id: user.uid, name: `${user.name} ${user.surname.charAt(0)}.`, score:0});
+  const [game, setGame] = useState<{ type: string; code: string; users: { imgUri:string; id: string; name: string; score: number; }[]; rounds: any[]; started: boolean; }>();
   const colorScheme = useColorScheme();
   const navigation = useNavigation();
   const handleStartTurn = () => {
@@ -125,7 +126,7 @@ export default function Pictionary({starter = false, socket}:{starter?:boolean;s
             <Text style={styles.gameCode}>{game.code}</Text>
             <Text style={styles.subtext}>Aangesloten spelers</Text>
             <View style={styles.connectedUsers}>
-              {game.users.map((user, index) => <Text style={styles.connectedUserText} key={index}>{user.name}</Text>)}
+            {game.users.map((user, index) => <View key={index} style={{alignItems:'center'}}><Image style={styles.profileImg} source={{uri: `${SERVER_URL}assets/img/users/${user.imgUri}`, headers: { 'Authorization' : `Bearer ${APP_API}`}}} /><Text style={styles.connectedUserText}>{user.name}</Text></View>)}
             </View>
           </View>
           {starter?<><View style={styles.spacer}/><PrimaryButton style={styles.gameButton} onPress={()=>{if(socket)socket.emit('startGamePictionary', game.code)}} disabled={game.users.length>1?false:true}  label={`Starten`}/></>:null}
@@ -209,6 +210,12 @@ const styles = StyleSheet.create({
     width:'100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  profileImg:{
+    width:40,
+    height:40,
+    resizeMode:'cover',
+    borderRadius:20,
   }
 
 });

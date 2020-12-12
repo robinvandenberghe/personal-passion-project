@@ -1,64 +1,21 @@
-import React , { useState, useEffect } from 'react';
+import React , { useState } from 'react';
 import firestore from '@react-native-firebase/firestore';
-import { Text, View, FlatList, PrimaryButton, Pressable, SecondaryButton} from '../components/Themed';
+import { Text, View, PrimaryButton, Pressable, SecondaryButton } from '../components/Themed';
 import { StyleSheet , Image } from 'react-native';
 import { RNCamera } from 'react-native-camera';
-import Colors, { alertDark, errorDark, infoDark, primaryDark, secondaryLight, successDark } from '../constants/Colors';
-import { useGlobalState } from '../state';
+import { alertDark, errorDark, secondaryLight, successDark } from '../constants/Colors';
 import AppIcons from '../components/AppIcons';
-import { SERVER_URL } from '@env';
+import { SERVER_URL, APP_API } from '@env';
 
-export default function QuestionsScreen() {
-  const [ screen, setScreen ] = useState<string>(``);
-  const [ error, setError ] = useState<{type:string; subject:string; message:string;}|undefined>();
-  const [ value, setValue ] = useState<string>(``);
-  const [ info, setInfo ] = useState<{ type:string; subject:string; message:string; }|null>();
-  const [ rewards , setRewards] = useState<{uid:string; amount:number; available:number; imageUrl:string; title:string; }[]>([]);
+export default function QuestionsScreen({navigation}:{navigation:any;}) {
   const [ scannedValue, setScannedValue ] = useState<{reward:any; user:any;}>();
-  const [ editValue, setEditValue ] = useState();
   const [ scanHandling, setScanHandling ] = useState(true);
-
-  useEffect(() => {
-    const fetchRewards = async () => {
-      try {
-        firestore().collection("rewards").where('available', '>', 0).onSnapshot((snap) => {
-          if(snap&&snap.size>0){
-            const a:{uid:string; amount:number; available:number; imageUrl:string; title:string; }[] = snap.docs.map((item) => {
-              const temp = item.data();
-              return {uid: item.id, amount: temp.amount, available: temp.available, imageUrl: temp.imageUrl, title: temp.title};
-            });
-            setRewards(a);
-          }
-        });
-      } catch (err) {
-        console.error(err);
-      }
-    }
-    fetchRewards();
-  }, []);
 
   const PendingView = () => (
     <View style={styles.container}>
       <Text>Waiting</Text>
     </View>
   );
-
-  const Reward = ({reward}:{reward:{uid:string; amount:number; available:number; imageUrl:string; title:string; };}) => {
-    const [imgLink, setImgLink] = useState({uri: `${SERVER_URL}assets/img/drinks/${reward.imageUrl}`});
-    return (
-      <View style={styles.rewardContainer}>
-        <Image source={imgLink} style={styles.rewardImage}/>
-        <Text style={styles.rewardTitle}>{reward.title}</Text>
-        <Text style={styles.rewardAmount}>{reward.amount.toString()}</Text>
-        <Pressable style={[styles.roundButton,styles.editButton]} onPress={()=>{}}><AppIcons size={18} color={secondaryLight} name={'posts'} /></Pressable>
-      </View>
-    );
-  }
-
-  const handleRejection = async ({questionProposal}:{questionProposal:any;}) =>{
-    const { uid} = questionProposal;
-    await firestore().doc(`questionRequests/${uid}`).delete();
-  }
 
   const handleBarcodeRead = async ({data, type}:{data:string; type:string;}) =>{
     setScanHandling(false);
@@ -83,78 +40,40 @@ export default function QuestionsScreen() {
     setScanHandling(true);
   }
 
-  switch(screen){
-    case `scanCode`:
-      return (
-        <View style={{ flex: 1,flexGrow:1,}}>
-          {scannedValue?
-            <>
-              <View style={styles.overlay} />
-              <View style={styles.scannedContainer}>
-                <Image style={styles.scannedImage} source={{uri: `${SERVER_URL}assets/img/drinks/${scannedValue.reward.imageUrl}`}}/>
-                <Text style={styles.scannedText}>{`${scannedValue.user.name} wil graag ${scannedValue.reward.amount} punten inruilen voor een ${scannedValue.reward.title}`}</Text>
-                <PrimaryButton style={{alignSelf:'center'}} onPress={handleRewardGiven} label={`In orde!`} />
-              </View>
-            </>:<></>}
-          <RNCamera
-            style={styles.cameraPreview}
-            type={RNCamera.Constants.Type.back}
-            captureAudio={false}
-            androidCameraPermissionOptions={{
-              title: 'Permission to use camera',
-              message: 'We hebben uw toestemming nodig om QR-codes te scannen in de app.',
-              buttonPositive: 'Ok',
-              buttonNegative: 'Cancel',
-            }}
-            onBarCodeRead={(e)=>{if(scanHandling)handleBarcodeRead(e)}}
-          >
-            {({ camera, status }) => {
-              if (status !== 'READY') return <PendingView />;
-              return (
-                <Pressable style={[styles.roundButton, styles.cameraQuitButton]} onPress={()=>setScreen(``)} >
-                  <AppIcons size={25} color={'#fff'} name={'cartcross'} />
-                </Pressable>
-              );
-            }}
-          </RNCamera>
-        </View>
-      );
-    case `editRewards`:
-      return(
-        <View style={[styles.container]} >
-          {editValue?
-          <>
-            <View style={styles.overlay} />
-            <View style={styles.scannedContainer}>
-              <Image style={styles.scannedImage} source={{uri: `${SERVER_URL}assets/img/drinks/${scannedValue.reward.imageUrl}`}}/>
-              <Text style={styles.scannedText}>{`${scannedValue.user.name} wil graag ${scannedValue.reward.amount} punten inruilen voor een ${scannedValue.reward.title}`}</Text>
-              <PrimaryButton style={{alignSelf:'center'}} onPress={handleRewardGiven} label={`In orde!`} />
-            </View>
-          </>:<></>}
-          <Text style={styles.title}>Beheer beloningen</Text>
-          <SecondaryButton style={styles.backButton} onPress={()=>{setScreen(``)}} label={`Terug`} />
-          <FlatList
-          style={styles.rewardsList}
-          data={rewards}
-          renderItem={({item, index}) => <Reward reward={item} />}
-          showsVerticalScrollIndicator ={false}
-          showsHorizontalScrollIndicator={false} 
-          keyExtractor={(item, index) => index.toString()} 
-          />
-        </View>
-      );
-    default:
-      return(
-        <View style={[styles.container]} >
-          <Text style={styles.title}>Beheer beloningen</Text>
-          <Text>Kies een optie</Text>
-          <View style={{flexGrow:1, justifyContent:'center'} }>
-            <View style={styles.gameButtonWrapper}><PrimaryButton style={styles.gameButton}  onPress={()=>{setScreen(`editRewards`)}} label={`Beheer beloningen`} /></View>
-            <View style={styles.gameButtonWrapper}><PrimaryButton style={styles.gameButton}  onPress={()=>{setScreen(`scanCode`)}} label={`Scan QR-code`} /></View>
+  return (
+    <View style={{ flex: 1,flexGrow:1,}}>
+      {scannedValue?
+        <>
+          <View style={styles.overlay} />
+          <View style={styles.scannedContainer}>
+            <Image style={styles.scannedImage} source={{uri: `${SERVER_URL}assets/img/drinks/${scannedValue.reward.imageUrl}`, headers:{ 'Authorization': `Bearer ${APP_API}`}}}/>
+            <Text style={styles.scannedText}>{`${scannedValue.user.name} wil graag ${scannedValue.reward.amount} punten inruilen voor een ${scannedValue.reward.title}`}</Text>
+            <View style={styles.buttonLine}><SecondaryButton style={{alignSelf:'center', marginRight:8,}} onPress={()=>{setScannedValue(undefined);setScanHandling(true);}} label={`Annuleer`} /><PrimaryButton style={{alignSelf:'center'}} onPress={handleRewardGiven} label={`In orde!`} /></View>
           </View>
-        </View>
-      );
-  }
+        </>:<></>}
+      <RNCamera
+        style={styles.cameraPreview}
+        type={RNCamera.Constants.Type.back}
+        captureAudio={false}
+        androidCameraPermissionOptions={{
+          title: 'Permission to use camera',
+          message: 'We hebben uw toestemming nodig om QR-codes te scannen in de app.',
+          buttonPositive: 'Ok',
+          buttonNegative: 'Cancel',
+        }}
+        onBarCodeRead={(e)=>{if(scanHandling)handleBarcodeRead(e)}}
+      >
+        {({ camera, status }) => {
+          if (status !== 'READY') return <PendingView />;
+          return (
+            <Pressable style={[styles.roundButton, styles.cameraQuitButton]} onPress={()=>navigation.goBack()} >
+              <AppIcons size={25} color={'#fff'} name={'cartcross'} />
+            </Pressable>
+          );
+        }}
+      </RNCamera>
+    </View>
+  );
 
 }
 
@@ -311,4 +230,7 @@ const styles = StyleSheet.create({
     height:'100%',
     backgroundColor: 'rgba(0,0,0,0.5)'
   },
+  buttonLine:{
+    flexDirection: 'row'
+  }
 });

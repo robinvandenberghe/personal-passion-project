@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Image, Pressable, Button, Dimensions, Platform } from 'react-native';
+import { StyleSheet, Image, Pressable, Platform } from 'react-native';
 import { Text, View, ScrollView, Message } from '../components/Themed';
 import Colors, { primaryCrema, secondaryGrey } from '../constants/Colors';
 import AppIcons from '../components/AppIcons';
@@ -84,7 +84,6 @@ export default function ProfileScreen() {
   };
 
   return (
-    user.role && user.role=='admin'? 
     <ScrollView style={styles.container} >
       <View style={styles.profileImageWrapper}>
         <Pressable onPress={handleChoosePhoto} style={[styles.editProfileImageButton, {backgroundColor: Colors[colorScheme].text}]}>
@@ -104,34 +103,17 @@ export default function ProfileScreen() {
         <ProfileItem title={'Puntenstand'} route={'puntenstand'} icon={'points'} color={Colors[colorScheme].text} />
         <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
         <ProfileItem title={'Mijn informatie'} route={'informatie'} icon={'info'} color={Colors[colorScheme].text} />
-        <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-        <ProfileItem title={'Bestellingen'} route={'bestellingen'} icon={'orders'} color={Colors[colorScheme].text} />
-        <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-        <ProfileItem title={'Nieuwe post'} route={'posts'} icon={'posts'} color={Colors[colorScheme].text} />
-        <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-        <ProfileItem title={'Quizvragen'} route={'vragen'} icon={'questions'} color={Colors[colorScheme].text} />
-        <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-        <ProfileItem title={'Evenementen'} route={'evenementen'} icon={'events'} color={Colors[colorScheme].text} />
-        <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-        <ProfileItem title={'Beloningen'} route={'beloningen'} icon={'rewards'} color={Colors[colorScheme].text} />
+        {user.role==`admin`? 
+          <>
+            <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
+            <ProfileItem title={'Bestellingen'} route={'bestellingen'} icon={'orders'} color={Colors[colorScheme].text} />
+            <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
+            <ProfileItem title={'Nieuwe post'} route={'posts'} icon={'posts'} color={Colors[colorScheme].text} />
+            <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
+            <ProfileItem title={'Scan beloning'} route={'beloningen'} icon={'rewards'} color={Colors[colorScheme].text} />
+          </>: null}
       </View>
     </ScrollView>
-    : 
-    <View style={styles.container}>
-        <Image source={imgLink} style={styles.profileImage}/>
-        <Text style={styles.title}>{welcomeMessage}</Text>
-        <View>
-          <ProfileItem title={'QR-code'} route={'qr'} icon={'qr'} color={Colors[colorScheme].text} />
-          <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-          <ProfileItem title={'Persoonlijke instellingen'} route={'instellingen'} icon={'settings'} color={Colors[colorScheme].text} />
-          <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-          <ProfileItem title={'Mijn lidmaatschap'} route={'lidmaatschap'} icon={'membership'} color={Colors[colorScheme].text} />
-          <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-          <ProfileItem title={'Puntenstand'} route={'puntenstand'} icon={'points'} color={Colors[colorScheme].text} />
-          <View style={styles.separator} lightColor={primaryCrema} darkColor={secondaryGrey} />
-          <ProfileItem title={'Mijn informatie'} route={'informatie'} icon={'info'} color={Colors[colorScheme].text} />
-        </View>
-      </View>
   );
 }
 

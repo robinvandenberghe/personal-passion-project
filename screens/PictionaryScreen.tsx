@@ -37,8 +37,6 @@ export default function PictionaryScreen({navigation}:{navigation:any;}) {
     }else{
       setError({type:`somethingWentWrong`, subject:`answer`, message: `Er ging iets mis tijdens het versturen van je antwoord.`});
     }
-
-
   }
 
   useEffect(()=>{
@@ -65,7 +63,7 @@ export default function PictionaryScreen({navigation}:{navigation:any;}) {
           <Text style={styles.title}>Stuur een antwoord in</Text>
           {info && info.subject===`answerSent`? <Message type={info.type} message={info.message} /> : null}
           <Text>{`Stuur een antwoord in en wie weet gebruiken we het in de app.\nWanneer we jouw antwoord selecteren, krijg je 10 punten toegevoegd bij je puntenstand.`}</Text>
-          <InputWithLabel style={styles.input} placeholder="bv. Een fiets" label="Geef een spelcode in" isError={(error && error.subject) == 'answer'?true: false}  errMessage={(error && error.subject) == 'answer'?error.message: ''} value={value} callback={(val)=>{if(val!==''&&error&&error.subject=='answer'){setError(null)}; setValue(val);}} />
+          <InputWithLabel style={styles.input} placeholder="bv. Een fiets" label="Jouw voorstel" isError={(error && error.subject) == 'answer'?true: false}  errMessage={(error && error.subject) == 'answer'?error.message: ''} value={value} callback={(val)=>{if(val!==''&&error&&error.subject=='answer'){setError(null)}; setValue(val);}} />
           <PrimaryButton style={styles.gameButton} onPress={handleSendAnswer} label={`Insturen`}/>
           <View style={styles.spacer}/>
           <SecondaryButton style={styles.gameButton} onPress={()=>setScreen(``)} label={`Terug`}/>

@@ -11,7 +11,7 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { useGlobalState } from '../state';
 
-export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
+export default function Navigation({ colorScheme  }: { colorScheme: ColorSchemeName }) {
   return (
     <NavigationContainer 
       linking={LinkingConfiguration}

@@ -1,14 +1,14 @@
 import React, {useState} from 'react';
-import { StyleSheet, Image, Pressable, TextInput } from 'react-native';
+import { StyleSheet, Image, Pressable, TextInput, Linking } from 'react-native';
 import Colors, { errorDark, secondaryLight ,primaryCrema , primaryDark, primaryLight, successDark} from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import { Text, View , FlatList, PrimaryButton, SecondaryButton, ScrollView, InputWithLabel} from '../components/Themed';
 import AppIcons from '../components/AppIcons';
 import { cartType, inputErrorType} from '../types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
+import firestore from '@react-native-firebase/firestore';
 import { useGlobalState } from '../state';
-
+import { PAYCONIQ_API, SERVER_URL, APP_API } from '@env';
 
 export default function CartScreen() {
   const [screen, setScreen] = useState<string>(``);
@@ -21,7 +21,6 @@ export default function CartScreen() {
   let cartTotal:number = 0;
   cart.map((item)=> cartTotal += (item.amount * item.drink.price));
   const insets = useSafeAreaInsets();
-
 
   const deleteItem = (item:any) => {
     cart.splice(cart.indexOf(item),1);
@@ -48,21 +47,37 @@ export default function CartScreen() {
           const options = { 
             method: 'POST',
             headers: {
-              'Authorization': `Bearer ${process.env['PAYCONIQ_API']}`,
-              'Content-Type': 'application/json',
+              'Authorization' : `Bearer d2b206e2-0e2c-47f8-91bd-1c63da2cffd4`,
+              'Content-Type' : 'application/json',
             },
             body: JSON.stringify({
               amount: `${cartTotal}`,
               currency: 'EUR',
-              callbackUrl: '',
+              callbackUrl: `${SERVER_URL}api/payment-callback'`,
               description: `Bestelling #${o.id} JH 't Kalf`,
               reference: `${o.id}`,
             }),
           };
-          // const r = await fetch(url, options);
-          setCart([]);
-          setTableNumber('');
-          setScreen(`orderSuccess`);
+          fetch(url, options).then(r=>r.json()).then(response => {
+            if(response){
+              console.log(response);
+              const { paymentId, status } = response;
+              firestore().doc(`orders/${o.id}`).update({paymentId, paymentStatus:status}).then(()=>{
+                const deeplink = response._links.deeplink.href;
+                Linking.openURL(`${deeplink}?returnUrl=kalf-app://cart`);
+                setCart([]);
+                setTableNumber('');
+                setScreen(`orderSuccess`);
+              }).catch((err)=>{
+                console.error(err);
+                setScreen(`orderFailed`);
+              });
+            }
+          }).catch((err)=>{
+            console.error(err);
+            setScreen(`orderFailed`);
+          });
+
         }else{
           setCart([]);
           setTableNumber('');
@@ -265,7 +280,7 @@ const styles = StyleSheet.create({
 });
 
 const Drink = ({item, deleteItem, screen}:{item:cartType; deleteItem:any; screen:string;}) => {
-  const [imgLink, setImgLink] = useState({uri: `https://robinvandenb.be/assets/img/kalfapp/${item.drink.imageUrl}`});
+  const [imgLink, setImgLink] = useState({uri: `${SERVER_URL}assets/img/drinks/${item.drink.imageUrl}`, headers: { 'Authorization': `Bearer ${APP_API}`}});
   const [amount, setAmount] = useState(item.amount);
   const [cart, setCart] = useGlobalState('cart');
 

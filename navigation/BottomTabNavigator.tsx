@@ -123,7 +123,7 @@ function PlayNavigator() {
       <PlayStack.Screen
         name="TrivialTimeScreen"
         component={TrivialTimeScreen}
-        options={{ headerTitle: 'Speel' }}
+        options={{ headerTitle: 'Trivial Time' }}
       />
     </PlayStack.Navigator>
   );
@@ -201,22 +201,12 @@ const ProfileNavigator = () => {
         <ProfileStack.Screen
         name="PostsScreen"
         component={PostsScreen}
-        options={{ headerTitle: 'Posts' }}
-        />
-        <ProfileStack.Screen
-        name="QuestionsScreen"
-        component={QuestionsScreen}
-        options={{ headerTitle: 'Quizvragen' }}
-        />
-        <ProfileStack.Screen
-        name="EventsScreen"
-        component={EventsScreen}
-        options={{ headerTitle: 'Quizvragen' }}
+        options={{ headerTitle: '' }}
         />
         <ProfileStack.Screen
         name="RewardsScreen"
         component={RewardsScreen}
-        options={{ headerTitle: 'Beloningen' }}
+        options={{ headerTitle: 'Scan beloning' }}
         />
       </>
       : null}

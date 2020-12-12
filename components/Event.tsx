@@ -51,13 +51,16 @@ const styles = StyleSheet.create({
     marginVertical:8,
     alignSelf: 'center',
     width:"100%",
-    overflow: 'hidden',
     borderRadius:8,
+    ...dropShadow
   },
   eventImage:{
     height: 120,
     width: '100%',
     resizeMode: 'cover',    
+    borderTopLeftRadius:8,
+    borderTopRightRadius:8,
+    overflow: 'hidden',
   },
   eventInfo:{
     backgroundColor: secondaryLight,
@@ -65,6 +68,8 @@ const styles = StyleSheet.create({
     flexShrink:1,
     flexDirection: 'row',
     justifyContent:'center',
+    borderRadius:8,
+
   },
   dateContainer:{
     flexGrow: 1,

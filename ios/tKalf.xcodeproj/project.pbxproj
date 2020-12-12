@@ -26,7 +26,7 @@
 		78C18865340B4385BEDD6552 /* Poppins-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0E33EB821D7C45D2A49904C6 /* Poppins-ExtraBoldItalic.ttf */; };
 		96905EF65AED1B983A6B3ABC /* libPods-tKalf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58EEBF8E8E6FB1BC6CAF49B5 /* libPods-tKalf.a */; };
 		9E3C7DD999A544859BE3C802 /* Poppins-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 752BD43862B34511A2DE3096 /* Poppins-ThinItalic.ttf */; };
-		AAD3E9D22572B70B00486D20 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AAD3E9D12572B70B00486D20 /* GoogleService-Info.plist */; };
+		AAA225A12584FF6900B36960 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AAA225A02584FF6900B36960 /* GoogleService-Info.plist */; };
 		AB35C8B67B904DDFB97D3624 /* Poppins-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6C2F3EEE190D4AA89DD229FB /* Poppins-Regular.ttf */; };
 		B3595A916E6146FCAB02D678 /* Poppins-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DF5CEAA9B9404F7D83E223C9 /* Poppins-ExtraLightItalic.ttf */; };
 		B47122F9982B4514BAA98C2F /* Poppins-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5BDFA7E2E3A34A2EB7F7A2CA /* Poppins-BoldItalic.ttf */; };
@@ -60,7 +60,7 @@
 		9135503E5063460D97370573 /* Poppins-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-LightItalic.ttf"; path = "../assets/fonts/Poppins-LightItalic.ttf"; sourceTree = "<group>"; };
 		A6B7CFC3EEBF46DBB3ED61F9 /* SpaceMono-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SpaceMono-Regular.ttf"; path = "../assets/fonts/SpaceMono-Regular.ttf"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = tKalf/SplashScreen.storyboard; sourceTree = "<group>"; };
-		AAD3E9D12572B70B00486D20 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		AAA225A02584FF6900B36960 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		AAEB99650BD8428F8E901ED3 /* Poppins-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Bold.ttf"; path = "../assets/fonts/Poppins-Bold.ttf"; sourceTree = "<group>"; };
 		B93FA2C5D09743EA850434A6 /* Poppins-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ExtraLight.ttf"; path = "../assets/fonts/Poppins-ExtraLight.ttf"; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
@@ -122,7 +122,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				AAD3E9D12572B70B00486D20 /* GoogleService-Info.plist */,
+				AAA225A02584FF6900B36960 /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* tKalf */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
@@ -251,12 +251,12 @@
 			files = (
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				AAD3E9D22572B70B00486D20 /* GoogleService-Info.plist in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
 				5206F8BDE67846B0A5A7185B /* Poppins-Black.ttf in Resources */,
 				B733A09FC05A4D7884015A6B /* Poppins-BlackItalic.ttf in Resources */,
 				3CA88FFBBA924ADEB9F49AA3 /* Poppins-Bold.ttf in Resources */,
+				AAA225A12584FF6900B36960 /* GoogleService-Info.plist in Resources */,
 				B47122F9982B4514BAA98C2F /* Poppins-BoldItalic.ttf in Resources */,
 				FBC7A829F1F343028FC90F8E /* Poppins-ExtraBold.ttf in Resources */,
 				78C18865340B4385BEDD6552 /* Poppins-ExtraBoldItalic.ttf in Resources */,
@@ -418,7 +418,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.expo.kalf;
+				PRODUCT_BUNDLE_IDENTIFIER = "be.robinvandenb.t-kalf";
 				PRODUCT_NAME = kalf;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -445,7 +445,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.expo.kalf;
+				PRODUCT_BUNDLE_IDENTIFIER = "be.robinvandenb.t-kalf";
 				PRODUCT_NAME = kalf;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;

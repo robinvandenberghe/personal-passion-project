@@ -6,7 +6,7 @@ import Colors, { primaryGrey, secondaryGrey } from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import { useGlobalState } from '../state';
 import QRCode from 'react-native-qrcode-svg';
-import { SERVER_URL } from '@env';
+import { SERVER_URL, APP_API } from '@env';
 
 export default function SettingsScreen() {
   const [user, setUser] = useGlobalState('user');
@@ -57,7 +57,7 @@ export default function SettingsScreen() {
   }
 
   const Reward = ({reward}:{reward:{uid:string; amount:number; available:number; imageUrl:string; title:string; };}) => {
-    const [imgLink, setImgLink] = useState({uri: `${SERVER_URL}assets/img/drinks/${reward.imageUrl}`});
+    const [imgLink, setImgLink] = useState({uri: `${SERVER_URL}assets/img/drinks/${reward.imageUrl}`, headers:{ 'Authorization': `Bearer ${APP_API}`}});
     return (
       <View style={styles.rewardContainer}>
         <Image source={imgLink} style={styles.rewardImage}/>

@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>109846928225-7irbm4r0vjhbjcmaj5iikn7os0s03g43.apps.googleusercontent.com</string>
+	<string>109846928225-id66j02khkla6i2lo76qrh3m94qtffbk.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.109846928225-7irbm4r0vjhbjcmaj5iikn7os0s03g43</string>
+	<string>com.googleusercontent.apps.109846928225-id66j02khkla6i2lo76qrh3m94qtffbk</string>
 	<key>API_KEY</key>
 	<string>AIzaSyDQoa4t4x7EdcIFe9ilFlxBi4vhULdqYH8</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>io.expo.kalf</string>
+	<string>be.robinvandenb.t-kalf</string>
 	<key>PROJECT_ID</key>
 	<string>kalf-app</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,7 +29,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:109846928225:ios:fe3eeb0607c74b12cf8320</string>
+	<string>1:109846928225:ios:3a4fd64d15a3ed4ccf8320</string>
 	<key>DATABASE_URL</key>
 	<string>https://kalf-app.firebaseio.com</string>
 </dict>
