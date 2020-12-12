@@ -59,8 +59,8 @@ export default function HomeScreen() {
       <FlatList
         contentContainerStyle={styles.container}
         data={posts}
-        renderItem={(item) => {
-          return <Post post={item} />;
+        renderItem={({item, index}) => {
+          return <Post post={item} index={index} posts={posts} setPosts={setPosts} />;
         }}
         showsVerticalScrollIndicator ={false}
         refreshing={isFetching}
@@ -79,7 +79,6 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     width:'100%',
-    // flexGrow:1,
     marginBottom:8,
   }
 });

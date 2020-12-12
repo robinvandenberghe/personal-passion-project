@@ -2,15 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { PrimaryButton, SecondaryButton, Text, View } from '../components/Themed';
 import TrivialTime from '../components/TrivialTime';
-import {io} from 'socket.io-client';
-
+import { io } from 'socket.io-client';
+import { SERVER_URL } from '@env';
 
 export default function TrivialTimeScreen({navigation}:{navigation:any;}) {
   const [screen, setScreen] = useState<string>(``);
   const [ gameSocket, setGameSocket] = useState<any>();
 
   useEffect(()=>{
-    const socket = io('http://192.168.1.35');
+    const socket = io(SERVER_URL);
     socket.on('connect', ()=>{
       setGameSocket(socket);
     });

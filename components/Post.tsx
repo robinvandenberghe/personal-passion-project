@@ -1,33 +1,51 @@
 import React, { useState } from 'react';
-import { StyleSheet, Dimensions, Platform, View } from 'react-native';
+import { StyleSheet, Dimensions, Platform, View, TextInput } from 'react-native';
 import Colors, { alertDark, dropShadow, errorDark, secondaryLight, successDark} from '../constants/Colors';
 import { Text, SwitchView, Pressable } from './Themed';
 import Event from './Event';
 import Carousel, { Pagination, ParallaxImage , AdditionalParallaxProps} from 'react-native-snap-carousel';
 import useColorScheme from '../hooks/useColorScheme';
-import { IMG_URL , APP_API } from "@env";
+import { SERVER_URL , APP_API } from "@env";
 import { useGlobalState } from '../state';
 import AppIcons from './AppIcons';
+import firestore from '@react-native-firebase/firestore';
 
-export default function Post({post}:{post:any}) {
-  const { date, message, event , images} = post.item;
+export default function Post({post, index, posts, setPosts}:{post:any; index:number; posts:any; setPosts:any;}) {
+  const { date, message, event , images, uid } = post;
   const {width: windowWidth} = Dimensions.get('window');
   const [ activeSlide, setActiveSlide ] = useState(0);
+  const [ editing, setEditing ] = useState<boolean>(false);
+  const [ editValue, setEditValue ] = useState<string>(message? message :``);
   const [ user, setUser ] = useGlobalState('user');
   const colorScheme = useColorScheme();
   const renderImage = (renderItem: { item: any; index: number; }, parallaxProps?: AdditionalParallaxProps) =>{
     const { item } = renderItem;
-    return <ParallaxImage parallaxFactor={0.4} style={styles.postImage} containerStyle={styles.imageContainer} source={{uri: `${IMG_URL}posts/${item}`, headers: { 'Authorization': `Bearer ${APP_API}`},}} {...parallaxProps} />;
+    return <ParallaxImage parallaxFactor={0.4} style={styles.postImage} containerStyle={styles.imageContainer} source={{uri: `${SERVER_URL}assets/img/posts/${item}`, headers: { 'Authorization': `Bearer ${APP_API}`},}} {...parallaxProps} />;
   }
 
-  const handleDeletePost = () => {
-    console.log('delete');
+  const handleDeletePost = async () => {
+    if(images){
+      images.map((img) => {
+        fetch(`${SERVER_URL}assets/img/posts/${img}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${APP_API}`},
+        })
+        .catch((err)=>{console.error(err)});
+      });
+    }
+    await firestore().doc(`posts/${uid}`).delete();
+  }
+
+  const handleSavePost = async () => {
+    await firestore().doc(`posts/${uid}`).update({message: editValue}).then(()=>setEditing(false)).catch((err)=>console.error(err));
+    posts[index].message = editValue;
+    setPosts([...posts]);
   }
 
   return (
     <SwitchView style={styles.container}>
-      <View style={styles.topLine}><Text style={styles.subText}>{parsePostingTime(date.toDate())}</Text>{user.role==`admin`? <View style={{flexDirection:'row'}}><Pressable onPress={handleDeletePost} style={[styles.roundButton, styles.rejectButton]}><AppIcons size={16} color={secondaryLight} name={`cartcross`} /></Pressable><Pressable onPress={()=>{}} style={[styles.roundButton, styles.editButton]}><AppIcons size={20} color={secondaryLight} name={`posts`} /></Pressable></View> :null}</View>
-      {message? <Text style={styles.message}>{message}</Text> :null}
+      <View style={styles.topLine}><Text style={styles.subText}>{parsePostingTime(date.toDate())}</Text>{user.role==`admin`? <View style={{flexDirection:'row'}}><Pressable onPress={handleDeletePost} style={[styles.roundButton, styles.rejectButton]}><AppIcons size={16} color={secondaryLight} name={`cartcross`} /></Pressable>{message?editing?<Pressable onPress={handleSavePost} style={[styles.roundButton, styles.approveButton]}><AppIcons size={20} color={secondaryLight} name={`save`} /></Pressable>:<Pressable onPress={()=>setEditing(true)} style={[styles.roundButton, styles.editButton]}><AppIcons size={20} color={secondaryLight} name={`posts`} /></Pressable>:null}</View> :null}</View>
+      {message? editing? <TextInput style={[styles.multiLineInput, {color: Colors[colorScheme].text}] }  blurOnSubmit placeholder={`Begin met typen ...`} placeholderTextColor={Colors[colorScheme].labelColor}  keyboardType={`default`}  multiline onChangeText={text =>setEditValue(text)} value={editValue}/> : <Text style={styles.message}>{message}</Text> :null}
       {event? <Event event={event} /> :null}
       {images?
         <>
@@ -135,5 +153,14 @@ const styles = StyleSheet.create({
   },
   approveButton:{
     backgroundColor: successDark,
+  },
+  multiLineInput:{
+    flexShrink:1,
+    borderColor: 'transparent',
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    padding:0,
+    marginVertical:8,
+    fontSize:16,
   },
 });

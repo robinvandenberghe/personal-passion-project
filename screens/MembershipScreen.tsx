@@ -8,8 +8,6 @@ import useColorScheme from '../hooks/useColorScheme';
 import { useLinkTo } from '@react-navigation/native';
 import { useGlobalState } from '../state';
 
-
-
 export default function SettingsScreen() {
   const [user, setUser] = useGlobalState('user');
   const colorScheme = useColorScheme();

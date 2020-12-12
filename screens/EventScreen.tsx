@@ -3,7 +3,7 @@ import { StyleSheet, Image} from 'react-native';
 import {  View, Pressable , InputWithLabel, Text, Link} from '../components/Themed';
 import Colors, { primaryDark, primaryCrema, secondaryLight } from '../constants/Colors';
 import firestore from '@react-native-firebase/firestore';
-import { IMG_URL , APP_API } from "@env";
+import { SERVER_URL , APP_API } from "@env";
 import useColorScheme from '../hooks/useColorScheme';
 
 export default function EventScreen({route, navigation}: {route?:any; navigation:any;}) {
@@ -20,7 +20,7 @@ export default function EventScreen({route, navigation}: {route?:any; navigation
         da.date = da.date.toDate();
         da.id = d.id;
         setEvent(da);
-        setImgLink({uri: `${IMG_URL}events/${da.imageUrl}`, headers:{ 'Authorization': `Bearer ${APP_API}`}});
+        setImgLink({uri: `${SERVER_URL}assets/img/events/${da.imageUrl}`, headers:{ 'Authorization': `Bearer ${APP_API}`}});
       } catch (err) {
         console.error(err);
       }

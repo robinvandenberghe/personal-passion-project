@@ -6,7 +6,7 @@ import { RNCamera } from 'react-native-camera';
 import Colors, { alertDark, errorDark, infoDark, primaryDark, secondaryLight, successDark } from '../constants/Colors';
 import { useGlobalState } from '../state';
 import AppIcons from '../components/AppIcons';
-
+import { SERVER_URL } from '@env';
 
 export default function QuestionsScreen() {
   const [ screen, setScreen ] = useState<string>(``);
@@ -44,7 +44,7 @@ export default function QuestionsScreen() {
   );
 
   const Reward = ({reward}:{reward:{uid:string; amount:number; available:number; imageUrl:string; title:string; };}) => {
-    const [imgLink, setImgLink] = useState({uri: `https://robinvandenb.be/assets/img/kalfapp/${reward.imageUrl}`});
+    const [imgLink, setImgLink] = useState({uri: `${SERVER_URL}assets/img/drinks/${reward.imageUrl}`});
     return (
       <View style={styles.rewardContainer}>
         <Image source={imgLink} style={styles.rewardImage}/>
@@ -91,7 +91,7 @@ export default function QuestionsScreen() {
             <>
               <View style={styles.overlay} />
               <View style={styles.scannedContainer}>
-                <Image style={styles.scannedImage} source={{uri: `https://robinvandenb.be/assets/img/kalfapp/${scannedValue.reward.imageUrl}`}}/>
+                <Image style={styles.scannedImage} source={{uri: `${SERVER_URL}assets/img/drinks/${scannedValue.reward.imageUrl}`}}/>
                 <Text style={styles.scannedText}>{`${scannedValue.user.name} wil graag ${scannedValue.reward.amount} punten inruilen voor een ${scannedValue.reward.title}`}</Text>
                 <PrimaryButton style={{alignSelf:'center'}} onPress={handleRewardGiven} label={`In orde!`} />
               </View>
@@ -126,7 +126,7 @@ export default function QuestionsScreen() {
           <>
             <View style={styles.overlay} />
             <View style={styles.scannedContainer}>
-              <Image style={styles.scannedImage} source={{uri: `https://robinvandenb.be/assets/img/kalfapp/${scannedValue.reward.imageUrl}`}}/>
+              <Image style={styles.scannedImage} source={{uri: `${SERVER_URL}assets/img/drinks/${scannedValue.reward.imageUrl}`}}/>
               <Text style={styles.scannedText}>{`${scannedValue.user.name} wil graag ${scannedValue.reward.amount} punten inruilen voor een ${scannedValue.reward.title}`}</Text>
               <PrimaryButton style={{alignSelf:'center'}} onPress={handleRewardGiven} label={`In orde!`} />
             </View>
@@ -312,22 +312,3 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)'
   },
 });
-
-const makeTitle = (slug) => {
-  var words = slug.split('-');
-  for (var i = 0; i < words.length; i++) {
-    var word = words[i];
-    words[i] = word.charAt(0).toUpperCase() + word.slice(1);
-  }
-  return words.join(' ');
-}
-const slugify = text =>
-  text
-    .toString()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/[^\w-]+/g, '')
-    .replace(/--+/g, '-')

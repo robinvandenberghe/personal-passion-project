@@ -5,7 +5,7 @@ import Pictionary from '../components/Pictionary';
 import {io} from 'socket.io-client';
 import firestore from '@react-native-firebase/firestore';
 import { useGlobalState } from '../state';
-
+import { SERVER_URL } from '@env';
 
 export default function PictionaryScreen({navigation}:{navigation:any;}) {
   const [screen, setScreen] = useState<string>(``);
@@ -42,7 +42,7 @@ export default function PictionaryScreen({navigation}:{navigation:any;}) {
   }
 
   useEffect(()=>{
-    const socket = io('http://192.168.1.35');
+    const socket = io(SERVER_URL);
     socket.on('connect', ()=>{
       setGameSocket(socket);
     });

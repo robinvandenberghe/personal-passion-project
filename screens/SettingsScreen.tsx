@@ -8,8 +8,6 @@ import AppIcons from '../components/AppIcons';
 import useColorScheme from '../hooks/useColorScheme';
 import { useGlobalState } from '../state';
 
-
-
 export default function SettingsScreen() {
   const [user, setUser] = useGlobalState('user');
   const [pushNotifications, setPushNotifications] = useState<boolean>(user.settings.pushNotifications);

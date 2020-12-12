@@ -3,7 +3,7 @@ import { StyleSheet, Image } from 'react-native';
 import {  primaryCrema, primaryDark, secondaryLight, dropShadow } from '../constants/Colors';
 import { useLinkTo } from '@react-navigation/native';
 import { Text, View, PrimaryButton } from './Themed';
-import { IMG_URL , APP_API } from "@env";
+import { SERVER_URL , APP_API } from "@env";
 
 export default function Event(post: { event: any; }) {
   const { event} = post;
@@ -19,7 +19,7 @@ export default function Event(post: { event: any; }) {
         da.date = da.date.toDate();
         da.id = d.id;
         setEvent(da);
-        setImgLink({uri: `${IMG_URL}events/${da.imageUrl}`, headers:{ 'Authorization': `Bearer ${APP_API}`}});
+        setImgLink({uri: `${SERVER_URL}assets/img/events/${da.imageUrl}`, headers:{ 'Authorization': `Bearer ${APP_API}`}});
       } catch (err) {
         console.error(err);
       }

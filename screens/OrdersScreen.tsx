@@ -9,7 +9,6 @@ import { orderType, drinksType} from '../types';
 import { useGlobalState } from '../state';
 import AppIcons from '../components/AppIcons';
 
-
 export default function OrdersScreen() {
   const [ orders , setOrders] = useState<[]>([]);
   const [drinks, setDrinks] = useGlobalState('drinks');

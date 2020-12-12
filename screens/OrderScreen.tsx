@@ -10,7 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Draggable from 'react-native-draggable';
 import { cartType, drinksType} from '../types';
 import { useGlobalState } from '../state';
-import { IMG_URL, APP_API } from "@env";
+import { SERVER_URL, APP_API } from "@env";
 
 
 export default function OrderScreen() {
@@ -79,11 +79,10 @@ export default function OrderScreen() {
   }, [isFetching]);
 
   return (
-    <View style={[styles.container, {paddingBottom: (insets.bottom) }]} >
+    <View style={[styles.container]} >
 
       <FlatList
         ListHeaderComponent={renderHeader}
-        style={styles.drinkList}
         data={categories}
         extraData={cart}
         renderItem={({item, index}) => <Category category={item}  drinks={drinks} index={index} cart={cart} addItem={addItem}/>}
@@ -93,7 +92,7 @@ export default function OrderScreen() {
         onRefresh={()=>setFetching(true)}
         keyExtractor={(item, index) => index.toString()} 
         nestedScrollEnabled={true}
-        contentContainerStyle={{paddingBottom: insets.bottom  }}
+        contentContainerStyle={[styles.drinkList, {paddingBottom: insets.bottom }]}
         />
       <CartIcon cart={cart} />
     </View>
@@ -104,10 +103,10 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     position:'relative',
+    paddingBottom: 0,
   },
   drinkList:{
     flexGrow:1,
-    paddingBottom: 120,
   },
   welcomeMessage: {
     fontWeight:'500',
@@ -202,7 +201,7 @@ const Drink = ({drink, amount, addItem}:{drink:drinksType; amount:number; addIte
   return (
     <View style={styles.drinkContainer}>
       <View>      
-        <Image source={{uri: `${IMG_URL}drinks/${drink.imageUrl}`, headers: { 'Authorization': `Bearer ${APP_API}`},}} style={styles.drinkImage}/>
+        <Image source={{uri: `${SERVER_URL}assets/img/drinks/${drink.imageUrl}`, headers: { 'Authorization': `Bearer ${APP_API}`},}} style={styles.drinkImage}/>
         <DrinkIcon amount={amount} />
       </View>
       <Text style={styles.drinkTitle}>{drink.title}</Text>

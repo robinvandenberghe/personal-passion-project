@@ -13,7 +13,6 @@ import { IMG_URL, APP_API } from "@env";
 
 export default function PostsScreen() {
   const [ screen, setScreen ] = useState<string>(``);
-  const [ value, setValue ] = useState<string>(``);
   const [ activeSlide, setActiveSlide ] = useState<number>(0);
   const [ info, setInfo ] = useState<{ type:string; subject:string; message:string; }|null>();
   const [ editValue, setEditValue ] = useState<{images?:any[];textValue:string;eventValue?:string;}>({textValue: ``});

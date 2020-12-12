@@ -2,12 +2,11 @@ import React, {useState, useEffect} from 'react';
 import { StyleSheet, Image } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import { Text, View, FlatList, PrimaryButton, SecondaryButton} from '../components/Themed';
-import Colors, { errorDark, primaryCrema, primaryDark, primaryGrey, secondaryGrey, secondaryLight } from '../constants/Colors';
+import Colors, { primaryGrey, secondaryGrey } from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import { useGlobalState } from '../state';
 import QRCode from 'react-native-qrcode-svg';
-
-
+import { SERVER_URL } from '@env';
 
 export default function SettingsScreen() {
   const [user, setUser] = useGlobalState('user');
@@ -58,7 +57,7 @@ export default function SettingsScreen() {
   }
 
   const Reward = ({reward}:{reward:{uid:string; amount:number; available:number; imageUrl:string; title:string; };}) => {
-    const [imgLink, setImgLink] = useState({uri: `https://robinvandenb.be/assets/img/kalfapp/${reward.imageUrl}`});
+    const [imgLink, setImgLink] = useState({uri: `${SERVER_URL}assets/img/drinks/${reward.imageUrl}`});
     return (
       <View style={styles.rewardContainer}>
         <Image source={imgLink} style={styles.rewardImage}/>

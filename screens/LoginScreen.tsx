@@ -1,9 +1,7 @@
-import React , { useState, useEffect } from 'react';
+import React , { useState } from 'react';
 import { StyleSheet} from 'react-native';
 import {  View, PrimaryButton , InputWithLabel, Text, Link} from '../components/Themed';
-import { primaryCrema } from '../constants/Colors';
 import auth from '@react-native-firebase/auth';
-
 
 export default function LoginScreen() {
   const [ email, setEmail] = useState(``);

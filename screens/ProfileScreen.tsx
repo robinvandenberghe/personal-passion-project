@@ -8,11 +8,11 @@ import { useLinkTo } from '@react-navigation/native';
 import { useGlobalState } from '../state';
 import ImagePicker from 'react-native-image-crop-picker';
 import firestore from '@react-native-firebase/firestore';
-import { IMG_URL, APP_API } from "@env";
+import { SERVER_URL, APP_API } from "@env";
 
 export default function ProfileScreen() {
   const [user, setUser] = useGlobalState('user');
-  const [imgLink, setImgLink] = useState(!user.profileImg? require('../assets/images/defaultUser.jpg') : {uri: `${IMG_URL}users/${user.profileImg}`, headers: {'Authorization':`Bearer ${APP_API}`}});
+  const [imgLink, setImgLink] = useState(!user.profileImg? require('../assets/images/defaultUser.jpg') : {uri: `${SERVER_URL}assets/img/users/${user.profileImg}`, headers: {'Authorization':`Bearer ${APP_API}`}});
   const [ info, setInfo ] = useState<{ type:string; subject:string; message:string; }|null>();
   const colorScheme = useColorScheme();
 
@@ -45,7 +45,7 @@ export default function ProfileScreen() {
           firestore().doc(`users/${user.uid}`).update({profileImg: response.image.filename});
           user.profileImg = response.image.filename;          
           setUser(user);
-          setImgLink({uri: `${IMG_URL}users/${response.image.filename}`});
+          setImgLink({uri: `${SERVER_URL}assets/img/users/${response.image.filename}`});
           setInfo({type: `success`, subject: `profileImage`, message:`Profielfoto succesvol upgeload!`});
         }else{
           setInfo({type: `error`, subject: `profileImage`, message:`Er liep iets mis tijdens het uploaden van je profielfoto.`});
@@ -56,9 +56,12 @@ export default function ProfileScreen() {
   }
 
   const handleUploadPhoto = (image) => {
-    return fetch("http://192.168.1.35/api/user-profilepicture", {
+    return fetch(`${SERVER_URL}api/user-profilepicture`, {
       method: "POST",
-      body: createFormData(image, { userId: user.uid, profileLink: user.profileImg })
+      body: createFormData(image, { userId: user.uid, profileLink: user.profileImg }),
+      headers: {
+        'Authorization' : `Bearer ${APP_API}`,
+      }
     })
       .then(response => response.json())
       .catch(error => {
