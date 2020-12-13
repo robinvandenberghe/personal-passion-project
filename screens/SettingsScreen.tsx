@@ -11,7 +11,7 @@ import Modal from 'react-native-modal';
 
 export default function SettingsScreen() {
   const [user, setUser] = useGlobalState('user');
-  const [pushNotifications, setPushNotifications] = useState<boolean>(user.settings.pushNotifications);
+  const [ pushNotifications, setPushNotifications ] = useState<boolean>(user.settings.pushNotifications);
   const [ isModalVisible, setModalVisible ] = useState<boolean>(false);
   const colorScheme = useColorScheme();
 
