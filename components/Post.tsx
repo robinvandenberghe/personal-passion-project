@@ -33,7 +33,10 @@ export default function Post({post, index, posts, setPosts}:{post:any; index:num
         .catch((err)=>{console.error(err)});
       });
     }
-    await firestore().doc(`posts/${uid}`).delete();
+    await firestore().doc(`posts/${uid}`).delete().then(()=>{
+      posts.splice(index,1);
+      setPosts([...posts]);
+    });
   }
 
   const handleSavePost = async () => {

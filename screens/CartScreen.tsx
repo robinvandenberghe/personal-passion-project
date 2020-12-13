@@ -43,11 +43,11 @@ export default function CartScreen() {
       const o = await firestore().collection('orders').add(order).catch((error)=> console.error(error));
       if(o){
         if(payconiq){
-          const url = 'https://api.ext.payconiq.com/v3/payments';
+          const url = 'https://api.payconiq.com/v3/payments';
           const options = { 
             method: 'POST',
             headers: {
-              'Authorization' : `Bearer d2b206e2-0e2c-47f8-91bd-1c63da2cffd4`,
+              'Authorization' : `Bearer ${PAYCONIQ_API}`,
               'Content-Type' : 'application/json',
             },
             body: JSON.stringify({
@@ -60,7 +60,6 @@ export default function CartScreen() {
           };
           fetch(url, options).then(r=>r.json()).then(response => {
             if(response){
-              console.log(response);
               const { paymentId, status } = response;
               firestore().doc(`orders/${o.id}`).update({paymentId, paymentStatus:status}).then(()=>{
                 const deeplink = response._links.deeplink.href;

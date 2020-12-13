@@ -66,7 +66,6 @@ export default function OrdersScreen() {
             });
             try {
               firestore().collection("orders").where('ready', '==', false).onSnapshot((querySnapshot) => {
-              if(querySnapshot.size > 0){
                 const b:[] = querySnapshot.docs.map((item) => {
                   const temp = item.data();
                   let tempDrinks = [];
@@ -78,8 +77,7 @@ export default function OrdersScreen() {
                 });
                 b.sort((first,second)=>second.date.getTime()-first.date.getTime());
                 setOrders(b);
-              }
-              setDrinks(a);
+                setDrinks(a);
               });
             } catch (err) {
               console.error(err);
@@ -90,7 +88,6 @@ export default function OrdersScreen() {
         }else{
           try {
             firestore().collection("orders").where('ready', '==', false).onSnapshot((querySnapshot) => {
-            if(querySnapshot.size > 0){
               const a:[] = querySnapshot.docs.map((item) => {
                 const temp = item.data();
                 let tempDrinks = [];
@@ -102,7 +99,7 @@ export default function OrdersScreen() {
               });
               a.sort((first,second)=>second.date.getTime()-first.date.getTime());
               setOrders(a);
-            }});
+            });
           } catch (err) {
             console.error(err);
           }    

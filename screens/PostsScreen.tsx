@@ -1,19 +1,23 @@
-import React , { useState } from 'react';
+import React , { useState, useEffect } from 'react';
 import firestore from '@react-native-firebase/firestore';
-import { Text, View, PrimaryButton, Message} from '../components/Themed';
+import { Text, View, PrimaryButton, Message, FlatList, } from '../components/Themed';
 import { StyleSheet , Dimensions, TextInput , Pressable, Platform} from 'react-native';
-import Colors, { alertDark, errorDark, successDark , dropShadow} from '../constants/Colors';
+import Colors, { alertDark, errorDark, successDark , dropShadow, primaryLight} from '../constants/Colors';
 import AppIcons from '../components/AppIcons';
 import useColorScheme from '../hooks/useColorScheme';
 import ImagePicker from 'react-native-image-crop-picker';
 import Event from './../components/Event';
 import Carousel, { Pagination, ParallaxImage, AdditionalParallaxProps } from 'react-native-snap-carousel';
 import { IMG_URL, APP_API } from "@env";
+import Modal from 'react-native-modal';
 
 
 export default function PostsScreen() {
   const [ screen, setScreen ] = useState<string>(``);
   const [ activeSlide, setActiveSlide ] = useState<number>(0);
+  const [ isModalVisible, setModalVisible ] = useState<boolean>(false);
+  const [ isFetching, setFetching ] = useState<boolean>(false);
+  const [ events, setEvents ] = useState<{ref:any; title:string;}[]>();
   const [ info, setInfo ] = useState<{ type:string; subject:string; message:string; }|null>();
   const [ editValue, setEditValue ] = useState<{images?:any[];textValue:string;eventValue?:string;}>({textValue: ``});
   const colorScheme = useColorScheme();
@@ -25,39 +29,41 @@ export default function PostsScreen() {
 
   const handlePost = async () =>{
     if(editValue.textValue !== `` || editValue.images || editValue.eventValue){
-      let input = {date: firestore.Timestamp.now()};
+      let input:{date:any; message?:string; event?:any;} = {date: firestore.Timestamp.now()};
       if(editValue.textValue !== ``){
         input.message = editValue.textValue; 
       }
-      if(editValue.eventValue !== ``){
-        input.message = editValue.textValue;
+      if(editValue.eventValue){
+        input.event = editValue.eventValue;
       }
       const newDoc = await firestore().collection('posts').add(input);
       if(newDoc){
-        handleUploadPhoto().then(response => {
-          if(response){
-            const images = response.uploadedImages.map(img => img.filename);
-            firestore().doc(`posts/${newDoc.id}`).update({images}).then(()=>{
-              setEditValue({textValue: ``});
-              setInfo({type: `success`, subject: `newPost`, message:`Post succesvol geplaatst!`});
-            }).catch((err)=>{
-              setInfo({type: `error`, subject: `profileImage`, message:`Er liep iets mis tijdens het uploaden van de afbeeldingen.`});
-            });
-          }else{
-          setInfo({type: `error`, subject: `profileImage`, message:`Er liep iets mis tijdens het uploaden van de afbeeldingen.`});
-          }
-        }).catch((err)=>{
-          setInfo({type: `error`, subject: `profileImage`, message:`Er liep iets mis tijdens het uploaden van de afbeeldingen.`});
-        });
-
+        if(editValue.images){
+          handleUploadPhoto().then(response => {
+            if(response){
+              const images = response.uploadedImages.map(img => img.filename);
+              firestore().doc(`posts/${newDoc.id}`).update({images}).then(()=>{
+                setEditValue({textValue: ``});
+                setInfo({type: `success`, subject: `newPost`, message:`Post succesvol geplaatst!`});
+              }).catch((err)=>{
+                setInfo({type: `error`, subject: `profileImage`, message:`Er liep iets mis tijdens het uploaden van de afbeeldingen.`});
+              });
+            }else{
+            setInfo({type: `error`, subject: `profileImage`, message:`Er liep iets mis tijdens het uploaden van de afbeeldingen.`});
+            }
+          }).catch((err)=>{
+            setInfo({type: `error`, subject: `profileImage`, message:`Er liep iets mis tijdens het uploaden van de afbeeldingen.`});
+          });
+        }else{
+          setEditValue({textValue: ``});
+          setInfo({type: `success`, subject: `newPost`, message:`Post succesvol geplaatst!`});
+        }
       }else{
         setInfo({type: `error`, subject: `newPost`, message:`Er liep iets mis tijdens het plaatsen van je post, probeer opnieuw!`});
       }
     }else{
       setInfo({type: `error`, subject: `newPost`, message:`Vul eerst iets in.`});
-    }
-
-    
+    } 
   }
 
   const handleChoosePhoto = () => {
@@ -76,10 +82,7 @@ export default function PostsScreen() {
       } 
 
     }).catch((error) => {
-      if (error.code === 'E_PICKER_CANCELLED' && editValue.images.length>0) {
-        editValue.images = undefined;
-        setEditValue({...editValue});   
-      }
+      console.error(error);
     });
   }
 
@@ -121,6 +124,39 @@ export default function PostsScreen() {
     return <ParallaxImage parallaxFactor={0.4} style={styles.exampleImage} containerStyle={styles.imageContainer}  source={{uri: item.path}} {...parallaxProps} />;
   }
 
+  const EventSelect = ({event}:{event:{ref:any; title:string;}}) =>{
+    const {title, ref } = event;
+    return (
+      <View style={styles.eventWrapper}>
+        <Text style={styles.eventTitle}>{title}</Text>
+        <PrimaryButton onPress={()=>{
+          editValue.eventValue = ref;
+          setEditValue({...editValue});
+          setModalVisible(false);
+        }} label={`Selecteer`} />
+      </View>
+    );
+  }
+
+  useEffect(()=>{
+    const fetchEvents = async () => {
+      if(isFetching){
+        const evRef = await firestore().collection(`events`).where(`date`,`>=`,firestore.Timestamp.now()).get();
+        if(evRef && evRef.size>0){
+          const evTemp = evRef.docs.map((item)=>{
+            const itTemp = item.data();
+            return {ref:item.ref, title: itTemp.title,};
+          });
+          setFetching(false);
+          setEvents(evTemp);
+        }else{
+          setFetching(false);
+        }
+      }
+    }
+    fetchEvents();
+  },[isFetching]);
+
   switch(screen){
     default:
       return(
@@ -135,7 +171,7 @@ export default function PostsScreen() {
                   <Text style={[styles.subtext, {color: Colors[colorScheme].labelColor}]}>5 minuten geleden</Text>
                   <TextInput style={[styles.multiLineInput, {color: Colors[colorScheme].text}] }  blurOnSubmit placeholder={`Begin met typen ...`} placeholderTextColor={Colors[colorScheme].labelColor}  keyboardType={`default`}  multiline onChangeText={text => {editValue.textValue = text; setEditValue({...editValue});}} value={editValue.textValue}/>
                   {editValue.images?
-                    <Pressable onPress={handleChoosePhoto} style={styles.carouselWrapper}>
+                    <View style={styles.carouselWrapper}>
                       <Carousel
                         data={editValue.images}
                         renderItem={renderImage}
@@ -155,12 +191,47 @@ export default function PostsScreen() {
                         inactiveDotScale={0.6}
                         containerStyle={{marginVertical:-24}}
                       />
-                    </Pressable>
+                      <View style={styles.editPhotoLine}>                      
+                        <Pressable onPress={()=>{
+                            editValue.images = undefined;
+                            setEditValue({...editValue});   
+                          }} 
+                          style={[styles.roundButton, styles.rejectButton]}>
+                          <AppIcons size={16} color={primaryLight} name={`cartcross`} />
+                        </Pressable>
+                        <Pressable onPress={handleChoosePhoto} style={[styles.roundButton, styles.editButton]}><AppIcons size={18} color={primaryLight} name={`posts`} /></Pressable>
+                      </View>
+                    </View>
                    :editValue.eventValue?
-                    <Event event={editValue.eventValue} />
-                    :<View style={[styles.buttonLine, {backgroundColor: Colors[colorScheme].postBackground}]}><PrimaryButton onPress={handleChoosePhoto} style={styles.imageButton} label={<AppIcons size={32} color={Colors[colorScheme].postBackground} name={`image`}/>} /><PrimaryButton onPress={handleChoosePhoto} style={styles.imageButton} label={<AppIcons size={32} color={Colors[colorScheme].postBackground} name={`events`}/>} /></View>}
+                    <View style={styles.carouselWrapper}>
+                      <Event event={editValue.eventValue} />
+                      <View style={styles.editPhotoLine}>                      
+                        <Pressable onPress={()=>{
+                            editValue.eventValue = undefined;
+                            setEditValue({...editValue});   
+                          }} 
+                          style={[styles.roundButton, styles.rejectButton]}>
+                          <AppIcons size={16} color={primaryLight} name={`cartcross`} />
+                        </Pressable>
+                        <Pressable onPress={()=>{setModalVisible(true); setFetching(true);}} style={[styles.roundButton, styles.editButton]}><AppIcons size={18} color={primaryLight} name={`posts`} /></Pressable>
+                      </View>
+                    </View>
+                    :<View style={[styles.buttonLine, {backgroundColor: Colors[colorScheme].postBackground}]}><PrimaryButton onPress={handleChoosePhoto} style={styles.imageButton} label={<AppIcons size={32} color={Colors[colorScheme].postBackground} name={`image`}/>} /><PrimaryButton onPress={()=>{setModalVisible(true); setFetching(true);}} style={styles.imageButton} label={<AppIcons size={32} color={Colors[colorScheme].postBackground} name={`events`}/>} /></View>}
                 </View>
                 <PrimaryButton onPress={handlePost} style={styles.postButton} label={`Plaatsen`} />
+                <Modal isVisible={isModalVisible}>
+                  <View style={styles.modal}>
+                    <FlatList
+                      data={events}
+                      renderItem={({item, index}) => <EventSelect event={item} />}
+                      showsVerticalScrollIndicator ={false}
+                      refreshing={isFetching}
+                      onRefresh={()=>setFetching(true)}
+                      keyExtractor={(item, index) => index.toString()} 
+                      scrollEnabled
+                      />    
+                  </View>
+                </Modal>
               </View>
           </View>
         </View>
@@ -277,11 +348,39 @@ const styles = StyleSheet.create({
   },
   carouselWrapper:{
     width:'100%',
+    position: 'relative',
+    backgroundColor:'transparent',
   },
   carousel:{
     height: 320,
     marginVertical: 8,
     flexGrow:0,
     flex:0,
+  },
+  editPhotoLine:{
+    position:'absolute',
+    top:8,
+    right:8,
+    flexDirection: 'row',
+    flexShrink:1,
+    backgroundColor:'transparent',
+  },
+  modal:{
+    height: '33%',
+    bottom:0,
+    borderRadius:8,
+    padding:8,
+  },
+  eventWrapper:{
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems:'center',
+    marginVertical:8,
+    width: '100%',
+  },
+  eventTitle:{
+    flexGrow:1,
+    fontSize: 18,
+    fontWeight: '500',
   }
 });

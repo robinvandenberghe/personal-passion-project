@@ -55,7 +55,7 @@ export default function HomeScreen() {
   }, [isFetching, fetchMore]);
 
   return (
-    <View>
+    <View style={{flexGrow:1, }}>
       <FlatList
         contentContainerStyle={styles.container}
         data={posts}

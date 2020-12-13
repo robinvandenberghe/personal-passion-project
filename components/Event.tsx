@@ -5,10 +5,9 @@ import { useLinkTo } from '@react-navigation/native';
 import { Text, View, PrimaryButton } from './Themed';
 import { SERVER_URL , APP_API } from "@env";
 
-export default function Event(post: { event: any; }) {
-  const { event} = post;
-  const [eventObject, setEvent] = useState({imageUrl: "", date: new Date(), title: "", id: ""});
-  const [imgLink, setImgLink] = useState(require('./../assets/images/eventDefault.jpg'))
+export default function Event({ event }:{ event: any; }) {
+  const [ eventObject, setEvent ] = useState({imageUrl: "", date: new Date(), title: "", id: ""});
+  const [ imgLink, setImgLink ] = useState(require('./../assets/images/eventDefault.jpg'))
   const linkTo = useLinkTo();
 
   useEffect(() => {
