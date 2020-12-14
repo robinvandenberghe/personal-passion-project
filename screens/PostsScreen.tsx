@@ -8,7 +8,7 @@ import useColorScheme from '../hooks/useColorScheme';
 import ImagePicker from 'react-native-image-crop-picker';
 import Event from './../components/Event';
 import Carousel, { Pagination, ParallaxImage, AdditionalParallaxProps } from 'react-native-snap-carousel';
-import { IMG_URL, APP_API } from "@env";
+import { SERVER_URL, APP_API } from "@env";
 import Modal from 'react-native-modal';
 
 
@@ -80,14 +80,11 @@ export default function PostsScreen() {
         editValue.images = images;
         setEditValue({...editValue});   
       } 
-
-    }).catch((error) => {
-      console.error(error);
     });
   }
 
   const handleUploadPhoto = () => {
-    return fetch("http://192.168.1.35:80/api/post-photo", {
+    return fetch(`${SERVER_URL}api/post-photo`, {
       method: "POST",
       body: createFormData(editValue.images, { userId: "123",  }),
       headers: { 
@@ -96,7 +93,7 @@ export default function PostsScreen() {
     })
       .then(response => response.json())
       .catch(error => {
-        console.log("upload error", error);
+        setInfo({type: `error`, subject: `newPost`, message:`Er liep iets fout tijdens het uploaden van de foto's.`});
       });
   };
 
@@ -110,7 +107,6 @@ export default function PostsScreen() {
           Platform.OS === "android" ? photo.sourceURL : photo.sourceURL.replace("file://", "")
       });
     });
-
  
     Object.keys(body).forEach(key => {
       data.append(key, body[key]);
@@ -216,7 +212,7 @@ export default function PostsScreen() {
                         <Pressable onPress={()=>{setModalVisible(true); setFetching(true);}} style={[styles.roundButton, styles.editButton]}><AppIcons size={18} color={primaryLight} name={`posts`} /></Pressable>
                       </View>
                     </View>
-                    :<View style={[styles.buttonLine, {backgroundColor: Colors[colorScheme].postBackground}]}><PrimaryButton onPress={handleChoosePhoto} style={styles.imageButton} label={<AppIcons size={32} color={Colors[colorScheme].postBackground} name={`image`}/>} /><PrimaryButton onPress={()=>{setModalVisible(true); setFetching(true);}} style={styles.imageButton} label={<AppIcons size={32} color={Colors[colorScheme].postBackground} name={`events`}/>} /></View>}
+                    :<View style={[styles.buttonLine, {backgroundColor: Colors[colorScheme].postBackground}]}><PrimaryButton onPress={handleChoosePhoto} style={styles.imageButton} label={<AppIcons size={32} color={primaryLight} name={`image`}/>} /><PrimaryButton onPress={()=>{setModalVisible(true); setFetching(true);}} style={styles.imageButton} label={<AppIcons size={32} color={primaryLight} name={`events`}/>} /></View>}
                 </View>
                 <PrimaryButton onPress={handlePost} style={styles.postButton} label={`Plaatsen`} />
                 <Modal isVisible={isModalVisible}>

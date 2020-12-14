@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Text, TextProps, TouchableHighlightProps, ViewProps } from "react-native";
 import Svg, { Path } from 'react-native-svg';
 import {primaryDark} from '../constants/Colors';
 

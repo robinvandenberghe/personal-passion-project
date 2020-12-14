@@ -11,7 +11,7 @@ import { SERVER_URL, APP_API } from '@env';
 export default function Pictionary({starter = false, socket}:{starter?:boolean;socket:any;}) {
   const [error, setError] = useState<{type:string; subject:string; message:string;}|undefined>();
   const [code, setCode] = useState<string>(``);
-  const [turn, setTurn] = useState();
+  const [turn, setTurn] = useState<{id: number; question:string; round:number; userId:string; startTime?:any;} | undefined>();
   const [screen, setScreen] = useState(``);
   const [user, setUser] = useGlobalState('user');
   const [gameUser, setGameUser] = useState({imgUri: user.profileImg, id: user.uid, name: `${user.name} ${user.surname.charAt(0)}.`, score:0});
@@ -34,7 +34,7 @@ export default function Pictionary({starter = false, socket}:{starter?:boolean;s
       }
     };
     run();
-    socket.on('turn', turn =>{
+    socket.on('turn', (turn) =>{
       const {userId} = turn;
       if(userId == user.uid){
         setTurn(turn);
@@ -45,7 +45,7 @@ export default function Pictionary({starter = false, socket}:{starter?:boolean;s
       }
     });
 
-    socket.on('roundEnded', game =>{
+    socket.on('roundEnded', (game) =>{
       setGame({...game});
       setScreen(`roundEnded`);
     });
@@ -60,7 +60,7 @@ export default function Pictionary({starter = false, socket}:{starter?:boolean;s
       }
     });
     
-    socket.on('gameError', err =>{
+    socket.on('gameError', (err) =>{
       setError(err);
     });
   },[]);

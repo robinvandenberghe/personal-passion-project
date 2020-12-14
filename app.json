@@ -20,7 +20,7 @@
     ],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "be.robinvandenb.t-kalf ",
+      "bundleIdentifier": "be.robinvandenb.t-kalf",
       "splash": {
         "image": "./assets/images/splash.png",
         "imageResizeMode": "contain",
@@ -32,7 +32,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#F9F5F0"
       },
-      "package": "be.robinvandenb.tkalf ",
+      "package": "be.robinvandenb.tkalf",
       "splash": {
         "image": "./assets/images/splash.png",
         "resizeMode": "contain",
