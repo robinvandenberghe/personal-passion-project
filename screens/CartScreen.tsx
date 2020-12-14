@@ -18,6 +18,7 @@ export default function CartScreen() {
   const [tableNumber, setTableNumber] = useState<string>(``);
   const [error, setError] = useState<inputErrorType | null>(null);
 
+
   let cartTotal:number = 0;
   cart.map((item)=> cartTotal += (item.amount * item.drink.price));
   const insets = useSafeAreaInsets();

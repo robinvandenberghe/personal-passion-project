@@ -11,7 +11,7 @@ import Modal from 'react-native-modal';
 
 export default function SettingsScreen() {
   const [user, setUser] = useGlobalState('user');
-  const [ isModalVisible, setModalVisible ] = useState<boolean>(true);
+  const [ isModalVisible, setModalVisible ] = useState<boolean>(false);
   const colorScheme = useColorScheme();
   const linkTo = useLinkTo();
 
@@ -33,7 +33,15 @@ export default function SettingsScreen() {
             <Text style={styles.perksText}>Check hieronder jouw voordelen als lid van 't Kalf</Text>
             <PrimaryButton onPress={()=>setModalVisible(true)} label={`Check je voordelen!`}/>
           </View>
-        </> : null}
+        </> : 
+        <View style={[styles.container]}>
+          <View style={[styles.successMessage, {width: '100%'}]}>
+            <AppIcons size={18} color={errorDark} name={`error`}/>
+            <Text style={[styles.successMessageText, { color: errorDark }]}>Je bent nog geen lid van 't Kalf. Vraag aan de bar in het jeugdhuis om lid te worden.</Text>
+          </View>
+          <Text style={styles.perksText}>Check hieronder jouw voordelen als lid van 't Kalf</Text>
+          <PrimaryButton style={{alignSelf:'center'}} onPress={()=>setModalVisible(true)} label={`Check je voordelen!`}/>
+        </View>}
       <Modal 
        style={{overflow:'hidden', top:'10%', maxHeight:'80%', borderRadius:8}} isVisible={isModalVisible}>
         <ScrollView bounces={true} style={styles.modal}>
@@ -44,13 +52,11 @@ export default function SettingsScreen() {
           <Text style={{fontSize:14}}>Iedereen viert graag, en daarom viert ‘t Kalf graag met jou mee. Op je verjaardag krijg je van ons een gratis fles cava.</Text>
           <Text style={{marginVertical:8,fontSize:10}}>Op vertoon van je identiteitskaart heb je vanaf je verjaardag tot 14 dagen nadien recht op één fles cava.</Text>
           <Image style={styles.perkImages} source={require('./../assets/images/bus.png')}/>
-          <Text style={{marginTop:8,fontWeight:'500'}}>Een fles cava op je verjaardag</Text>
-          <Text style={{fontSize:14}}>Iedereen viert graag, en daarom viert ‘t Kalf graag met jou mee. Op je verjaardag krijg je van ons een gratis fles cava.</Text>
-          <Text style={{marginVertical:8,fontSize:10}}>Op vertoon van je identiteitskaart heb je vanaf je verjaardag tot 14 dagen nadien recht op één fles cava.</Text>
-          <Image style={styles.perkImages} source={require('./../assets/images/cava.png')}/>
-          <Text style={{marginTop:8,fontWeight:'500'}}>Een fles cava op je verjaardag</Text>
-          <Text style={{fontSize:14}}>Iedereen viert graag, en daarom viert ‘t Kalf graag met jou mee. Op je verjaardag krijg je van ons een gratis fles cava.</Text>
-          <Text style={{marginVertical:8,fontSize:10}}>Op vertoon van je identiteitskaart heb je vanaf je verjaardag tot 14 dagen nadien recht op één fles cava.</Text> 
+          <Text style={{marginTop:8,fontWeight:'500'}}>Jeugdhuizenrally</Text>
+          <Text style={{fontSize:14}}>Elk jaar gaan we, verkleed in een thema, op ontdekkingstocht langs andere jeugdhuizen van de streek met een party-bus. Plezier gegarandeerd!</Text>
+          <Image style={styles.perkImages} source={require('./../assets/images/discount.png')}/>
+          <Text style={{marginTop:8,fontWeight:'500'}}>Tal van kortingen</Text>
+          <Text style={{fontSize:14}}>Als lid heb je ook het hele jaar door recht op tal van kortingen. WAT?! Jazeker, naast onze voordelige tarieven heb jij op sommige evenementen of zaken nog een extra korting. Omdat we je graag zien!</Text>
           <SecondaryButton style={{alignSelf:'flex-end', marginTop:8,}} onPress={()=>setModalVisible(false)} label={`Terug`}/>
         </ScrollView>
       </Modal>
@@ -127,7 +133,8 @@ const styles = StyleSheet.create({
     width:'100%',
     height:150,
     resizeMode:'contain',
-    marginVertical:8,
+    marginBottom:8,
+    marginTop:24,
   },
   personalButton:{
     backgroundColor: `#2E8787`,
